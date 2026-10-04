@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --coral: #e8673f;
+  --coral-dark: #c9532c;
+  --coral-soft: #fbe3d8;
+  --cream: #fff8ef;
+  --cream-deep: #f6ead8;
+  --indigo: #2b2d6b;
+  --indigo-soft: #e4e5f7;
+  --teal: #14b8a6;
+  --teal-soft: #d8f5f0;
+  --ink: #2a2320;
+  --ink-soft: #6b5f58;
+  --line: #ead9c6;
+}
+
+@theme inline {
+  --color-coral: var(--coral);
+  --color-coral-dark: var(--coral-dark);
+  --color-coral-soft: var(--coral-soft);
+  --color-cream: var(--cream);
+  --color-cream-deep: var(--cream-deep);
+  --color-indigo: var(--indigo);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --font-sans: "Nunito Variable", "Cairo Variable", system-ui, sans-serif;
+  --font-display: "Fredoka Variable", "Cairo Variable", system-ui, sans-serif;
+  --radius-blob: 1.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+[dir="rtl"] body,
+[dir="rtl"] {
+  font-family: "Cairo Variable", "Nunito Variable", system-ui, sans-serif;
+}
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] .display {
+  font-family: "Cairo Variable", system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-coral text-white shadow-[0_6px_0_var(--coral-dark)] hover:translate-y-[1px] hover:shadow-[0_5px_0_var(--coral-dark)]; }
+.btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-indigo text-white hover:bg-[#3b3e8c]; }
+.btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-white text-indigo border-2 border-line hover:border-indigo; }
+
+.card { @apply rounded-[var(--radius-blob)] bg-white border border-line shadow-[0_2px_0_var(--line)]; }
+
+.field { @apply w-full rounded-2xl border-2 border-line bg-white px-4 py-3 text-base outline-none focus:border-coral min-h-12; }
+
+.chip { @apply inline-flex items-center rounded-full border-2 border-line bg-white px-4 py-2 text-sm font-semibold cursor-pointer select-none transition min-h-11; }
+.chip-on { @apply border-coral bg-coral-soft text-coral-dark; }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(0.6); }
+  50% { transform: scale(1); }
+}
+.breathe { animation: breathe 8s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 4s ease-in-out infinite; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+  .page { page-break-after: always; }
+}

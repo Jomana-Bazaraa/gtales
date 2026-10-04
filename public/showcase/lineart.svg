@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" font-family="sans-serif">
+  <rect width="800" height="600" fill="#fff"/>
+  <!-- sky & sun -->
+  
+  <circle cx="680" cy="90" r="46" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+  <!-- clouds -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="4">
+    <ellipse cx="150" cy="110" rx="60" ry="26"/><ellipse cx="120" cy="100" rx="34" ry="24"/><ellipse cx="185" cy="98" rx="36" ry="24"/>
+    <ellipse cx="520" cy="150" rx="50" ry="22"/><ellipse cx="495" cy="142" rx="28" ry="20"/><ellipse cx="548" cy="140" rx="30" ry="20"/>
+  </g>
+  <!-- distant trees -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="4">
+    <circle cx="60" cy="300" r="48"/><circle cx="130" cy="280" r="60"/><circle cx="740" cy="290" r="54"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-width="4"><rect x="52" y="330" width="16" height="40" rx="4"/><rect x="122" y="330" width="16" height="50" rx="4"/><rect x="732" y="330" width="16" height="44" rx="4"/></g>
+  <!-- pitch -->
+  <rect x="0" y="360" width="800" height="240" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+  
+  <defs><pattern id="stripes" width="80" height="240" patternUnits="userSpaceOnUse"><rect width="40" height="240" fill="#74b856" opacity="0.6"/></pattern></defs>
+  <!-- pitch lines -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="3">
+    <rect x="40" y="400" width="720" height="180" rx="6"/>
+    <circle cx="400" cy="490" r="60"/>
+    <line x1="400" y1="400" x2="400" y2="580"/>
+  </g>
+  <!-- scorched grass patch -->
+  <ellipse cx="560" cy="540" rx="120" ry="34" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+  <!-- goal -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="4">
+    <path d="M600 300 L600 450 M760 300 L760 450 M600 300 L760 300"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-width="2" opacity="1">
+    <line x1="610" y1="300" x2="610" y2="440"/><line x1="632" y1="300" x2="632" y2="440"/><line x1="654" y1="300" x2="654" y2="440"/><line x1="676" y1="300" x2="676" y2="440"/><line x1="698" y1="300" x2="698" y2="440"/><line x1="720" y1="300" x2="720" y2="440"/><line x1="742" y1="300" x2="742" y2="440"/>
+    <line x1="600" y1="320" x2="760" y2="320"/><line x1="600" y1="342" x2="760" y2="342"/><line x1="600" y1="364" x2="760" y2="364"/><line x1="600" y1="386" x2="760" y2="386"/><line x1="600" y1="408" x2="760" y2="408"/><line x1="600" y1="430" x2="760" y2="430"/>
+  </g>
+  <!-- singed football -->
+  <circle cx="470" cy="536" r="28" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+  <path d="M470 516 l10 8 l-4 12 l-12 0 l-4 -12 z" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+  <path d="M452 548 q10 10 36 0" stroke="#1a1a1a" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- ADAM: 6yo boy, medium skin, short dark-brown hair, football kit -->
+  <g transform="translate(200 240)">
+    <!-- legs -->
+    <rect x="22" y="200" width="30" height="80" rx="12" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <rect x="68" y="200" width="30" height="80" rx="12" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- socks & boots -->
+    <rect x="20" y="240" width="34" height="34" rx="8" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <rect x="66" y="240" width="34" height="34" rx="8" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <ellipse cx="34" cy="282" rx="24" ry="10" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <ellipse cx="86" cy="282" rx="24" ry="10" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- shorts -->
+    <rect x="14" y="160" width="92" height="56" rx="14" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- shirt -->
+    <path d="M10 70 Q60 50 110 70 L120 170 L0 170 Z" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <rect x="44" y="95" width="32" height="44" rx="6" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <text x="60" y="128" text-anchor="middle" font-size="30" font-weight="700" fill="#1a1a1a">7</text>
+    <!-- arms -->
+    <path d="M10 80 Q-30 120 -10 160" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M110 80 Q150 110 150 150" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M10 80 Q-30 120 -10 160 M24 90 Q-6 120 10 150" fill="none" stroke="#1a1a1a" stroke-width="4"/><path d="M110 80 Q150 110 150 150 M96 90 Q130 112 130 146" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <circle cx="-10" cy="164" r="14" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <circle cx="150" cy="154" r="14" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- head -->
+    <circle cx="60" cy="30" r="48" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- hair -->
+    <path d="M12 26 Q20 -30 60 -22 Q100 -30 108 26 Q90 8 60 10 Q30 8 12 26 Z" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <!-- face -->
+    <circle cx="42" cy="34" r="5" fill="#2a2320"/><circle cx="78" cy="34" r="5" fill="#2a2320"/>
+    <path d="M46 56 Q60 66 74 56" stroke="#2a2320" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+  </g>
+
+  <!-- BLAZE: red, jagged (trouble state) -->
+  <g transform="translate(560 330)">
+    <path d="M60 -40 C 100 10 120 40 118 90 C 116 140 90 170 60 170 C 30 170 4 140 2 90 C 0 40 20 10 60 -40 Z" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+    <path d="M20 -10 L30 24 M100 -10 L90 24 M-6 60 L14 70 M126 60 L106 70" stroke="#1a1a1a" stroke-width="10" stroke-linecap="round"/>
+    <path d="M60 10 C 84 40 96 60 94 96 C 92 130 76 150 60 150 C 44 150 28 130 26 96 C 24 60 36 40 60 10 Z" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+    <path d="M60 60 C 72 76 78 88 76 108 C 74 128 66 136 60 136 C 54 136 46 128 44 108 C 42 88 48 76 60 60 Z" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+    <!-- face -->
+    <circle cx="44" cy="92" r="7" fill="#2a2320"/><circle cx="76" cy="92" r="7" fill="#2a2320"/>
+    <circle cx="46" cy="90" r="2.5" fill="#fff"/><circle cx="78" cy="90" r="2.5" fill="#fff"/>
+    <path d="M30 76 L48 84 M90 76 L72 84" stroke="#2a2320" stroke-width="4" stroke-linecap="round"/>
+    <path d="M46 118 Q60 108 74 118" stroke="#2a2320" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- stubby arms -->
+    <path d="M10 110 q-20 6 -14 22" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M110 110 q20 6 14 22" stroke="#1a1a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- smoke -->
+    <g fill="none" stroke="#1a1a1a" stroke-width="3" opacity="1">
+      <path d="M-10 -20 q-10 -16 4 -28 q-14 -10 -2 -24"/><path d="M130 -30 q10 -16 -4 -28 q14 -10 2 -24"/>
+    </g>
+  </g>
+</svg>
