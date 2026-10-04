@@ -29,7 +29,7 @@ export async function runTextAndImages(id: string): Promise<void> {
     let tpl = null as Awaited<ReturnType<typeof loadTemplate>> | null;
     let keeperId: KeeperId | null = struggle.keeper;
     if (struggle.template) {
-      const key = (await templateExists(struggle.template, lang)) ? struggle.template : "blaze-anger"; // TODO: remove fallback once all 11 templates exist
+      const key = (await templateExists(struggle.template, lang)) ? struggle.template : "blaze-anger";
       if (key !== struggle.template) console.warn(`[estoria] template ${struggle.template}.${lang} missing — falling back to blaze-anger`);
       tpl = await loadTemplate(key, lang);
       if (key === "blaze-anger") keeperId = "blaze";
