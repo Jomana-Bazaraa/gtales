@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { StoryBook } from "@/components/story/StoryBook";
+import { PrintBook } from "@/components/story/PrintBook";
 import { getStory } from "@/lib/db";
 import { showcaseStory } from "@/lib/showcase";
 
@@ -12,8 +12,8 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/st
   if (!story || !story.assembled) notFound();
   return (
     <div className="bg-white">
-      <style>{`@page { size: A4; margin: 0; } body { background: #fff; }`}</style>
-      <StoryBook story={story} mode="print" variant={variant} />
+      <style>{`@page { size: 200mm 200mm; margin: 0; } html, body { background: #fff; margin: 0; }`}</style>
+      <PrintBook story={story} variant={variant} />
     </div>
   );
 }

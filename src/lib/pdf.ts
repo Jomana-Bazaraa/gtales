@@ -23,7 +23,7 @@ export async function renderStoryPdf(id: string, variant: "color" | "lineart", b
     const token = process.env.INTERNAL_RENDER_TOKEN || "dev";
     await page.goto(`${baseUrl}/story/${id}/print?variant=${variant}&token=${token}`, { waitUntil: "networkidle0", timeout: 60_000 });
     await page.evaluateHandle("document.fonts.ready");
-    const pdf = await page.pdf({ format: "A4", printBackground: true, preferCSSPageSize: true, margin: { top: "0", bottom: "0", left: "0", right: "0" } });
+    const pdf = await page.pdf({ width: "200mm", height: "200mm", printBackground: true, preferCSSPageSize: true, margin: { top: "0", bottom: "0", left: "0", right: "0" } });
     return putFile(`${id}/${variant}.pdf`, Buffer.from(pdf), "application/pdf");
   } finally {
     await browser.close();

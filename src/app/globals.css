@@ -86,3 +86,20 @@ h1, h2, h3, .display {
   body { background: white; }
   .page { page-break-after: always; }
 }
+
+/* ---- print book: activity pages fill the page ---- */
+.print-book .act .hdr svg { width: 11mm; height: 11mm; margin: 0; }
+.print-book .act .body h3 { font-size: 22pt; line-height: 1.15; margin-bottom: 2mm; }
+.print-book .act .body p { font-size: 12pt; line-height: 1.45; }
+.print-book .act .body > div { height: 100%; display: flex; flex-direction: column; }
+.print-book .act .body svg { max-width: none; width: auto; height: 112mm; max-height: 112mm; margin: 2mm auto 0; display: block; }
+.print-book .act .body .grid svg { height: 100mm; max-height: 100mm; }
+.print-book .act .body .chip { font-size: 11pt; min-height: 0; padding: 2mm 5mm; }
+.print-book .act .body .card { padding: 4mm; }
+.print-book .act .body .grid { gap: 4mm; }
+.print-book .act .body .no-print { display: none; }
+.print-book .act .body img { max-height: 112mm; width: auto; margin: 0 auto; display: block; }
+.print-book .act .body ul li, .print-book .act .body ol li { font-size: 12pt; }
+.print-book .act .body .text-4xl { font-size: 26pt; }
+.print-book .act .body .h-8, .print-book .act .body .h-7 { height: 10mm; }
+.print-book .act .body .min-h-\[88px\] { min-height: 42mm; font-size: 14pt; }
