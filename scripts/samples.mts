@@ -113,7 +113,8 @@ if (WANT_PDF && ids.length) {
       console.log(`  ✗ PDF for ${r.id}: ${e instanceof Error ? e.message : e}`);
     }
   }
-  server.kill();
+  if (process.platform === "win32" && server.pid) { const { execSync } = await import("node:child_process"); try { execSync(`taskkill /pid ${server.pid} /T /F`, { stdio: "ignore" }); } catch { /* */ } }
+  else server.kill();
 } else if (!WANT_PDF) {
   console.log("\n(PDFs skipped — set PUPPETEER_EXECUTABLE_PATH in .env.local to your Chrome path and run `npm run build` once to get the real parent PDFs)");
 }
