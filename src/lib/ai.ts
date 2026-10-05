@@ -12,7 +12,7 @@ import { KEEPERS, STRUGGLES, UNIVERSE, type KeeperId } from "./keepers";
 import type { AiChallenge, ChallengeType, GeneratedText, StoryInput } from "./types";
 import { ageBand } from "./activities/registry";
 
-export const isMockAi = !process.env.GEMINI_API_KEY;
+export const isMockAi = !process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "mock";
 const TEXT_MODEL = process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite";
 
 let _ai: GoogleGenAI | null = null;
