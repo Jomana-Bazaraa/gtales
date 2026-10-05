@@ -63,7 +63,13 @@ export function StoryBook({ story, mode, variant = "color" }: Props) {
             textPageNo++;
             return (
               <Page key={i} print={print} color={keeper.color} tone={print ? (textPageNo % 2 ? "cream" : "white") : "cream"} className={print ? "justify-center" : ""}>
-                <div className={`${print ? "text-[23px] leading-[1.9] my-auto" : "text-lg sm:text-xl leading-relaxed"} space-y-5 max-w-prose mx-auto w-full`}>
+                {p.imageUrl && (
+                  <div className={`rounded-2xl overflow-hidden border border-line bg-white mx-auto w-full ${print ? "max-w-[170mm] mb-6" : "max-w-xl mb-5"}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.imageUrl} alt="" className="w-full block" />
+                  </div>
+                )}
+                <div className={`${print ? (p.imageUrl ? "text-[19px] leading-[1.7]" : "text-[23px] leading-[1.9] my-auto") : "text-lg sm:text-xl leading-relaxed"} space-y-5 max-w-prose mx-auto w-full`}>
                   {p.paragraphs?.map((t, j) => <p key={j}>{t}</p>)}
                 </div>
                 {print && <div className="pt-8 text-center text-xs text-ink-soft">{textPageNo}</div>}

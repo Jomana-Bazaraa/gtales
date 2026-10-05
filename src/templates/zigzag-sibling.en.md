@@ -13,7 +13,7 @@ There, in a heap, sat a small orange fox. He had two big fluffy tails — one ti
 
 "I said left FIRST," muttered the teal tail. "I said right LOUDER," said the coral one.
 
-And that wasn't all. Each tail had grabbed hold of {{INTEREST_OBJECT}} — {{CHILD_NAME}}'s favourite — and neither would let go. "Mine!" "No, MINE!"
+And that wasn't all. Each tail had grabbed hold of {{INTEREST_OBJECT}}, and neither would let go. "Mine!" "No, MINE!"
 ---
 "I'm Zigzag," sighed the fox. "Keeper of Paths. I'm supposed to know the way to everywhere. But my tails can't agree on the way to anywhere."
 

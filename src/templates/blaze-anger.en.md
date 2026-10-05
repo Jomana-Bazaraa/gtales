@@ -11,7 +11,7 @@ There, hovering just above the ground, was a small flame-creature with big round
 
 "Oh no, oh no, oh no," the creature was saying. "Not again."
 
-The grass around him was scorched black. And {{INTEREST_OBJECT}} — {{CHILD_NAME}}'s favourite — lay in the middle of it, singed at the edges.
+The grass around him was scorched black. And there, right in the middle of it, lay {{INTEREST_OBJECT}}, singed at the edges.
 ---
 "I'm Blaze," said the creature, drooping. "Keeper of Fire. My job is to keep the fire warm and bright. But today it went red."
 
@@ -57,7 +57,7 @@ His flame flickered. The red softened to orange. The orange faded to gold. And t
 
 "Blue Blaze," {{he|she}} said. "I like it."
 ---
-They walked back together. The grass was still a bit black. {{INTEREST_OBJECT}} was still a bit singed. But Blaze didn't droop this time.
+They walked back together. The grass was still a bit black, and {{INTEREST_OBJECT}} was still a bit singed. But Blaze didn't droop this time.
 
 "Next time I feel the hot thing," said Blaze, "I'm going to find my blue first."
 

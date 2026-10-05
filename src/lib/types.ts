@@ -68,6 +68,7 @@ export interface GeneratedText {
   };
   parent_tips: string[]; // 4 conversation questions
   cover_scene: string; // one-sentence scene description for the illustrator
+  page_scenes?: string[]; // one English scene per story text page, in order
 }
 
 export interface AiChallenge {
@@ -86,6 +87,7 @@ export interface StoryPage {
   paragraphs?: string[];
   activity?: string; // activity id
   image?: "cover" | "lineart";
+  imageUrl?: string; // per-page illustration (full/mixed illustration modes)
 }
 
 export interface AssembledStory {
@@ -105,6 +107,7 @@ export interface StoryRecord {
   assembled: AssembledStory | null;
   cover_url: string | null;
   lineart_url: string | null;
+  page_images?: string[] | null; // index = text-page number (0-based)
   pdf_color_url: string | null;
   pdf_lineart_url: string | null;
   error: string | null;

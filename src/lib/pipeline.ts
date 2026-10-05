@@ -6,7 +6,7 @@
  */
 import { generateStoryText } from "./ai";
 import { getStory, updateStory } from "./db";
-import { generateCover, generateLineArt } from "./images";
+import { generateCover, generateLineArt, generatePageImage, ILLUSTRATION_MODE } from "./images";
 import { KEEPERS, struggleById, type KeeperId } from "./keepers";
 import { ageBand, defaultWorkshop } from "./activities/registry";
 import { assemblePages, fallbackInterest, loadTemplate, slotContext, splitParas, substitute, templateExists, type SubstitutionContext } from "./template-engine";
@@ -38,7 +38,7 @@ export async function runTextAndImages(id: string): Promise<void> {
     // 2. the single text call
     await updateStory(id, { progress: "text" });
     const slot = tpl ? slotContext(tpl.pages, "[PERSONAL_DETAIL_SLOT]") : { before: "", after: "" };
-    const generated = await generateStoryText({ input, keeper: keeperId, slotBefore: slot.before, slotAfter: slot.after, templateTitle: tpl?.title });
+    const generated = await generateStoryText({ input, keeper: keeperId, slotBefore: slot.before, slotAfter: slot.after, templateTitle: tpl?.title, templatePages: tpl?.pages });
     if (!keeperId) keeperId = (generated.full_story?.keeper as KeeperId) || "chroma";
     if (!KEEPERS[keeperId]) keeperId = "chroma";
 
@@ -77,7 +77,35 @@ export async function runTextAndImages(id: string): Promise<void> {
     const scene = generated.cover_scene || (tpl ? substitute(tpl.coverScene, ctx) : `${input.childName} with ${KEEPERS[keeperId].name.en}`);
     const cover = await generateCover({ storyId: id, keeper: keeperId, scene, appearance: input.appearance, gender: input.gender, age: input.age });
     const lineart = await generateLineArt({ storyId: id, keeper: keeperId, cover });
-    await updateStory(id, { cover_url: cover.url, lineart_url: lineart, status: "ready", progress: "pdf" });
+    await updateStory(id, { cover_url: cover.url, lineart_url: lineart });
+
+    // 5. optional per-page illustrations (ILLUSTRATION_MODE=full|mixed), cover passed as the character reference
+    let page_images: string[] | null = null;
+    const textPages = assembled.pages.filter((p) => p.kind === "text");
+    const scenes = generated.page_scenes ?? [];
+    if (ILLUSTRATION_MODE !== "cover" && scenes.length) {
+      page_images = new Array(textPages.length).fill("");
+      const jobs = textPages.map((_, i) => i).filter((i) => scenes[i]);
+      const CONCURRENCY = 4;
+      for (let start = 0; start < jobs.length; start += CONCURRENCY) {
+        await Promise.all(
+          jobs.slice(start, start + CONCURRENCY).map(async (i) => {
+            try {
+              page_images![i] = await generatePageImage({
+                storyId: id, keeper: keeperId!, index: i, scene: scenes[i],
+                lineArt: ILLUSTRATION_MODE === "mixed" && i % 2 === 1,
+                appearance: input.appearance, gender: input.gender, age: input.age, cover,
+              });
+            } catch (e) {
+              console.warn(`[estoria] page image ${i + 1} failed`, e);
+            }
+          }),
+        );
+      }
+      let n = 0;
+      for (const p of assembled.pages) if (p.kind === "text") { if (page_images[n]) p.imageUrl = page_images[n]; n++; }
+    }
+    await updateStory(id, { page_images, assembled, status: "ready", progress: "pdf" });
   } catch (e) {
     console.error("[estoria] generation failed", e);
     await updateStory(id, { status: "failed", error: e instanceof Error ? e.message : String(e) });

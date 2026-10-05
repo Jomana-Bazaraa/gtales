@@ -84,6 +84,47 @@ export async function generateLineArt(args: { storyId: string; keeper: KeeperId;
   return putFile(`${args.storyId}/lineart.${ext}`, bytes, mime);
 }
 
+/** Illustration mode: cover (1 colour + line-art) | full (every story page coloured) | mixed (alternate colour / line-art). */
+export type IllustrationMode = "cover" | "full" | "mixed";
+export const ILLUSTRATION_MODE = ((process.env.ILLUSTRATION_MODE as IllustrationMode) || "cover") as IllustrationMode;
+
+export async function generatePageImage(args: {
+  storyId: string;
+  keeper: KeeperId;
+  index: number;
+  scene: string;
+  lineArt: boolean;
+  appearance: Appearance;
+  gender: Gender;
+  age: number;
+  cover: { bytes: Buffer; mime: string };
+}): Promise<string> {
+  const k = KEEPERS[args.keeper];
+  if (isMockAi) {
+    const svg = placeholderSvg(args.lineArt ? "#2a2320" : k.color, `${k.name.en} — page ${args.index + 1}`, args.lineArt);
+    return putFile(`${args.storyId}/page-${args.index + 1}.svg`, Buffer.from(svg), "image/svg+xml");
+  }
+  const ref = await keeperReference(args.keeper);
+  const child = appearanceToText(args.appearance, args.gender, args.age);
+  const style = args.lineArt
+    ? "Clean black-and-white colouring-book illustration: crisp black outlines only, pure white fill, no shading, no grey, no colour, no text, lines thick enough for a child to colour inside."
+    : STYLE;
+  const prompt = `${style}\n\nScene: ${args.scene}\n\nThe child: ${child} — draw the SAME child as in the first attached image (same face, hair, clothes). The Keeper: ${k.visualBrief}${ref ? " — match the second attached reference image of the Keeper exactly." : " — keep the Keeper identical to the first attached image."}\nLandscape 4:3 composition. This is page ${args.index + 1} of a picture book; keep the same art style and palette as the attached image.`;
+  const parts: Array<{ text?: string; inlineData?: { mimeType: string; data: string } }> = [
+    { text: prompt },
+    { inlineData: { mimeType: args.cover.mime, data: args.cover.bytes.toString("base64") } },
+  ];
+  if (ref) parts.push({ inlineData: ref });
+  const res = await genai().models.generateContent({
+    model: IMAGE_MODEL,
+    contents: [{ role: "user", parts }],
+    config: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "4:3", imageSize: "1K" } },
+  });
+  const { bytes, mime } = await extractImage(res);
+  const ext = mime.includes("jpeg") ? "jpg" : "png";
+  return putFile(`${args.storyId}/page-${args.index + 1}.${ext}`, bytes, mime);
+}
+
 function placeholderSvg(color: string, label: string, outline: boolean): string {
   const fill = outline ? "none" : color;
   const stroke = outline ? "#111" : "none";

@@ -99,7 +99,10 @@ export function substitute(text: string, ctx: SubstitutionContext): string {
     out = out.replace(/\[PERSONAL_DETAIL_SLOT\]/g, ctx.personalDetail);
   }
   // collapse double spaces left by removed blocks
-  return out.replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+  out = out.replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+  // English: capitalise the first letter of each sentence/paragraph (a substituted phrase may start one)
+  if (ctx.lang === "en") out = out.replace(/(^|[.!?]\s+|\n\s*)([a-z])/g, (_, pre: string, ch: string) => pre + ch.toUpperCase());
+  return out;
 }
 
 /** Extracts the sentence before/after a slot so the AI can match continuity. */

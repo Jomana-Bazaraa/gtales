@@ -25,7 +25,9 @@ if (!process.env.GEMINI_API_KEY) {
 // force the local file store for samples, whatever else is configured
 delete process.env.SUPABASE_URL;
 delete process.env.SUPABASE_SERVICE_ROLE_KEY;
-process.env.PDF_DISABLED = "1";
+const WANT_PDF = !!process.env.PUPPETEER_EXECUTABLE_PATH && existsSync(process.env.PUPPETEER_EXECUTABLE_PATH);
+process.env.PDF_DISABLED = WANT_PDF ? "" : "1";
+process.env.ILLUSTRATION_MODE = process.env.ILLUSTRATION_MODE || "full"; // samples: every page illustrated
 
 const { STRUGGLES, KEEPERS } = await import("../src/lib/keepers");
 const { insertStory, getStory } = await import("../src/lib/db");
@@ -82,6 +84,40 @@ for (const s of STRUGGLES) {
   }
 }
 
+// ---- optional: real parent-facing PDFs (needs a built app + Chrome path in .env.local) ----
+const pdfLinks: Record<string, { color: string; lineart: string }> = {};
+if (WANT_PDF && ids.length) {
+  const { spawn } = await import("node:child_process");
+  const { renderStoryPdf } = await import("../src/lib/pdf");
+  const { copyFileSync } = await import("node:fs");
+  const port = 3123;
+  console.log("\nRendering PDFs (starting the app on port " + port + ")…");
+  const server = spawn(process.platform === "win32" ? "npx.cmd" : "npx", ["next", "start", "-p", String(port)], { stdio: "ignore", shell: process.platform === "win32" });
+  const base = `http://localhost:${port}`;
+  for (let i = 0; i < 60; i++) {
+    try { if ((await fetch(base)).ok) break; } catch { /* not up yet */ }
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  mkdirSync("samples", { recursive: true });
+  for (const r of ids) {
+    try {
+      const color = await renderStoryPdf(r.id, "color", base);
+      const lineart = await renderStoryPdf(r.id, "lineart", base);
+      const src = (u: string) => path.join(process.cwd(), ".data", "files", u.replace(/^\/api\/files\//, ""));
+      const c = `${r.struggle}-${r.lang}-book.pdf`, l = `${r.struggle}-${r.lang}-activity.pdf`;
+      copyFileSync(src(color), path.join("samples", c));
+      copyFileSync(src(lineart), path.join("samples", l));
+      pdfLinks[r.id] = { color: c, lineart: l };
+      console.log(`  ✓ ${c}, ${l}`);
+    } catch (e) {
+      console.log(`  ✗ PDF for ${r.id}: ${e instanceof Error ? e.message : e}`);
+    }
+  }
+  server.kill();
+} else if (!WANT_PDF) {
+  console.log("\n(PDFs skipped — set PUPPETEER_EXECUTABLE_PATH in .env.local to your Chrome path and run `npm run build` once to get the real parent PDFs)");
+}
+
 // ---- build the review page ----
 const dataFiles = path.join(process.cwd(), ".data", "files");
 const img = (url: string | null) => {
@@ -111,11 +147,13 @@ for (const r of ids) {
   if (!s?.assembled) continue;
   const k = KEEPERS[s.assembled.keeper];
   html += `<section class="book" id="${r.id}" dir="${r.lang === "ar" ? "rtl" : "ltr"}"><h2>${esc(s.assembled.title)}</h2><small>${r.struggle} · ${k.name[r.lang]} · challenge: ${s.input.challengeType}</small>
+  ${pdfLinks[r.id] ? `<p><a href="${pdfLinks[r.id].color}">📕 Story PDF (what the parent gets)</a> · <a href="${pdfLinks[r.id].lineart}">✏️ Activity PDF</a></p>` : ""}
   <div class="imgs"><img src="${img(s.cover_url)}" alt="cover"><img src="${img(s.lineart_url)}" alt="line art"></div>
-  <p class="ai"><b>AI sentence:</b> ${esc(s.generated?.personal_detail_text ?? "")}<br><b>Interest phrases:</b> ${esc(JSON.stringify(s.generated?.interest_phrases))}<br><b>Cover scene:</b> ${esc(s.generated?.cover_scene ?? "")}</p>`;
+  <p class="ai"><b>Workshop activities in this book:</b> ${s.assembled.workshop.join(", ")} + badge + parent page</p>
+  <p class="ai"><b>Illustration mode:</b> ${process.env.ILLUSTRATION_MODE}<br><b>AI sentence:</b> ${esc(s.generated?.personal_detail_text ?? "")}<br><b>Interest phrases:</b> ${esc(JSON.stringify(s.generated?.interest_phrases))}<br><b>Cover scene:</b> ${esc(s.generated?.cover_scene ?? "")}</p>`;
   let n = 0;
   for (const p of s.assembled.pages) {
-    if (p.kind === "text") html += `<div class="page"><small>${r.lang === "ar" ? "صفحة" : "Page"} ${++n}</small>${p.paragraphs!.map((t) => `<p>${esc(t)}</p>`).join("")}</div>`;
+    if (p.kind === "text") html += `<div class="page"><small>${r.lang === "ar" ? "صفحة" : "Page"} ${++n}</small>${p.imageUrl ? `<img src="${img(p.imageUrl)}" style="width:100%;max-width:640px;border-radius:12px;border:1px solid #ead9c6;display:block;margin:8px 0">` : ""}${p.paragraphs!.map((t) => `<p>${esc(t)}</p>`).join("")}</div>`;
     if (p.kind === "challenge") {
       const c = s.generated?.challenge;
       html += `<div class="ch"><b>Challenge (${s.input.challengeType})</b>${c ? `<br>${esc(c.title)}: ${esc(c.prompt)}${c.options ? "<br>• " + c.options.map(esc).join("<br>• ") : ""}<br><i>answer: ${esc(c.answer)}</i>` : " — code-generated puzzle (see app)"}</div>`;

@@ -29,6 +29,8 @@ interface TextCallArgs {
   slotBefore: string;
   slotAfter: string;
   templateTitle?: string;
+  /** The template's story pages (tokens unresolved) so the model can describe one scene per page. */
+  templatePages?: string[];
 }
 
 const challengeSchema = {
@@ -73,6 +75,7 @@ const responseSchema = {
     },
     parent_tips: { type: "array", items: { type: "string" } },
     cover_scene: { type: "string" },
+    page_scenes: { type: "array", items: { type: "string" } },
   },
   required: ["interest_phrases", "personal_detail_text", "parent_tips", "cover_scene"],
 };
@@ -107,7 +110,7 @@ TASKS:
 1. interest_phrases — four short phrases in ${langName} that drop grammatically into these sentence frames (the template is pre-written):
    world: "the world of ___" style noun phrase (e.g. "the football world")
    place: a concrete location in that world, usable after "at"/"في" (e.g. "the football pitch behind the house")
-   object: one beloved object, with article, usable as a direct object (e.g. "his football")
+   object: one beloved object FROM THE INTEREST ONLY (never from the personal detail), with possessive, usable as a direct object (e.g. "his football")
    activity: a present-participle activity, usable after "was"/"كان" (e.g. "practising penalties")
 2. personal_detail_text — 1 to 2 sentences, in ${langName}, in the story's narrator voice, that weave the parent's personal detail into the story at this point. It must flow naturally between these two template sentences:
    BEFORE: "${a.slotBefore}"
@@ -116,6 +119,7 @@ TASKS:
 3. challenge — ${needsAiChallenge ? `one "${input.challengeType}" challenge the child solves to help the Keeper at the story's turning point, themed on ${interests} and the Keeper. ${challengeGuide(input.challengeType, band)}` : "null (this story uses a code-generated challenge)."}
 4. parent_tips — exactly 4 short conversation questions a parent can ask the child after reading, in ${langName}, tied to this story's events.
 5. cover_scene — ONE English sentence describing the cover illustration: the child (do not describe appearance, it's added separately) with the Keeper in the ${interests} setting, Keeper in flawed state. Concrete, visual, no text in the image.
+${a.templatePages ? `5b. page_scenes — exactly ${a.templatePages.length} English sentences, one per story page below, in order, each describing ONE illustration for that page: who is in frame (child and/or Keeper, side character if present), what they are doing, where, the Keeper's state (flawed / changing / resolved) at that moment, time of day. Vary composition (close-up, wide, from above). No text in images. Refer to the child as "the child" and the Keeper by name.\nSTORY PAGES (tokens are placeholders):\n${a.templatePages.map((t, i) => `[${i + 1}] ${t.replace(/\s+/g, " ").slice(0, 400)}`).join("\n")}` : "5b. page_scenes — if full_story is written, one English illustration sentence per page of it, in order (same rules as cover_scene)."}
 ${isOther ? `6. full_story — because the struggle is custom, write the WHOLE story: title, 8–10 pages of 2–4 short paragraphs each, in ${langName}, with the chosen Keeper. The page where the child helps must contain the literal token [INTERACTIVE_SLOT] on its own line. Set the child as helper, the Keeper as the one struggling. End with the child becoming "${UNIVERSE.helper[lang]}" of the Keeper. Include the personal detail naturally (also still fill personal_detail_text with that sentence). moral: one line for parents.` : "6. full_story — null."}`;
 }
 
@@ -211,5 +215,6 @@ function mockText(a: TextCallArgs): GeneratedText {
         }
       : undefined;
 
-  return { interest_phrases, personal_detail_text, challenge, parent_tips, cover_scene, full_story };
+  const page_scenes = (a.templatePages ?? full_story?.pages ?? []).map((_, idx) => `${name} and the Keeper, scene ${idx + 1} on the ${i} field`);
+  return { interest_phrases, personal_detail_text, challenge, parent_tips, cover_scene, full_story, page_scenes };
 }
