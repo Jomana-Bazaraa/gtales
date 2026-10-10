@@ -181,7 +181,9 @@ Schema (zod in `src/stories/schema.ts`):
 ```
 Challenge types: `choice` (tap an answer), `riddle` (choice plus riddle lines), `steps` (the 4-step Combo on page 12, each ticked), `boxes` (tick N boxes), `say` (say it out loud, no right answer). The bullying tale has `other_rule: "not_sibling"`.
 
-Images: `public/stories/<slug>/<boy|girl>/cover.jpg, back.jpg, p01.jpg … p15.jpg`. Pages 2550 × 2040 (5:4); covers 2550 × 3580 (5:7). Signs are drawn over the picture because the art leaves signs blank.
+Images: `public/stories/<slug>/<boy|girl>/cover.jpg, back.jpg, p01.jpg … p15.jpg`. Handoff README: pages 4:5 portrait 2480 × 3100 (the picture box is about 216 × 238 mm), covers 5:7 2480 × 3508. (The first delivered set, worry/boy, is 2550 × 2040 landscape; the template crops it with `object-fit: cover`, which works but shows less of the picture.) Extra page fields from the handoff: `screen` (+ `screen_after`) for the band's screen text, challenge `tag` and `done`, `**bold**` inside steps, story `back_blurb` and `struggle`.
+
+**Design is the team's template, used unchanged (handoff rule 2):** `public/gtales-book/book.css`, `render.js` and the embedded Literata + Fredoka fonts. The app never restyles pages. `render.js` fills the tokens and builds cover + 15 pages + back cover; `fitPages()` sizes each picture so it ends where the text begins and warns on "too much text". The reference PDF to compare against is `docs/reference/worry-boy-template.pdf`.
 
 AC: a check script confirms every `(…)` in the source became a token; every tale has both image sets; `uses` matches the tokens actually present.
 
@@ -196,9 +198,9 @@ AC: a check script confirms every `(…)` in the source became a token; every ta
 | 5 | What they're great at | noun that fits "Best ___ in Maadi": builder, artist, football player, swimmer, dancer, helper, reader, singer, or other (free text noun) |
 | 6 | The child chooses: sidekick name · Power Word | sidekick 1–12 chars; power word 1–20 chars |
 | 7 | Need and Ask | from the tale's own `need_choices` / `ask_choices`; shown only when the tale uses them (step skipped otherwise) |
-| 8 | Dedication (optional, ≤ 120 chars) · parent's first name · WhatsApp number or email | one contact required |
+| 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
-Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
+Boy or girl picks the image set; if a tale's girl set is missing the girl book is refused with a clear message, never the boy pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
 
 ### 7.3 fillStory (no AI, always works)
 
@@ -216,10 +218,10 @@ Submit → fillStory → polish (if on) → Ready screen in ≤ 10 s (p95). Rate
 
 ## 8. Reader and PDFs
 
-**Reader `/story/[id]/read`.** Cream paper #fbf5e9 with faint dot texture, Andika 20–22 px / 1.6, text #3d2b1f. Picture on top (5:4, rounded 18 px) with the sign text drawn over it, text below, page number "— 4 —" centred. Chrome hidden; thin top bar on tap (close, title, A−/A+, "Read to me"). Swipe or tap edges, small arrows, keyboard arrows. "Read to me": Web Speech API at rate 0.85 with word highlighting (sentence fallback); auto-advance off. Challenges on screen: tappable answers with the response bubble; `steps` tick off one by one; `boxes` tick N boxes; `say` shows the line to say. Stars + short sound on a correct answer.
-AC: works offline after first load; A−/A+ work; keyboard arrows work; reader never shows a `{{token}}`.
+**Screen version `/story/[id]/read`.** The template HTML rendered by `render.js`, with `book.css` untouched, scaled to the phone width (CSS zoom), pages stacked vertically, `fitPages()` run after fonts and images load. Challenges are tappable: an option shows its `response` (green for correct, with a star and a short chime); `steps` and `boxes` tick one by one and show the `done` text when all are ticked. Top bar: close, title, PDF.
+AC: no `{{token}}` or `undefined` in the output; no "too much text" warning; the girl book has she/her exactly where the boy book has he/his and nowhere else ("Where he goes" on page 6 is the Big Shadow and stays "he").
 
-**Story PDF.** A4 portrait, 16 pages: front cover + 15 story pages (back cover printed separately). Story page: picture full width at the top (5:4, 3 mm bleed), sign drawn over it, text below; text must fit its own page, if it overflows at the normal size the page's font steps down one size (never below 15 pt) and it is logged. Challenges in print: question + options as circles to tick. Fonts embedded (Andika for text, Fredoka for titles), never loaded from Google at render time. Rendered by headless Chrome (`src/lib/pdf.ts`), `printBackground: true`, A4, no margins. Colouring PDF: same layout with the tale's line-art set when available, otherwise omitted (button hidden, never a mismatched picture). Parent guide: team-authored per tale, child's name merged.
+**Story PDF.** Same HTML rendered by headless Chrome: A4, `printBackground: true`, zero margins, `preferCSSPageSize: true`; wait for `document.fonts.ready`, call `fitPages`, print. 17 pages: cover, 15 story pages, back cover. Made on first request (`/api/books/[id]/pdf`), then stored. Pages 1, 8 and 12 must match `docs/reference/worry-boy-template.pdf`. Colouring PDF: only when a tale ships a line-art set (none yet; button hidden).
 AC: no overflow, no empty tokens, no broken words; one boy book and one girl book per tale reviewed before launch.
 
 ## 9. Series order form (`/order`, 15 steps)
@@ -357,5 +359,6 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.2 (10 Oct 2026): handoff pack adopted: team template (book.css + render.js + fonts) is the only design, 17-page A4 PDF, screen version = template scaled with tappable challenges, worry tale + boy set in repo, girl set refused until delivered, dedication dropped.
 - 1.1 (10 Oct 2026): free tier = text-only personalisation engine (story JSON, fillStory, optional AI polish, fixed boy/girl art), new 8-step form fields, A4 16-page PDF rules, catalogue age filter removed, LAN dev origins.
 - 1.0 (10 Oct 2026): first consolidated spec. Price 949/569/69, no refund, 15-step order form (struggles and strengths split), passwordless sign-in and order tracker, how-it-works tiles, tier cards instead of comparison table.

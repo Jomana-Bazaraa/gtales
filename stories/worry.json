@@ -1,0 +1,193 @@
+{
+  "slug": "worry",
+  "struggle": "Worry and fear",
+  "title": "{{name}} and the Big Shadow",
+  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "ask", "strength"],
+  "other_rule": null,
+  "need_choices": ["I need a hug.", "I need a light.", "I need you to stay.", "I need to talk."],
+  "ask_choices": ["Can you turn on the torch?", "Can you sit with me?", "Can you hold my hand?", "Can you check with me?"],
+  "back_blurb": [
+    "When the power goes out, {{name}} sees a big, scary shadow on the wall.",
+    "Up on the roof, the Big Fanous has gone dark.",
+    "Can {{name}} make {{his}} worry cloud small enough to be brave?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "It was bedtime in {{place}}. {{name}}, {{age}}, was in bed. Click! The power went off.",
+        "On the wall was a big, dark shadow with pointy ears!",
+        "{{name}}'s tummy felt tight. The cloud on {{his}} band began to grow."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "\"Mama!\" {{name}} cried, and hid under {{his}} blanket.",
+        "\"It's just a power cut,\" said {{other}}.",
+        "But the cloud on {{his}} band was very big now."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Look at the band. Is the cloud big or small?",
+        "options": [
+          { "label": "Big", "correct": true, "response": "Yes. Big cloud, big worry." },
+          { "label": "Small", "correct": false, "response": "Look again. It's very big!" }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up. Whoosh! A soft wind lifted {{name}} all the way up to the roof.",
+        "\"Beep. Don't worry. I'm here,\" said {{sidekick}}."
+      ],
+      "sign": "A note said: The Big Shadow took the light from the Big Fanous!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "\"I'm scared of the dark,\" {{name}} whispered. The cloud got smaller, and {{his}} band began to shine."
+      ],
+      "screen": "SMALL CLOUD = LIGHT · BIG CLOUD = DARK",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "What makes the worry cloud smaller?",
+        "options": [
+          { "label": "Saying the worry out loud", "correct": true, "response": "Yes! Say it, and it shrinks." },
+          { "label": "Hiding under a blanket", "correct": false, "response": "Hiding keeps the cloud big. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "A dark stairway led to the next roof.",
+        "\"I'm scared,\" said {{name}}. \"But I can go slow.\"",
+        "Step by step, they went up. Little geckos waved hello!"
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "By the pigeon house, a little pigeon was crying.",
+        "\"I'm Simsim. The Big Shadow took the light. Where he goes, the lights go out.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Which way did the Big Shadow go?",
+        "options": [
+          { "label": "Where the lights are off", "correct": true, "response": "Yes! The lights went out where he passed." },
+          { "label": "Where the lights are on", "correct": false, "response": "Those lights are still bright. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "\"WOOF!\" {{name}} ran and hid. {{His}} band went dark.",
+        "Then {{he}} hugged {{his}} tummy. \"I'm scared,\" {{he}} said out loud, and the light came back.",
+        "It was just a friendly dog!"
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "Under a flower pot was a note. \"Read it, quick!\" said {{sidekick}}."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "riddle": ["I am big on the wall, but small in real life.", "Turn on the light, and I go away. What am I?"],
+        "options": [
+          { "label": "A shadow", "correct": true, "response": "A shadow! {{name}} kept the riddle in {{his}} pocket." },
+          { "label": "A giant", "correct": false, "response": "Giants don't go away when you turn on the light!" },
+          { "label": "A ghost", "correct": false, "response": "Close! But this one is made by the light." }
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There it was! The Big Shadow, next to the dark Big Fanous.",
+        "\"GO AWAY!\" it said.",
+        "But look. The Big Shadow was shaking."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Only some planks glowed between the roofs.",
+        "{{name}} took one slow breath. \"I can take one small step.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Trace the planks with your finger. Which path gets to the top?",
+        "options": [
+          { "label": "Blue", "correct": false, "response": "Oops! That one stops in the air." },
+          { "label": "Green", "correct": true, "response": "Yes! Step, step, step, all the way across." },
+          { "label": "Pink", "correct": false, "response": "That path goes back down. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "\"BOO!\" said the Big Shadow.",
+        "{{name}} ran all the way down the stairs.",
+        "Now {{he}} was alone. {{sidekick}} was still up there, in the dark."
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "\"I left {{sidekick}} alone,\" said {{name}}.",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Use your words:** \"I'm scared. {{need}}\""
+        ],
+        "done": "The cloud got tiny, and {{his}} band shone brighter than the moon!"
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "{{name}} climbed back up. {{His}} band shone like a torch.",
+        "Behind the Big Fanous sat a tiny kitten, Basbousa! Her shadow only LOOKED big.",
+        "{{name}} lit the Big Fanous. Glow! The city lights came back on."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "\"I'm scared of the dark,\" Basbousa meowed.",
+        "\"Me too, sometimes,\" said {{name}}. \"Say it out loud, then breathe with me.\""
+      ],
+      "challenge": {
+        "type": "boxes",
+        "question": "Help Basbousa. Take three slow breaths, and tick a box for each one.",
+        "count": 3,
+        "done": "Basbousa's cloud is tiny. You helped a kitten be brave!"
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back in bed, {{name}} saw the shadow again.",
+        "{{He}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
+        "\"{{other}}, I'm scared. {{ask}}\" The torch went on. It was only {{his}} coat and hat!",
+        "{{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
+      ]
+    }
+  ]
+}

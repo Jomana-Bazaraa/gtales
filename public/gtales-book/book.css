@@ -1,0 +1,50 @@
+/* GTales book layout: A4 portrait, picture on top fading into white, book-style text at the bottom. */
+@font-face{font-family:Literata;font-weight:200 900;src:url(fonts/literata-latin-opsz-normal.woff2) format('woff2')}
+@font-face{font-family:Literata;font-style:italic;font-weight:200 900;src:url(fonts/literata-latin-opsz-italic.woff2) format('woff2')}
+@font-face{font-family:Fredoka;font-weight:300 700;src:url(fonts/fredoka-latin-wght-normal.woff2) format('woff2')}
+@page{size:210mm 297mm;margin:0}
+:root{--ink:#22212e;--ink2:#6a6474;--line:#e6e6e6;--accent:#3f8fce;--green:#2a8a5b}
+*{box-sizing:border-box;margin:0;padding:0}
+.gt-book{background:#ddd}
+.gt-page{width:210mm;height:297mm;position:relative;overflow:hidden;break-after:page;margin:0 auto 6mm;background:#fff;color:var(--ink)}
+@media print{.gt-book{background:none}.gt-page{margin:0}}
+
+/* picture: height is set per page by fitPages() so it ends where the text begins */
+.gt-pic{position:absolute;top:0;left:0;right:0;height:235mm}
+.gt-pic img{width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block;
+  -webkit-mask-image:linear-gradient(to top,transparent 0,transparent 2.5mm,rgba(0,0,0,.25) 9mm,rgba(0,0,0,.8) 17mm,#000 24mm);
+          mask-image:linear-gradient(to top,transparent 0,transparent 2.5mm,rgba(0,0,0,.25) 9mm,rgba(0,0,0,.8) 17mm,#000 24mm)}
+.gt-pic::after{content:'';position:absolute;left:0;right:0;bottom:-1mm;height:2.5mm;background:#fff}
+
+/* text block */
+.gt-txt{position:absolute;left:0;right:0;bottom:16mm;display:flex;flex-direction:column;align-items:center;gap:3mm}
+.gt-story{width:160mm;font:400 15pt/1.5 Literata,Georgia,serif;display:grid;gap:1.6mm;text-wrap:pretty}
+.gt-story p:first-child::first-letter{font:600 2.7em/.8 Fredoka,sans-serif;color:var(--ink);float:left;margin:1.4mm 2.2mm 0 0}
+.gt-story.nodrop p:first-child::first-letter{all:unset}
+.gt-dense .gt-story{font-size:14pt}
+.gt-sign{font-style:italic;font-weight:500;font-size:.95em}
+.gt-screen{font:600 .8em/1.3 Fredoka,sans-serif;letter-spacing:1px;color:var(--green)}
+
+/* "Your turn" card */
+.gt-card{width:160mm;background:#fff;border:.4mm solid var(--line);border-radius:5mm;padding:2.8mm 5mm 3.2mm}
+.gt-tag{font:600 8.5pt Fredoka,sans-serif;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent)}
+.gt-q{font:500 12.5pt/1.35 Fredoka,sans-serif;margin-top:.8mm}
+.gt-riddle{font:italic 400 11.5pt/1.45 Literata,serif;color:var(--ink2);margin:1.2mm 0 .4mm}
+.gt-choices{display:flex;flex-wrap:wrap;gap:2mm;margin-top:2mm}
+.gt-choice{display:flex;align-items:center;gap:1.8mm;font:600 11pt Fredoka,sans-serif;background:#fff;border:.45mm solid var(--line);border-radius:99px;padding:1.2mm 3.6mm 1.2mm 1.6mm;color:var(--ink)}
+.gt-choice::before{content:'';width:4mm;height:4mm;border:.5mm solid var(--ink);border-radius:50%;background:#fff}
+.gt-steps{list-style:none;display:grid;gap:1mm;margin-top:1.6mm;font:400 11pt/1.3 Fredoka,sans-serif}
+.gt-steps li{display:flex;gap:2mm;align-items:center}
+.gt-steps li::before{content:'';flex:none;width:4mm;height:4mm;border:.5mm solid var(--ink);border-radius:1mm}
+.gt-boxes{display:flex;gap:4mm;margin-top:2mm}
+.gt-boxes i{width:8mm;height:8mm;border:.5mm solid var(--ink);border-radius:1.5mm}
+.gt-num{position:absolute;bottom:7mm;left:0;right:0;text-align:center;font:600 9pt Fredoka,sans-serif;color:#c2c2c2;letter-spacing:1px}
+
+/* covers */
+.gt-cover .gt-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gt-title{position:absolute;top:20mm;left:14mm;right:14mm;text-align:center;color:#fff;text-shadow:0 1mm 4mm rgba(0,0,0,.5)}
+.gt-title small{font:600 11pt Fredoka,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#ffd77a}
+.gt-title h1{font:700 40pt/1.05 Fredoka,sans-serif;margin-top:3mm}
+.gt-made{position:absolute;bottom:12mm;left:14mm;font:600 12pt Fredoka,sans-serif;color:#fff;text-shadow:0 .5mm 2mm rgba(0,0,0,.6)}
+.gt-blurb{position:absolute;top:24mm;left:22mm;right:22mm;color:#fff;font:400 15pt/1.5 Literata,serif;display:grid;gap:4mm;text-shadow:0 .5mm 3mm rgba(0,0,0,.6)}
+.gt-bfoot{position:absolute;bottom:10mm;left:0;right:0;text-align:center;font:500 10pt Fredoka,sans-serif;color:#fff;text-shadow:0 .5mm 2mm rgba(0,0,0,.6)}

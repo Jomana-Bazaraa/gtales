@@ -36,8 +36,8 @@ export function possessive(name: string): string {
 }
 
 const PRON: Record<"boy" | "girl", Record<(typeof PRONOUNS)[number], string>> = {
-  boy: { he: "he", him: "him", his: "his", He: "He", His: "His" },
-  girl: { he: "she", him: "her", his: "her", He: "She", His: "Her" },
+  boy: { he: "he", him: "him", his: "his", He: "He", Him: "Him", His: "His" },
+  girl: { he: "she", him: "her", his: "her", He: "She", Him: "Her", His: "Her" },
 };
 
 function upperFirst(s: string) {
@@ -96,7 +96,9 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
   const fillChallenge = (c: Challenge | null): Challenge | null =>
     c && {
       ...c,
+      tag: c.tag ? f(c.tag) : c.tag,
       question: f(c.question),
+      done: c.done ? f(c.done) : c.done,
       riddle: c.riddle?.map(f),
       options: c.options?.map((o) => ({ ...o, label: f(o.label), response: f(o.response) })),
       steps: c.steps?.map(f),
@@ -106,12 +108,14 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
   return {
     ...story,
     title: f(story.title),
+    back_blurb: story.back_blurb.map(f),
     need_choices: story.need_choices.map(f),
     ask_choices: story.ask_choices.map(f),
     pages: story.pages.map((p) => ({
       ...p,
       text: p.text.map(f),
       sign: p.sign ? f(p.sign) : null,
+      screen: p.screen ? f(p.screen) : p.screen,
       challenge: fillChallenge(p.challenge),
     })),
     gender: form.gender,
@@ -121,13 +125,14 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
 
 /** Every string in a story, for validation and length checks. */
 export function storyStrings(s: StoryJson): string[] {
-  const out: string[] = [s.title];
+  const out: string[] = [s.title, ...s.back_blurb];
   for (const p of s.pages) {
     out.push(...p.text);
     if (p.sign) out.push(p.sign);
+    if (p.screen) out.push(p.screen);
     const c = p.challenge;
     if (c) {
-      out.push(c.question, ...(c.riddle ?? []), ...(c.steps ?? []), ...(c.line ? [c.line] : []));
+      out.push(c.question, ...(c.riddle ?? []), ...(c.steps ?? []), ...(c.line ? [c.line] : []), ...(c.tag ? [c.tag] : []), ...(c.done ? [c.done] : []));
       for (const o of c.options ?? []) out.push(o.label, o.response);
     }
   }

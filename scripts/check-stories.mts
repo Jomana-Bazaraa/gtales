@@ -23,10 +23,10 @@ for (const f of files) {
   for (const t of uses) if (!present.has(t)) { console.log(`✗ ${f}: "${t}" in uses but never used`); bad++; }
   for (const g of ["boy", "girl"]) {
     const imgDir = path.join(root, "public", "stories", slug, g);
-    const need = ["cover.jpg", ...s.pages.map((p) => p.image)];
+    const need = ["cover.jpg", "back.jpg", ...s.pages.map((p) => p.image ?? `p${String(p.n).padStart(2, "0")}.jpg`)];
     const have = new Set(await fs.readdir(imgDir).catch(() => []));
     const missing = need.filter((n) => !have.has(n));
-    if (missing.length) { console.log(`✗ ${f}: ${g} set missing ${missing.length} images (${missing.slice(0, 3).join(", ")}…)`); bad++; }
+    if (missing.length) console.log(`${g === "boy" ? "✗" : "⚠"} ${f}: ${g} set missing ${missing.length} images (${missing.slice(0, 3).join(", ")}…)${g === "girl" ? " — girl books are refused until it exists" : ""}`), g === "boy" && bad++;
   }
   if (!bad) console.log(`✓ ${f}`);
 }

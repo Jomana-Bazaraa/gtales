@@ -119,7 +119,6 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         const c = d.contact.trim();
         const ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c) || /^\+?[0-9 ]{8,20}$/.test(c);
         if (!d.parent_name.trim() || !ok) return "Your first name and a WhatsApp number or email.";
-        if (d.dedication.length > 120) return "The dedication is up to 120 characters.";
         return null;
       }
       default: return null;
@@ -142,7 +141,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       strength: uses("strength") ? (d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength) : undefined,
       sidekick: uses("sidekick") ? cap(d.sidekick) : undefined, power_word: uses("power_word") ? d.power_word.trim() : undefined,
       need: uses("need") ? d.need : undefined, ask: uses("ask") ? d.ask : undefined,
-      dedication: d.dedication.trim() || undefined, parent_name: d.parent_name.trim(), contact: d.contact.trim(),
+      parent_name: d.parent_name.trim(), contact: d.contact.trim(),
       ref: safeRef(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
     };
     const r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
@@ -271,7 +270,6 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
             <Title hint="So we can save the story and the PDF for you.">Last thing: where do we send it?</Title>
             <Field label="Your first name"><input className="field font-medium" placeholder="e.g. Ayman" value={d.parent_name} onChange={(e) => u("parent_name", e.target.value)} maxLength={60} /></Field>
             <Field label="WhatsApp number or email"><input className="field font-medium" inputMode="email" placeholder="01x xxxx xxxx or you@email.com" value={d.contact} onChange={(e) => u("contact", e.target.value)} maxLength={120} /></Field>
-            <Field label="A dedication for the first page (optional)"><textarea className="field font-medium min-h-20" placeholder={`e.g. For ${name}, our brave one. Love, Mama and Baba`} value={d.dedication} onChange={(e) => u("dedication", e.target.value)} maxLength={120} /></Field>
             <p className="m-0 text-[13px] leading-[18px] text-ink-soft">We use it only to send this story and to save your stories. No spam.</p>
           </>
         )}

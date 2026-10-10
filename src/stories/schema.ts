@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const TOKENS = ["name", "age", "place", "other", "sidekick", "power_word", "need", "ask", "strength"] as const;
 export type Token = (typeof TOKENS)[number];
-export const PRONOUNS = ["he", "him", "his", "He", "His"] as const;
+export const PRONOUNS = ["he", "him", "his", "He", "Him", "His"] as const;
 
 const option = z.object({
   label: z.string().min(1),
@@ -16,7 +16,9 @@ const option = z.object({
 
 export const challengeSchema = z.object({
   type: z.enum(["choice", "riddle", "steps", "boxes", "say"]),
+  tag: z.string().optional(), // card label, default "Your turn"
   question: z.string().min(1),
+  done: z.string().optional(), // shown when all steps / boxes are ticked
   riddle: z.array(z.string()).optional(), // riddle lines (type riddle)
   options: z.array(option).optional(), // choice, riddle
   steps: z.array(z.string()).optional(), // steps (the Combo)
@@ -26,15 +28,19 @@ export const challengeSchema = z.object({
 
 export const pageSchema = z.object({
   n: z.number().int().min(1).max(15),
-  image: z.string().regex(/^p\d{2}\.jpg$/),
-  text: z.array(z.string()),
+  image: z.string().regex(/^p\d{2}\.jpg$/).optional(), // defaults to p<nn>.jpg
+  text: z.array(z.string()).min(1),
   sign: z.string().nullable().default(null),
+  screen: z.string().optional(), // text on the band's screen, drawn as a green caption
+  screen_after: z.number().int().min(0).optional(),
   challenge: challengeSchema.nullable().default(null),
 });
 
 export const storySchema = z.object({
   slug: z.string().min(1),
+  struggle: z.string().optional(),
   title: z.string().min(1),
+  back_blurb: z.array(z.string()).default([]),
   uses: z.array(z.enum(TOKENS)),
   need_choices: z.array(z.string()).default([]),
   ask_choices: z.array(z.string()).default([]),

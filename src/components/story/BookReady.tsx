@@ -35,7 +35,7 @@ export function BookReady({ book, url }: { book: BookRecord; url: string }) {
               <b className="font-bold">How to read it with {name}</b>
               <ul className="m-0 ps-5 text-[15px] leading-[22px] text-ink-soft flex flex-col gap-1">
                 <li>Read it together, and let {name} answer every "Your turn" alone.</li>
-                <li>Do the Combo with {name}, step by step, the first time.</li>
+                <li>Do the steps with {name}, standing up, the first time.</li>
                 <li>When it gets hard at home, say the Power Word first, then the Combo.</li>
               </ul>
             </div>
