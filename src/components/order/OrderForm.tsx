@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { COPY, egp, priceBreakdown } from "@/lib/gtales";
+import { COPY, egp, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -26,7 +26,7 @@ interface Draft {
   books: Book[];
   parentName: string; whatsapp: string; governorate: string; city: string; street: string; landmark: string; bestTime: string; promo: string;
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", body: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "LAUNCH40" };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", body: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "" };
 
 const STRENGTHS = ["Building", "Drawing", "Football", "Swimming", "Dancing", "Reading", "Singing", "Helping", "Running", "Making people laugh", "Puzzles"];
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
@@ -46,21 +46,21 @@ const F = ({ label, children, hint }: { label: string; children: React.ReactNode
   <label className="flex flex-col gap-1.5 font-bold text-[15px]">{label}{children}{hint && <span className="text-[12px] font-medium text-ink-soft">{hint}</span>}</label>
 );
 
-export function OrderForm({ prefill }: { prefill: Prefill }) {
+export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pricing }) {
   const router = useRouter();
   const [d, setD] = useState<Draft>(EMPTY);
   const [i, setI] = useState(0);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
-  const price = priceBreakdown();
+  const price = priceBreakdown(pricing);
 
   useEffect(() => {
-    let base = { ...EMPTY };
+    let base = { ...EMPTY, promo: pricing.promoCode };
     try { const raw = localStorage.getItem(KEY); if (raw) base = { ...EMPTY, ...(JSON.parse(raw) as { d: Draft }).d }; } catch {}
     if (prefill.name && !base.name) base = { ...base, name: prefill.name, age: prefill.age ?? base.age, gender: prefill.gender ?? base.gender, struggles: prefill.struggle && !base.struggles.length ? [prefill.struggle] : base.struggles };
     setD(base); setReady(true);
-  }, [prefill]);
+  }, [prefill, pricing.promoCode]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d })); } catch {} }, [d, ready]);
 
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));

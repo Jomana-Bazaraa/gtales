@@ -4,6 +4,8 @@ import { isValidAdminCookie } from "@/lib/admin-auth";
 import { getOrder, privatePhotoUrl } from "@/lib/db";
 import { egp } from "@/lib/gtales";
 import { STATUS_LABEL, STATUS_ORDER } from "@/lib/orders";
+import { statusMessage, waLink } from "@/lib/whatsapp";
+import { baseUrl } from "@/lib/site";
 
 /** Admin order detail: every field from the form, including loved-ones' photos (SPEC §11). */
 export default async function AdminSeriesOrder({ params }: PageProps<"/admin/series/[id]">) {
@@ -14,6 +16,7 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
   if (!o) notFound();
   const photo = async (k?: string) => (k && !o.photos_deleted_at ? await privatePhotoUrl(k) : "");
   const face = await photo(o.photos.face), body = await photo(o.photos.body);
+  const msg = statusMessage(o, await baseUrl());
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => <section className="card p-4 flex flex-col gap-2"><h2 className="font-bold">{title}</h2>{children}</section>;
   return (
     <div className="flex flex-col gap-4">
@@ -26,6 +29,11 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
           <label className="text-sm font-bold flex items-center gap-1"><input type="checkbox" name="edit_requested" defaultChecked={o.edit_requested} /> edits requested</label>
           <button className="btn-primary !h-10 !px-4 text-sm">Update</button>
         </form>
+      </div>
+      <div className="card p-4 flex flex-col gap-2 bg-sun-soft">
+        <b className="font-bold">WhatsApp message for this status</b>
+        <p className="m-0 text-sm whitespace-pre-wrap">{msg}</p>
+        <a href={waLink(o.parent.whatsapp, msg)} target="_blank" rel="noreferrer" className="btn-secondary self-start !h-10 !px-4 text-sm">Open in WhatsApp</a>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
         <Section title="Photos">

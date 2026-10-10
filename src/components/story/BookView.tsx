@@ -80,6 +80,13 @@ export function BookView({ html, story, backHref, pdfHref, bookId }: { html: str
   }, [story, bookId]);
 
   useEffect(() => { beacon("story_opened", bookId); }, [bookId]);
+  // story_finished when the back cover comes into view
+  useEffect(() => {
+    const pages = root.current?.querySelectorAll(".gt-page"); const last = pages?.[pages.length - 1]; if (!last) return;
+    let sent = false;
+    const io = new IntersectionObserver((es) => { if (!sent && es.some((e) => e.isIntersecting)) { sent = true; beacon("story_finished", bookId); io.disconnect(); } }, { threshold: 0.5 });
+    io.observe(last); return () => io.disconnect();
+  }, [html, bookId]);
 
   return (
     <div className="min-h-dvh bg-[#ddd]">

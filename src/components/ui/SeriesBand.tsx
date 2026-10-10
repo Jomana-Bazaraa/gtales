@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { COPY, egp, priceBreakdown } from "@/lib/gtales";
+import { COPY, egp } from "@/lib/gtales";
+import { currentBreakdown } from "@/lib/pricing";
 import { Icon, type IconName } from "./Icon";
 import { Promises } from "./Promises";
 
@@ -14,8 +15,8 @@ const ROWS: { icon: IconName; text: string }[] = [
  * "Make it truly theirs" — the route from free to paid (SPEC §6 struggle page, §7 ready screen).
  * Four icon rows, price, compact promises, one button.
  */
-export function SeriesBand({ childName, className = "", href = "/order" }: { childName?: string; className?: string; href?: string }) {
-  const p = priceBreakdown();
+export async function SeriesBand({ childName, className = "", href = "/order" }: { childName?: string; className?: string; href?: string }) {
+  const p = await currentBreakdown();
   return (
     <section className={`rounded-[24px] md:rounded-[28px] bg-white border-[3px] border-flame p-5 md:p-7 flex flex-col gap-4 shadow-[0_3px_0_var(--line)] ${className}`}>
       <div className="flex flex-col gap-1">

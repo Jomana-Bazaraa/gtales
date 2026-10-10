@@ -34,3 +34,18 @@ export async function logEvent(e: EventRow): Promise<void> {
     console.error("[events]", err);
   }
 }
+
+export interface StoredEvent extends EventRow { created_at: string }
+/** Read events for the Stats tab (mock: ndjson file; Supabase: events table). */
+export async function listEvents(sinceIso?: string): Promise<StoredEvent[]> {
+  if (isMockDb) {
+    try {
+      const raw = await fs.readFile(path.join(process.cwd(), ".data", "events.ndjson"), "utf8");
+      return raw.split("\n").filter(Boolean).map((l) => JSON.parse(l) as StoredEvent).filter((e) => !sinceIso || e.created_at >= sinceIso);
+    } catch { return []; }
+  }
+  let q = supabase().from("events").select("*").order("created_at", { ascending: false }).limit(20000);
+  if (sinceIso) q = q.gte("created_at", sinceIso);
+  const { data } = await q;
+  return (data as StoredEvent[]) ?? [];
+}

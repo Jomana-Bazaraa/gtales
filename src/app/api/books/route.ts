@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { countRecentBooks, insertBook } from "@/lib/db";
 import { logEvent } from "@/lib/events";
+import { getSettings } from "@/lib/settings";
 import { loadStory } from "@/stories";
 import { fillStory, FillError } from "@/stories/fill";
 import { polishStory } from "@/stories/polish";
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const limit = Number(process.env.RATE_LIMIT_PER_HOUR || 10);
+  const limit = (await getSettings()).rate_limit_per_hour;
   if ((await countRecentBooks(ip, f.contact.toLowerCase())) >= limit) {
     await logEvent({ event: "rate_limited", tale: f.slug, device: ip });
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { COPY } from "@/lib/gtales";
+import { getSettings } from "@/lib/settings";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
@@ -17,10 +18,12 @@ const NAV = [
   ["#faq", "FAQ"],
 ];
 
-export function PromoBar() {
+export async function PromoBar() {
+  const s = await getSettings();
+  if (!s.promo_bar) return null;
   return (
     <div className="bg-flame text-white text-center text-[13px] md:text-sm font-bold leading-5 px-4 py-2">
-      {COPY.promoBar()}
+      {s.promo_bar}
     </div>
   );
 }
@@ -48,7 +51,7 @@ export function Header({ landing = false }: { landing?: boolean }) {
 }
 
 export function Footer() {
-  const wa = COPY.whatsapp ? `https://wa.me/${COPY.whatsapp}` : "#";
+  const wa = COPY.whatsapp ? `https://wa.me/${COPY.whatsapp}` : "/my-stories";
   return (
     <footer className="mt-12 border-t border-line bg-surface-tint">
       <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-soft font-medium">

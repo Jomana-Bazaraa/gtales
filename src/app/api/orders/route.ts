@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { insertOrder } from "@/lib/db";
 import { logEvent } from "@/lib/events";
-import { priceBreakdown } from "@/lib/gtales";
+import { currentBreakdown } from "@/lib/pricing";
 import { assertSafe, SafetyError } from "@/stories/safety";
 import type { OrderRecord } from "@/lib/types";
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     if (e instanceof SafetyError) return NextResponse.json({ error: "unsafe", field: e.field, message: "Please choose another word." }, { status: 422 });
     throw e;
   }
-  const p = priceBreakdown();
+  const p = await currentBreakdown();
   const promoOk = (o.promo_code ?? "").toUpperCase() === p.promoCode.toUpperCase();
   const discount = promoOk ? p.discount : 0;
   const now = new Date().toISOString();

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/SiteChrome";
 import { OrderForm, type Prefill } from "@/components/order/OrderForm";
-import { getBook } from "@/lib/db";
+import { getBook, getOrder } from "@/lib/db";
+import { getSession } from "@/lib/session";
 import { taleBySlug } from "@/lib/gtales";
+import { currentPricing } from "@/lib/pricing";
 
 export const metadata: Metadata = { title: "Create your child's books — GTales" };
 export const dynamic = "force-dynamic";
@@ -18,10 +20,16 @@ export default async function OrderPage({ searchParams }: PageProps<"/order">) {
     const b = await getBook(storyId);
     if (b) prefill = { name: b.child_name, age: b.form.age, gender: b.gender, struggle: STRUGGLE_FROM_TALE[b.slug] ?? taleBySlug(b.slug)?.helps, storyId };
   }
+  const reorder = Array.isArray(sp.reorder) ? sp.reorder[0] : sp.reorder;
+  if (reorder) {
+    const session = await getSession();
+    const o = await getOrder(reorder);
+    if (o && session?.whatsapp && o.parent.whatsapp.replace(/\D/g, "").endsWith(session.whatsapp.slice(-9))) prefill = { name: o.child.name, age: o.child.age, gender: o.child.gender };
+  }
   return (
     <>
       <Header />
-      <main className="flex-1 w-full bg-white"><OrderForm prefill={prefill} /></main>
+      <main className="flex-1 w-full bg-white"><OrderForm prefill={prefill} pricing={await currentPricing()} /></main>
     </>
   );
 }

@@ -5,6 +5,7 @@ import "@fontsource-variable/cairo";
 import "./globals.css";
 import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/i18n-client";
+import { PageViewBeacon } from "@/components/PageViewBeacon";
 import type { Lang } from "@/lib/i18n";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <LangProvider lang={lang}>{children}</LangProvider>
+        <PageViewBeacon />
       </body>
     </html>
   );

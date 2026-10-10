@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { COPY, TALES, egp, priceBreakdown } from "@/lib/gtales";
+import { COPY, TALES, egp } from "@/lib/gtales";
+import { currentBreakdown } from "@/lib/pricing";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -184,8 +185,8 @@ function Row({ ok, children, className = "" }: { ok: boolean; children: React.Re
   );
 }
 
-export function Pricing() {
-  const p = priceBreakdown();
+export async function Pricing() {
+  const p = await currentBreakdown();
   return (
     <section id="pricing" className="scroll-mt-16">
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-16 flex flex-col gap-6 md:gap-8">
