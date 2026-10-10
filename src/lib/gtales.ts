@@ -29,8 +29,8 @@ export const TALES: Tale[] = [
     title: "Calm",
     helps: "Hitting, shouting, slamming doors",
     line: "Your child learns the slow breath that cools the heat.",
-    cover: "/book/cover.jpg",
-    coverAlt: "Cover of the Calm tale: Adam and the Great Blocktown Smash",
+    cover: null,
+    coverAlt: "Cover of the Calm tale",
   },
   {
     slug: "anxiety",
@@ -171,7 +171,7 @@ export const COPY = {
   ctaSecondary: "Try a free story",
   promoBar: (p = getPricing()) =>
     `Launch offer: ${p.promoPercent}% off the printed Series with ${p.promoCode} · Pay on delivery`,
-  trustLine: ["Ages 4–8", "You approve every page", "Pay on delivery"],
+  trustLine: ["Ages 2–10", "You approve every page", "Pay on delivery"],
   reviewsVisible: process.env.NEXT_PUBLIC_REVIEWS_VISIBLE === "true",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "",
 };

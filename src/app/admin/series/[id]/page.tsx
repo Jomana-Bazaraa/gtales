@@ -15,7 +15,7 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
   const o = await getOrder(id);
   if (!o) notFound();
   const photo = async (k?: string) => (k && !o.photos_deleted_at ? await privatePhotoUrl(k) : "");
-  const face = await photo(o.photos.face), body = await photo(o.photos.body);
+  const face = await photo(o.photos.face);
   const msg = statusMessage(o, await baseUrl());
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => <section className="card p-4 flex flex-col gap-2"><h2 className="font-bold">{title}</h2>{children}</section>;
   return (
@@ -36,10 +36,10 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
         <a href={waLink(o.parent.whatsapp, msg)} target="_blank" rel="noreferrer" className="btn-secondary self-start !h-10 !px-4 text-sm">Open in WhatsApp</a>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
-        <Section title="Photos">
-          <div className="flex gap-3">
-            {face ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={face} alt="Face" className="w-32 h-32 object-cover rounded-xl" /> : <span className="text-ink-soft text-sm">{o.photos_deleted_at ? "Deleted after delivery" : "No face photo"}</span>}
-            {body && /* eslint-disable-next-line @next/next/no-img-element */ <img src={body} alt="Full body" className="w-32 h-32 object-cover rounded-xl" />}
+        <Section title="The hero">
+          <div className="flex gap-3 items-start">
+            {face ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={face} alt="Face" className="w-32 h-32 object-cover rounded-xl" /> : <span className="text-ink-soft text-sm">{o.photos_deleted_at ? "Photo deleted after delivery" : "No photo uploaded — ask for one on WhatsApp"}</span>}
+            {o.child.description && <p className="m-0 text-sm">{o.child.description}</p>}
           </div>
         </Section>
         <Section title="Good at">{o.strengths.join(", ")}</Section>

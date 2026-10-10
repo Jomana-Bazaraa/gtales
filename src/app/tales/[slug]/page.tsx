@@ -24,8 +24,6 @@ const INSIDE: { icon: IconName; title: string; copy: string }[] = [
   { icon: "heart", title: "A parent guide for this struggle", copy: "What to say, what to try, and what to notice, for this one superpower." },
 ];
 
-// Sample pages: real pages exist only for the Calm tale today (SPEC §2.5).
-const SAMPLES = ["/book/page-4.jpg", "/book/your-turn.jpg", "/book/page-22.jpg"];
 
 /** Superpower (struggle) page — docs/SPEC.md §6. */
 export default async function TalePage({ params }: PageProps<"/tales/[slug]">) {
@@ -48,7 +46,7 @@ export default async function TalePage({ params }: PageProps<"/tales/[slug]">) {
                 <Link href={`/create?tale=${t.slug}`} className="btn-secondary md:!h-14 md:!px-7 md:text-lg">{COPY.ctaSecondary}</Link>
                 <Link href="/order" className="btn-ghost">{COPY.ctaPrimary}</Link>
               </div>
-              <span className="text-[13px] font-bold text-ink-soft">Ages 4–8 · Ready in two minutes · No photo, no address</span>
+              <span className="text-[13px] font-bold text-ink-soft">Ages 2–10 · Ready in two minutes · No photo, no address</span>
             </div>
             {hasArt ? (
               <Image src={t.cover!} alt={t.coverAlt} width={867} height={867} priority sizes="(max-width: 768px) 80vw, 420px" className={`w-[260px] md:w-[360px] mx-auto object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)] ${t.portrait ? "aspect-[5/7]" : "aspect-square"}`} />
@@ -69,7 +67,7 @@ export default async function TalePage({ params }: PageProps<"/tales/[slug]">) {
             ))}
           </div>
           <div className="grid grid-cols-3 gap-2 md:gap-4">
-            {(t.samples ?? SAMPLES.map((src, i) => ({ src, alt: ["A story page from the Calm tale", "A Your turn page from the Calm tale", "A story page from the Calm tale"][i] }))).map((s) =>
+            {(t.samples ?? []).map((s) =>
               hasArt ? (
                 <Image key={s.src} src={s.src} alt={s.alt} width={867} height={867} sizes="(max-width: 768px) 30vw, 360px" className={`w-full object-cover rounded-2xl shadow-[0_3px_0_var(--line)] ${t.portrait ? "aspect-[5/4]" : "aspect-square"}`} />
               ) : (

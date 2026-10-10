@@ -164,8 +164,8 @@ export interface OrderRecord {
   id: string;
   status: OrderStatus;
   edit_requested: boolean;
-  child: { name: string; age: number; gender: "boy" | "girl" };
-  photos: { face?: string; body?: string };
+  child: { name: string; age: number; gender: "boy" | "girl"; description?: string };
+  photos: { face?: string };
   strengths: string[];
   books: OrderBook[]; // 1–3
   world: { favourites: string[]; notes?: string };

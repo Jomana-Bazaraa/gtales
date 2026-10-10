@@ -22,7 +22,7 @@ export async function POST(req: Request, { params }: RouteContext<"/api/admin/se
     patch.edit_requested = form.get("edit_requested") === "on";
     if (status !== o.status) await logEvent({ event: "status_changed", order_id: id, meta: { from: o.status, to: status } });
     if ((status === "delivered_paid" || status === "cancelled") && !o.photos_deleted_at) {
-      const keys = [o.photos.face, o.photos.body, ...o.books.flatMap((b) => b.people.map((p) => p.photo_key))].filter(Boolean) as string[];
+      const keys = [o.photos.face, ...o.books.flatMap((b) => b.people.map((p) => p.photo_key))].filter(Boolean) as string[];
       await deletePrivatePhotos(keys);
       patch.photos_deleted_at = new Date().toISOString();
       await logEvent({ event: "photos_deleted", order_id: id, meta: { count: keys.length } });

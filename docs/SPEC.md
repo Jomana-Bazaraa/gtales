@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.0 · 10 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.5 · 10 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -12,7 +12,7 @@ How to use this file
 
 ## 1. Product
 
-GTales ("Gamified Tales"): personalised, interactive storybooks for children aged 4–8 in which the child is the hero and each tale builds one "superpower" (a strength that answers a real struggle: anger, fear, bullying, lying, big feelings, friendship).
+GTales ("Gamified Tales"): personalised, interactive storybooks for children aged 2–10 in which the child is the hero and each tale builds one "superpower" (a strength that answers a real struggle: anger, fear, bullying, lying, big feelings, friendship).
 
 Two offers:
 
@@ -116,14 +116,14 @@ Every public page: `<title>`, meta description, OG image, canonical, `lang="en"`
 Seven sections, same order desktop and phone. Phone target: ≤ 5,200 px total height at 390 px wide (measured 5,079 px on 10 Oct with readable type; the design board reached 3,700 px only with smaller type).
 
 0. **Promo bar** (dismissible, [config] text): "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery".
-1. **Hero.** H1 "A personalised storybook where your child is the hero." Subline "The only story where they see their own name, and their own face, on every page. Each tale unlocks a superpower." Buttons: CTA + "Try a free story". Trust line: "Ages 4–8 · You approve every page · Pay on delivery". Visual: three fanned book images (cover front, two story pages behind). No photo-to-hero transition.
+1. **Hero.** H1 "A personalised storybook where your child is the hero." Subline "The only story where they see their own name, and their own face, on every page. Each tale unlocks a superpower." Buttons: CTA + "Try a free story". Trust line: "Ages 2–10 · You approve every page · Pay on delivery". Visual: three fanned book images (cover front, two story pages behind). No photo-to-hero transition.
 2. **How it works.** H2 "Four steps to three printed books". Four steps as coloured icon tiles (flame-soft, sky-soft, sun-soft, mint-soft) with a small ink number badge, joined by a dashed line (desktop) or stacked (phone). The time pill sits directly under the tile so all four align. No large numerals.
    - 10 minutes · Tell us about your child · "Name, photo, their people, what's hard right now."
    - 5 days · We create their story · "Three tales with their face in every picture."
    - Until it's perfect · You approve every page · "On WhatsApp. Change anything you like."
    - 5 days after approval · Delivered to your door · "Three printed books. Pay the courier."
-3. **Meet the book.** H2 "Adam, 6, Maadi. His superpower: Calm." Four equal real pages (cover, story page, "Your turn" page, certificate). Six feature tiles: The hero · The superpower · Their world · Their people · Play pages · Read or listen (copy as on board). Button "Read Adam's story" → reader. Phone: 2×2 images, one paragraph, button.
-4. **Six superpowers.** Night background, H2 "Six tales. Six superpowers.", subline "Every tale helps your child grow one strength. Pick the three that matter most." Six cards (3×2 desktop; horizontal swipe strip of 150 px cards on phone): cover image, Title, "Helps with: …", one line, "Free story →". Footnote "Ages 4–8. New superpowers are added every month."
+3. **Meet the book.** H2 "Adam, 6, Maadi. His superpower: Courage." Four real A4 pages rendered from the current template (`public/meet/`: cover, page 1, the riddle "Your turn" page, back cover) — never the retired 20×20 cm Series mock-up. Six feature tiles: The hero · The superpower · Their world · Their people · Your turn pages · A real book. Button "See the Courage tale" → `/tales/anxiety`. Phone: 2×2 images, one paragraph, button. The hero fan (§5.1) uses the same rendered pages.
+4. **Six superpowers.** Night background, H2 "Six tales. Six superpowers.", subline "Every tale helps your child grow one strength. Pick the three that matter most." Six cards (3×2 desktop; horizontal swipe strip of 150 px cards on phone): cover image, Title, "Helps with: …", one line, "Free story →". Footnote "Ages 2–10. New superpowers are added every month."
 5. **Pricing.** H2 "Start free. Keep the printed books forever." Two tier cards styled like a pricing page, **not** a comparison table:
    - Free story (left, surface-tint, muted): "A taste, in two minutes", "Free", ✓ name/interests/home words · ✓ interactive pages · ✓ 1 story PDF + colouring book + parent guide · ✗ standard pictures, not your child's face · ✗ ready-made tale · ✗ digital only. Ghost button "Try a free story".
    - The Series (right, wider, flame border, tag "The Series · printed · most loved"): "Three printed books + a complete parent guide", 749 struck → 449 EGP, LAUNCH40 pill, "+ 89 EGP delivery · pay on delivery", eight ✓ rows (face from photo, loved ones' faces, written from scratch, family memory, interactive pages, three printed books delivered, one complete guide, approve every page on WhatsApp), CTA, line "You approve every page before we print".
@@ -192,7 +192,7 @@ AC: a check script confirms every `(…)` in the source became a token; every ta
 | Step | Asks | Rules |
 |---|---|---|
 | 1 | Which superpower should this story build? | picks the tale; pre-selected from `?tale=` |
-| 2 | Hero's name · boy or girl · age | name 1–14 chars, letters, spaces, hyphens, first letter capitalised automatically; boy/girl picks the image set and pronouns; age 4–8 (written in words in the story) |
+| 2 | Hero's name · boy or girl · age | name 1–14 chars, letters, spaces, hyphens, first letter capitalised automatically; boy/girl picks the image set and pronouns; age 2–10 (written in words in the story) |
 | 3 | A place they know: neighbourhood or city | free text 2–20 chars, e.g. "Maadi", "Smouha" |
 | 4 | The other child: name + relation | brother, sister, cousin, friend; bullying tale only: a child at school or the park (`other_rule`) |
 | 5 | What they're great at | noun that fits "Best ___ in Maadi": builder, artist, football player, swimmer, dancer, helper, reader, singer, or other (free text noun) |
@@ -226,11 +226,11 @@ AC: no overflow, no empty tokens, no broken words; one boy book and one girl boo
 
 ## 9. Series order form (`/order`, 12 screens)
 
-Restructured per Ayman's review (10 Oct): hero first, strengths before struggles, free-text struggles with suggestions (up to three → the three books), optional context, world and words, dedication, activities, then one screen per book (characters + setting), delivery, review. Smooth and quick: chips and suggestions everywhere, free text always allowed, optional fields say so, auto-saved, pre-filled from the free story when `?story=<id>` is present.
+Restructured per Ayman's review (10 Oct): hero first, strengths before struggles, free-text struggles with suggestions (up to three → the three books), optional context, world and words, dedication, activities, then one screen per book (characters + setting), delivery, review. Smooth and quick: chips and suggestions everywhere, free text always allowed, optional fields say so, auto-saved, pre-filled from the free story when `?story=<id>` is present. The price line under the Next button appears only on the delivery and review screens; the early screens show no cost.
 
 | # | Screen | Asks | Saved as |
 |---|---|---|---|
-| 1 | The hero | Name · age (4–8) · boy/girl · one clear face photo (required) · one full-body photo (optional). Pre-filled from the free story. | `child`, `photos` |
+| 1 | The hero | Opens with a one-line note: "You will get three printed books. Each one is about one thing that is hard for your child right now." Name · age (2–10) · boy/girl · face photo (optional) · "Or describe {name}" free text (optional; hair, eyes, glasses…). No full-body photo. If neither photo nor description is given the team asks on WhatsApp. Pre-filled from the free story. | `child` (incl. `description`), `photos.face` |
 | 2 | What is Adam good at? | Chips (Building · Drawing · Football · Swimming · Dancing · Reading · Singing · Helping · Running · Making people laugh · Puzzles) + free text; pick any number | `strengths[]` |
 | 3 | What's hard for Adam right now? | Up to three, free text with suggestions: Tantrums · Hitting · Being bullied · Sleeping in the dark · Worries · Lying · Big feelings · Sharing · Making friends · Shyness · Screen time · New school. Each one becomes a book. | `struggles[1..3]` |
 | 4 | Tell us more (optional) | For each struggle: "When or where does it happen?" one line, e.g. "at bedtime", "when his brother takes his toys" | `context[]` |
@@ -353,6 +353,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.5 (10 Oct 2026): ages 2–10 everywhere (was 4–8; free engine accepts 2–10 too). Hero screen: photo optional with an optional text description instead, full-body photo removed, three-books note on screen 1. Price footer shown only on the delivery and review screens. Meet the book and hero fan use rendered template pages; the 20×20 Series mock-up (`public/book/`) is retired and Calm has no cover until its pack arrives.
 - 1.4 (10 Oct 2026): Series is three books (was five): list 749, LAUNCH40 → 449, delivery 89, total 538. Order form restructured per Ayman's review (see §9).
 - 1.3 (10 Oct 2026): second handoff: worry girl set, bullied (Big Crab) story + girl set, updated template (blurb panel, drop-cap rule); landscape page art is final; per-gender "coming soon".
 - 1.2 (10 Oct 2026): handoff pack adopted: team template (book.css + render.js + fonts) is the only design, 17-page A4 PDF, screen version = template scaled with tappable challenges, worry tale + boy set in repo, girl set refused until delivered, dedication dropped.

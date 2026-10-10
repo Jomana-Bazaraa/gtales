@@ -36,22 +36,22 @@ export function Hero() {
 
 function FannedBooks() {
   const books = [
-    { src: "/book/page-10.jpg", alt: "A story page: Adam builds a bridge of blocks across the river", cls: "-rotate-6 translate-x-10 -translate-y-3 md:translate-x-20 md:-translate-y-4" },
-    { src: "/book/page-24.jpg", alt: "A story page: Adam hugs his little brother Omar", cls: "rotate-6 -translate-x-10 -translate-y-3 md:-translate-x-20 md:-translate-y-4" },
-    { src: "/book/cover.jpg", alt: "The cover: Adam and the Great Blocktown Smash", cls: "z-10" },
+    { src: "/meet/page-7.jpg", alt: "A story page: Adam hides behind the water tank and meets a friendly dog", cls: "-rotate-6 translate-x-10 -translate-y-3 md:translate-x-20 md:-translate-y-4" },
+    { src: "/meet/page-12.jpg", alt: "A Your turn page: Adam sits on the stairs and does the brave steps", cls: "rotate-6 -translate-x-10 -translate-y-3 md:-translate-x-20 md:-translate-y-4" },
+    { src: "/meet/cover.jpg", alt: "The cover: Adam and the Big Shadow", cls: "z-10" },
   ];
   return (
-    <div className="relative h-[260px] md:h-[420px] flex items-center justify-center">
+    <div className="relative h-[280px] md:h-[440px] flex items-center justify-center">
       {books.map((b, i) => (
         <Image
           key={b.src}
           src={b.src}
           alt={b.alt}
-          width={867}
-          height={867}
+          width={693}
+          height={980}
           priority={i === 2}
           sizes="(max-width: 768px) 60vw, 360px"
-          className={`absolute w-[200px] md:w-[320px] aspect-square object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)] ${b.cls}`}
+          className={`absolute w-[170px] md:w-[270px] aspect-[1/1.414] object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)] ${b.cls}`}
         />
       ))}
     </div>
@@ -97,18 +97,18 @@ export function HowItWorks() {
 
 /* ============ 3. Meet the book ============ */
 const PAGES = [
-  { src: "/book/cover.jpg", alt: "The cover: Adam and the Great Blocktown Smash" },
-  { src: "/book/page-10.jpg", alt: "A story page: Adam builds a bridge of blocks across the river" },
-  { src: "/book/your-turn.jpg", alt: "A Your turn page: Adam's band says green builds, red smashes, and asks which colour makes it build" },
-  { src: "/book/certificate.jpg", alt: "The certificate page: Adam, Master Builder of Blocktown" },
+  { src: "/meet/cover.jpg", alt: "The cover: Adam and the Big Shadow" },
+  { src: "/meet/page-1.jpg", alt: "Page 1: bedtime in Maadi, the power goes off and a big shadow appears on the wall" },
+  { src: "/meet/your-turn.jpg", alt: "A Your turn page: help Adam read the riddle" },
+  { src: "/meet/back.jpg", alt: "The back cover: can Adam make his worry cloud small enough to be brave?" },
 ];
 const FEATURES: { icon: IconName; title: string; copy: string }[] = [
   { icon: "person", title: "The hero", copy: "Adam, 6, in every picture" },
-  { icon: "bolt", title: "The superpower", copy: "Calm: the slow breath that turns red to green" },
-  { icon: "blocks", title: "Their world", copy: "A city built from his favourite blocks" },
-  { icon: "people", title: "Their people", copy: "Little brother Omar, Mama and Baba" },
-  { icon: "grid", title: "Play pages", copy: "Mazes, riddles and choices only Adam can solve" },
-  { icon: "speaker", title: "Read or listen", copy: "Read together or press play for narration" },
+  { icon: "bolt", title: "The superpower", copy: "Courage: a worry cloud that shrinks with a brave heart" },
+  { icon: "blocks", title: "Their world", copy: "His rooftop in Maadi, his Power Word, his sidekick Bolt" },
+  { icon: "people", title: "Their people", copy: "His brother Omar, Mama and Baba" },
+  { icon: "grid", title: "Your turn pages", copy: "Riddles, choices and steps only Adam can do" },
+  { icon: "book", title: "A real book", copy: "A4 pages, 15 story pages plus cover and back" },
 ];
 
 export function MeetTheBook() {
@@ -117,15 +117,15 @@ export function MeetTheBook() {
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-16 flex flex-col gap-6 md:gap-7">
         <div className="flex flex-col gap-2">
           <span className="eyebrow">Meet the book</span>
-          <h2 className="text-[28px] leading-8 md:text-[38px] md:leading-[42px] font-bold">Adam, 6, Maadi. His superpower: Calm.</h2>
+          <h2 className="text-[28px] leading-8 md:text-[38px] md:leading-[42px] font-bold">Adam, 6, Maadi. His superpower: Courage.</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {PAGES.map((p) => (
-            <Image key={p.src} src={p.src} alt={p.alt} width={867} height={867} sizes="(max-width: 768px) 45vw, 270px" className="w-full aspect-square object-cover rounded-2xl shadow-[0_4px_0_var(--line)]" />
+            <Image key={p.src} src={p.src} alt={p.alt} width={693} height={980} sizes="(max-width: 768px) 45vw, 270px" className="w-full aspect-[1/1.414] object-cover rounded-2xl shadow-[0_4px_0_var(--line)]" />
           ))}
         </div>
         <p className="md:hidden m-0 text-[15px] leading-[22px] text-ink-soft">
-          Adam is in every picture, with Omar, Mama and Baba. A city built from his favourite blocks, play pages only he can solve, and narration when you press play.
+          Adam is in every picture, with Omar, Mama and Baba. His rooftop in Maadi, his Power Word, and Your turn pages only he can solve.
         </p>
         <div className="hidden md:grid grid-cols-3 gap-3">
           {FEATURES.map((f) => (
@@ -135,7 +135,7 @@ export function MeetTheBook() {
             </div>
           ))}
         </div>
-        <Link href="/tales/anger" className="btn-secondary self-start">See the Calm tale</Link>
+        <Link href="/tales/anxiety" className="btn-secondary self-start">See the Courage tale</Link>
       </div>
     </section>
   );
@@ -154,7 +154,7 @@ export function Superpowers() {
           {TALES.map((t) => (
             <Link key={t.slug} href={`/tales/${t.slug}`} className="w-[160px] md:w-auto flex flex-col rounded-2xl md:rounded-[28px] bg-white overflow-hidden shadow-[0_3px_0_var(--line)] no-underline text-ink">
               {t.cover ? (
-                <Image src={t.cover} alt={t.coverAlt} width={867} height={867} sizes="(max-width: 768px) 160px, 360px" className={`w-full object-cover ${t.portrait ? "aspect-[4/5] object-top" : "aspect-[4/3]"}`} />
+                <Image src={t.cover} alt={t.coverAlt} width={693} height={980} sizes="(max-width: 768px) 160px, 360px" className={`w-full object-cover ${t.portrait ? "aspect-[4/5] object-top" : "aspect-[4/3]"}`} />
               ) : (
                 <div className="w-full aspect-[4/3] grid place-items-center text-center p-3 text-[12px] md:text-[13px] font-bold text-ink-soft bg-surface-tint border-b-2 border-dashed border-line">
                   IMAGE NEEDED: cover of the {t.title} tale
@@ -169,7 +169,7 @@ export function Superpowers() {
             </Link>
           ))}
         </div>
-        <p className="m-0 text-center text-[#b9b5d9] text-sm md:text-[15px]">Ages 4–8. New superpowers are added every month.</p>
+        <p className="m-0 text-center text-[#b9b5d9] text-sm md:text-[15px]">Ages 2–10. New superpowers are added every month.</p>
       </div>
     </section>
   );

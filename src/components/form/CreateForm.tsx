@@ -199,11 +199,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
         {step === "age" && (<>
           <Q>How old is your child?</Q>
-          <div className="flex justify-between gap-2">
-            {[4, 5, 6, 7, 8].map((a) => (
-              <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-14 h-14 rounded-full border-[3px] display font-bold text-2xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>
-            ))}
-          </div>
+          <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>
         </>)}
 
         {step === "place" && (<>

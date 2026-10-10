@@ -12,7 +12,7 @@ export class FillError extends Error {
   }
 }
 
-const AGE_WORDS: Record<number, string> = { 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine" };
+const AGE_WORDS: Record<number, string> = { 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten" };
 
 export function ageInWords(age: number, half = false): string {
   const w = AGE_WORDS[age];

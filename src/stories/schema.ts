@@ -61,7 +61,7 @@ export const formSchema = z.object({
   slug: z.string().min(1),
   name: z.string().trim().min(1).max(14).regex(/^[A-Za-z][A-Za-z '\-]*$/, "letters, spaces and hyphens only"),
   gender: z.enum(["boy", "girl"]),
-  age: z.number().int().min(4).max(8),
+  age: z.number().int().min(2).max(10),
   half: z.boolean().default(false), // "six and a half"
   place: z.string().trim().min(2).max(20),
   other: z.string().trim().min(1).max(14).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(),
