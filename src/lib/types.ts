@@ -134,3 +134,24 @@ export interface PhysicalOrder {
   shipped_at: string | null;
   created_at: string;
 }
+
+/** A GTales free story made by the personalization engine (SPEC §7). */
+export interface BookRecord {
+  id: string;
+  slug: string; // tale key / story file
+  title: string;
+  gender: "boy" | "girl";
+  child_name: string;
+  form: import("@/stories/schema").StoryForm;
+  story: import("@/stories/schema").FilledStory;
+  polished: boolean;
+  parent_name: string;
+  /** email or WhatsApp number, as given */
+  contact: string;
+  dedication?: string;
+  ref?: string;
+  ip?: string;
+  pdf_url: string | null;
+  created_at: string;
+  updated_at: string;
+}

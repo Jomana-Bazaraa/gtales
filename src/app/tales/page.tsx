@@ -21,11 +21,6 @@ export default function TalesPage() {
             <span className="eyebrow">Superpowers</span>
             <h1 className="text-[30px] leading-9 md:text-[44px] md:leading-[48px] font-bold text-balance">Which superpower does your child need right now?</h1>
             <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft max-w-2xl">Every superpower has a free story, a colouring book and a parent guide. Pick one and your child's story is ready in two minutes.</p>
-            <div className="flex gap-2 pt-1" role="group" aria-label="Age">
-              {["All ages", "4–5", "6–8"].map((a, i) => (
-                <span key={a} className={`chip !min-h-10 !py-1.5 ${i === 0 ? "chip-on" : ""}`}>{a}</span>
-              ))}
-            </div>
           </div>
         </section>
 

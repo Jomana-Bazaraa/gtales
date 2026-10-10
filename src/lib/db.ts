@@ -5,7 +5,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import type { PhysicalOrder, StoryRecord } from "./types";
+import type { BookRecord, PhysicalOrder, StoryRecord } from "./types";
 
 export const isMockDb = !process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -21,9 +21,10 @@ export function supabase(): SupabaseClient {
 
 // ---------- mock store: one JSON file per record (safe across Next's worker processes) ----------
 const DATA_DIR = path.join(process.cwd(), ".data");
-const dirOf = (kind: "stories" | "orders" | "tokens") => path.join(DATA_DIR, kind);
+type Kind = "stories" | "orders" | "tokens" | "books";
+const dirOf = (kind: Kind) => path.join(DATA_DIR, kind);
 
-async function writeJson(kind: "stories" | "orders" | "tokens", id: string, data: unknown) {
+async function writeJson(kind: Kind, id: string, data: unknown) {
   const dir = dirOf(kind);
   await fs.mkdir(dir, { recursive: true });
   const final = path.join(dir, `${encodeURIComponent(id)}.json`);
@@ -31,14 +32,14 @@ async function writeJson(kind: "stories" | "orders" | "tokens", id: string, data
   await fs.writeFile(tmp, JSON.stringify(data, null, 2));
   await fs.rename(tmp, final); // atomic
 }
-async function readJson<T>(kind: "stories" | "orders" | "tokens", id: string): Promise<T | null> {
+async function readJson<T>(kind: Kind, id: string): Promise<T | null> {
   try {
     return JSON.parse(await fs.readFile(path.join(dirOf(kind), `${encodeURIComponent(id)}.json`), "utf8")) as T;
   } catch {
     return null;
   }
 }
-async function readAll<T extends { created_at: string }>(kind: "stories" | "orders"): Promise<T[]> {
+async function readAll<T extends { created_at: string }>(kind: Kind): Promise<T[]> {
   let files: string[] = [];
   try {
     files = (await fs.readdir(dirOf(kind))).filter((f) => f.endsWith(".json"));
@@ -168,4 +169,39 @@ export async function putFile(key: string, bytes: Buffer, contentType: string): 
   const { error } = await supabase().storage.from(bucket).upload(key, bytes, { contentType, upsert: true });
   if (error) throw error;
   return supabase().storage.from(bucket).getPublicUrl(key).data.publicUrl;
+}
+
+// ---------- books (GTales free stories, SPEC §7) ----------
+export async function insertBook(rec: BookRecord): Promise<void> {
+  if (isMockDb) return writeJson("books", rec.id, rec);
+  const { error } = await supabase().from("books").insert(rec);
+  if (error) throw error;
+}
+export async function updateBook(id: string, patch: Partial<BookRecord>): Promise<void> {
+  if (isMockDb) {
+    const cur = await readJson<BookRecord>("books", id);
+    if (cur) await writeJson("books", id, { ...cur, ...patch, updated_at: new Date().toISOString() });
+    return;
+  }
+  const { error } = await supabase().from("books").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
+}
+export async function getBook(id: string): Promise<BookRecord | null> {
+  if (isMockDb) return readJson<BookRecord>("books", id);
+  const { data } = await supabase().from("books").select("*").eq("id", id).maybeSingle();
+  return (data as BookRecord) ?? null;
+}
+export async function listBooks(limit = 200): Promise<BookRecord[]> {
+  if (isMockDb) return (await readAll<BookRecord>("books")).slice(0, limit);
+  const { data } = await supabase().from("books").select("*").order("created_at", { ascending: false }).limit(limit);
+  return (data as BookRecord[]) ?? [];
+}
+export async function countRecentBooks(ip: string, contact: string, windowMinutes = 60): Promise<number> {
+  const since = new Date(Date.now() - windowMinutes * 60_000).toISOString();
+  if (isMockDb) {
+    const all = await readAll<BookRecord & { ip?: string }>("books");
+    return all.filter((x) => x.created_at > since && (x.ip === ip || (contact && x.contact === contact))).length;
+  }
+  const { count } = await supabase().from("books").select("id", { count: "exact", head: true }).gt("created_at", since).or(`ip.eq.${ip},contact.eq.${contact || "-"}`);
+  return count ?? 0;
 }

@@ -9,9 +9,12 @@
     "lint": "eslint",
     "samples": "tsx scripts/samples.mts",
     "check:templates": "node scripts/check-templates.mjs && tsx scripts/render-check.mts",
-    "pdfs": "tsx scripts/pdf.mts"
+    "pdfs": "tsx scripts/pdf.mts",
+    "test": "tsx --test src/stories/__tests__/*.test.ts",
+    "check:stories": "tsx scripts/check-stories.mts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@fontsource-variable/cairo": "^5.3.0",
     "@fontsource-variable/fredoka": "^5.3.0",
     "@fontsource-variable/nunito": "^5.3.0",

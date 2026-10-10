@@ -3,13 +3,16 @@ import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
 import { ReadyActions } from "@/components/story/ReadyActions";
 import { SeriesBand } from "@/components/ui/SeriesBand";
-import { getStory } from "@/lib/db";
+import { getBook, getStory } from "@/lib/db";
+import { BookReady } from "@/components/story/BookReady";
 import { taleByKey } from "@/lib/gtales";
 import { baseUrl } from "@/lib/site";
 
 /** Ready screen — docs/SPEC.md §7. */
 export default async function StoryPage({ params }: PageProps<"/story/[id]">) {
   const { id } = await params;
+  const book = await getBook(id);
+  if (book) return <BookReady book={book} url={`${await baseUrl()}/story/${id}`} />;
   const story = await getStory(id);
   if (!story) notFound();
   if (story.status !== "ready" || !story.assembled) redirect(`/story/${id}/status`);

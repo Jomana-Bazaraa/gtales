@@ -1,45 +1,50 @@
 "use client";
 /**
- * Free story form — docs/SPEC.md §7. Eight steps, one question per screen,
+ * Free story form — docs/SPEC.md §7.2. Eight steps, one question per screen,
  * auto-saved to localStorage, "No photo, no address."
  */
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TALES, type Tale } from "@/lib/gtales";
-import { challengeOptions, ageBand } from "@/lib/activities/registry";
-import type { StoryInput } from "@/lib/types";
+import { TALES } from "@/lib/gtales";
+import { RELATIONS, STRENGTHS, type Relation } from "@/stories/schema";
 import { Icon } from "@/components/ui/Icon";
 
-const TOTAL = 8;
-const KEY = "gtales.free-draft.v1";
-
-interface Draft {
-  tale: string; // slug
-  childName: string;
-  age: number;
-  gender: "boy" | "girl";
-  companion: string;
-  place: string;
-  placeChips: string[];
-  food: string;
-  foodChips: string[];
-  sayToThem: string;
-  theySay: string;
-  goodAt: string[];
-  goodAtOther: string;
-  parentName: string;
-  contact: string;
+export interface TaleMeta {
+  slug: string;
+  available: boolean;
+  uses: string[];
+  need_choices: string[];
+  ask_choices: string[];
+  other_rule: "not_sibling" | null;
 }
 
-const EMPTY: Draft = {
-  tale: "", childName: "", age: 6, gender: "boy", companion: "", place: "", placeChips: [], food: "", foodChips: [],
-  sayToThem: "", theySay: "", goodAt: [], goodAtOther: "", parentName: "", contact: "",
-};
+const TOTAL = 8;
+const KEY = "gtales.free-draft.v2";
 
-const PLACES = ["The beach", "Teta's house", "The club", "The park", "Their bedroom", "The desert", "School"];
-const FOODS = ["Koshari", "Pizza", "Molokhia", "Mango", "Chicken nuggets", "Pasta", "Ice cream"];
-const GOOD_AT = ["Building", "Running fast", "Drawing", "Football", "Singing", "Making people laugh", "Helping at home", "Puzzles", "Swimming", "Being kind to animals"];
+interface Draft {
+  slug: string;
+  name: string;
+  gender: "boy" | "girl";
+  age: number;
+  half: boolean;
+  place: string;
+  other: string;
+  other_relation: Relation | "";
+  strength: string;
+  strengthOther: string;
+  sidekick: string;
+  power_word: string;
+  need: string;
+  ask: string;
+  dedication: string;
+  parent_name: string;
+  contact: string;
+}
+const EMPTY: Draft = { slug: "", name: "", gender: "boy", age: 6, half: false, place: "", other: "", other_relation: "", strength: "", strengthOther: "", sidekick: "", power_word: "", need: "", ask: "", dedication: "", parent_name: "", contact: "" };
+
+const REL_LABEL: Record<Relation, string> = { brother: "Brother", sister: "Sister", cousin: "Cousin", friend: "Friend", school: "A child at school", park: "A child at the park" };
+const PLACES = ["Maadi", "Zamalek", "Nasr City", "Heliopolis", "Sheikh Zayed", "New Cairo", "Smouha", "Mansoura"];
 
 function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -56,93 +61,102 @@ function Title({ children, hint }: { children: React.ReactNode; hint?: string })
     </div>
   );
 }
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <label className="flex flex-col gap-1.5 font-bold text-[15px]">{label}{children}</label>
+);
 
-export function CreateForm({ initialTale }: { initialTale?: string }) {
+export function CreateForm({ initialTale, metas }: { initialTale?: string; metas: TaleMeta[] }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [d, setD] = useState<Draft>({ ...EMPTY, tale: initialTale ?? "" });
+  const [d, setD] = useState<Draft>({ ...EMPTY, slug: initialTale ?? "" });
+  const [ready, setReady] = useState(false);
 
-  // restore / auto-save (SPEC §7)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const saved = JSON.parse(raw) as { d: Draft; step: number };
-        setD({ ...saved.d, tale: initialTale || saved.d.tale });
-        setStep(initialTale && saved.step === 1 ? 2 : saved.step);
+        setD({ ...EMPTY, ...saved.d, slug: initialTale || saved.d.slug });
+        setStep(initialTale && saved.step === 1 ? 2 : Math.min(TOTAL, Math.max(1, saved.step)));
       } else if (initialTale) setStep(2);
     } catch {}
+    setReady(true);
   }, [initialTale]);
   useEffect(() => {
+    if (!ready) return;
     try { localStorage.setItem(KEY, JSON.stringify({ d, step })); } catch {}
-  }, [d, step]);
+  }, [d, step, ready]);
 
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
-  const toggle = (k: "placeChips" | "foodChips" | "goodAt", v: string) =>
-    setD((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
-  const tale: Tale | undefined = useMemo(() => TALES.find((t) => t.slug === d.tale), [d.tale]);
-  const name = d.childName.trim() || "your child";
+  const meta = useMemo(() => metas.find((m) => m.slug === d.slug), [metas, d.slug]);
+  const uses = (t: string) => !meta || meta.uses.includes(t);
+  const needsStep7 = !!meta && (meta.uses.includes("need") || meta.uses.includes("ask"));
+  const name = d.name.trim() ? cap(d.name) : "your child";
+  const relations: Relation[] = meta?.other_rule === "not_sibling" ? ["school", "park", "cousin", "friend"] : ["brother", "sister", "cousin", "friend"];
 
   const valid = (s: number): string | null => {
     switch (s) {
-      case 1: return d.tale ? null : "Pick a superpower to continue.";
-      case 2: return d.childName.trim().length >= 2 ? null : "Please add the hero's name.";
-      case 4: return d.place.trim() || d.placeChips.length ? null : "Pick a place or type one.";
-      case 5: return d.food.trim() || d.foodChips.length ? null : "Pick a food or type one.";
-      case 7: return d.goodAt.length || d.goodAtOther.trim() ? null : "Pick at least one thing.";
+      case 1: return d.slug ? (meta?.available === false ? "This tale is almost ready. Please pick another superpower for now." : null) : "Pick a superpower to continue.";
+      case 2: {
+        const n = d.name.trim();
+        if (!n) return "Please add the hero's name.";
+        if (n.length > 14) return "Up to 14 letters, please.";
+        if (!/^[A-Za-z][A-Za-z '\-]*$/.test(n)) return "Letters, spaces and hyphens only.";
+        return null;
+      }
+      case 3: { const p = d.place.trim(); return p.length >= 2 && p.length <= 20 ? null : "A neighbourhood or city, 2 to 20 letters."; }
+      case 4: if (!uses("other")) return null; return d.other.trim() && d.other_relation ? (/^[A-Za-z][A-Za-z '\-]*$/.test(d.other.trim()) ? null : "Letters, spaces and hyphens only.") : "The other child's name and who they are.";
+      case 5: if (!uses("strength")) return null; return d.strength === "other" ? (d.strengthOther.trim().length >= 2 ? null : "Type what they're great at (one word, like 'climber').") : d.strength ? null : "Pick one.";
+      case 6: {
+        if (uses("sidekick") && !(d.sidekick.trim().length >= 1 && d.sidekick.trim().length <= 12)) return "A sidekick name, up to 12 letters.";
+        if (uses("power_word") && !(d.power_word.trim().length >= 1 && d.power_word.trim().length <= 20)) return "A Power Word, up to 20 letters.";
+        return null;
+      }
+      case 7: if (!needsStep7) return null; return (uses("need") && !d.need) || (uses("ask") && !d.ask) ? "Pick one of each." : null;
       case 8: {
         const c = d.contact.trim();
         const ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c) || /^\+?[0-9 ]{8,20}$/.test(c);
-        return d.parentName.trim() && ok ? null : "Your first name and a WhatsApp number or email.";
+        if (!d.parent_name.trim() || !ok) return "Your first name and a WhatsApp number or email.";
+        if (d.dedication.length > 120) return "The dedication is up to 120 characters.";
+        return null;
       }
       default: return null;
     }
   };
-  const next = () => { const e = valid(step); setErr(e); if (!e) setStep((s) => Math.min(TOTAL, s + 1)); };
-  const back = () => { setErr(null); setStep((s) => Math.max(1, s - 1)); };
+  const next = () => {
+    const e = valid(step); setErr(e); if (e) return;
+    let s = step + 1;
+    if (s === 7 && !needsStep7) s = 8;
+    setStep(Math.min(TOTAL, s));
+  };
+  const back = () => { setErr(null); let s = step - 1; if (s === 7 && !needsStep7) s = 6; setStep(Math.max(1, s)); };
 
   const submit = async () => {
     const e = valid(8); if (e) return setErr(e);
-    if (!tale) return setStep(1);
     setBusy(true); setErr(null);
-    const place = [...d.placeChips, d.place.trim()].filter(Boolean).join(", ");
-    const food = [...d.foodChips, d.food.trim()].filter(Boolean).join(", ");
-    const goodAt = [...d.goodAt, d.goodAtOther.trim()].filter(Boolean);
-    const contact = d.contact.trim();
-    const isEmail = contact.includes("@");
-    const band = ageBand(d.age);
-    const challenges = challengeOptions(tale.key, band);
-    const payload: StoryInput = {
-      childName: d.childName.trim(),
-      age: d.age,
-      gender: d.gender,
-      appearance: { skinTone: "medium", hairStyle: "short", hairColor: "dark_brown" },
-      interests: goodAt.slice(0, 5),
-      sidekick: d.companion.trim() ? { name: d.companion.trim(), relation: "friend" } : undefined,
-      struggle: tale.key,
-      challengeType: challenges[0] ?? "maze",
-      vibe: "funny",
-      personalDetail: `${name} loves ${place || "home"} and ${food || "a good meal"}.`,
-      place, food,
-      homeWords: { parent: d.sayToThem.trim() || undefined, child: d.theySay.trim() || undefined },
-      parentName: d.parentName.trim(),
-      parentEmail: isEmail ? contact : undefined,
-      parentPhone: isEmail ? undefined : contact,
-      language: "en",
-      consent: true,
-      website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
+    const payload = {
+      slug: d.slug, name: cap(d.name), gender: d.gender, age: d.age, half: d.half, place: d.place.trim(),
+      other: uses("other") ? cap(d.other) : undefined, other_relation: uses("other") && d.other_relation ? d.other_relation : undefined,
+      strength: uses("strength") ? (d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength) : undefined,
+      sidekick: uses("sidekick") ? cap(d.sidekick) : undefined, power_word: uses("power_word") ? d.power_word.trim() : undefined,
+      need: uses("need") ? d.need : undefined, ask: uses("ask") ? d.ask : undefined,
+      dedication: d.dedication.trim() || undefined, parent_name: d.parent_name.trim(), contact: d.contact.trim(),
+      ref: safeRef(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
     };
-    const r = await fetch("/api/stories", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+    const r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) {
       setBusy(false);
-      setErr(r.status === 429 ? "Please try again in a little while." : "Something went wrong. Please try again.");
-      return;
+      if (r.status === 429) return setErr("Please try again in a little while.");
+      if (r.status === 422) { setStep(stepFor(j.field)); return setErr(j.message || "Please change that word."); }
+      if (r.status === 404) { setStep(1); return setErr(j.message); }
+      if (r.status === 400 && j.issues?.[0]) { setStep(stepFor(j.issues[0].path)); return setErr(j.issues[0].message); }
+      return setErr("Something went wrong. Please try again.");
     }
     try { localStorage.removeItem(KEY); } catch {}
-    router.push(`/story/${j.id}/status`);
+    router.push(`/story/${j.id}`);
   };
 
   return (
@@ -166,12 +180,17 @@ export function CreateForm({ initialTale }: { initialTale?: string }) {
           <>
             <Title hint="Every tale builds one strength. The story is ready in two minutes.">Which superpower should this story build?</Title>
             <div className="grid grid-cols-2 gap-2.5">
-              {TALES.map((t) => (
-                <button key={t.slug} type="button" aria-pressed={d.tale === t.slug} onClick={() => u("tale", t.slug)} className={`text-left rounded-2xl border-[3px] p-3.5 flex flex-col gap-1 transition ${d.tale === t.slug ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>
-                  <b className="display text-lg leading-[22px] font-bold">{t.title}</b>
-                  <span className="text-[12px] leading-4 font-bold text-ink-soft">Helps with: {t.helps}</span>
-                </button>
-              ))}
+              {TALES.map((t) => {
+                const m = metas.find((x) => x.slug === t.slug);
+                const soon = m ? !m.available : true;
+                return (
+                  <button key={t.slug} type="button" aria-pressed={d.slug === t.slug} onClick={() => u("slug", t.slug)} className={`relative text-left rounded-2xl border-[3px] p-3.5 flex flex-col gap-1 transition ${d.slug === t.slug ? "border-flame bg-flame-soft" : "border-line bg-white"} ${soon ? "opacity-70" : ""}`}>
+                    <b className="display text-lg leading-[22px] font-bold">{t.title}</b>
+                    <span className="text-[12px] leading-4 font-bold text-ink-soft">Helps with: {t.helps}</span>
+                    {soon && <span className="pill bg-sun-soft text-ink !text-[10px] self-start mt-1">Coming soon</span>}
+                  </button>
+                );
+              })}
             </div>
           </>
         )}
@@ -179,12 +198,7 @@ export function CreateForm({ initialTale }: { initialTale?: string }) {
         {step === 2 && (
           <>
             <Title hint="Use the name they like to be called. It appears on every page.">The hero's name</Title>
-            <input className="field text-xl" autoFocus placeholder="e.g. Adam" value={d.childName} onChange={(e) => u("childName", e.target.value)} maxLength={30} />
-            <div className="flex flex-col gap-2">
-              <span className="font-bold">How old is {name}? <span className="text-flame text-xl">{d.age}</span></span>
-              <input type="range" min={4} max={8} value={d.age} onChange={(e) => u("age", Number(e.target.value))} className="w-full accent-flame" aria-label="Age" />
-              <div className="flex justify-between text-xs font-bold text-ink-soft"><span>4</span><span>8</span></div>
-            </div>
+            <input className="field text-xl" autoFocus placeholder="e.g. Adam" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} />
             <div className="grid grid-cols-2 gap-2.5">
               {(["boy", "girl"] as const).map((g) => (
                 <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`rounded-2xl border-[3px] p-4 text-center font-bold text-lg ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>
@@ -192,61 +206,72 @@ export function CreateForm({ initialTale }: { initialTale?: string }) {
                 </button>
               ))}
             </div>
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">How old is {name}? <span className="text-flame text-xl">{d.age}{d.half ? "½" : ""}</span></span>
+              <input type="range" min={4} max={8} value={d.age} onChange={(e) => u("age", Number(e.target.value))} className="w-full accent-flame" aria-label="Age" />
+              <div className="flex justify-between text-xs font-bold text-ink-soft"><span>4</span><span>8</span></div>
+              <label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" checked={d.half} onChange={(e) => u("half", e.target.checked)} className="w-5 h-5 accent-sky" />…and a half</label>
+            </div>
           </>
         )}
 
         {step === 3 && (
           <>
-            <Title hint="A friend, sibling, cousin or pet who joins the adventure. Optional.">Who goes on adventures with {name}?</Title>
-            <input className="field text-xl" autoFocus placeholder="e.g. Omar, or Fluffy the cat" value={d.companion} onChange={(e) => u("companion", e.target.value)} maxLength={30} />
+            <Title hint="A neighbourhood or city. It becomes where the story happens.">Where does {name} live?</Title>
+            <div className="flex flex-wrap gap-2">{PLACES.map((p) => <Chip key={p} on={d.place === p} onClick={() => u("place", p)}>{p}</Chip>)}</div>
+            <input className="field" placeholder="Or type it, e.g. Mohandessin" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} />
           </>
         )}
 
         {step === 4 && (
           <>
-            <Title hint="It becomes a place in the story.">A place {name} loves</Title>
-            <div className="flex flex-wrap gap-2">{PLACES.map((p) => <Chip key={p} on={d.placeChips.includes(p)} onClick={() => toggle("placeChips", p)}>{p}</Chip>)}</div>
-            <input className="field" placeholder="Or type one, e.g. the roof at Geddo's" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={60} />
+            <Title hint={meta?.other_rule === "not_sibling" ? "In this tale the other child is from school or the park." : "A brother, sister, cousin or friend who is in the story."}>Who else is in the story?</Title>
+            <Field label="Their name"><input className="field font-medium" placeholder="e.g. Omar" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} /></Field>
+            <div className="flex flex-wrap gap-2">{relations.map((r) => <Chip key={r} on={d.other_relation === r} onClick={() => u("other_relation", r)}>{REL_LABEL[r]}</Chip>)}</div>
           </>
         )}
 
         {step === 5 && (
           <>
-            <Title hint="The hero's favourite food shows up too.">{name}'s favourite food</Title>
-            <div className="flex flex-wrap gap-2">{FOODS.map((p) => <Chip key={p} on={d.foodChips.includes(p)} onClick={() => toggle("foodChips", p)}>{p}</Chip>)}</div>
-            <input className="field" placeholder="Or type one" value={d.food} onChange={(e) => u("food", e.target.value)} maxLength={60} />
+            <Title hint={`It fits the sentence "the best ___ in ${d.place.trim() || "Maadi"}".`}>What is {name} great at?</Title>
+            <div className="flex flex-wrap gap-2">
+              {STRENGTHS.map((s) => <Chip key={s} on={d.strength === s} onClick={() => u("strength", s)}>{s[0].toUpperCase() + s.slice(1)}</Chip>)}
+              <Chip on={d.strength === "other"} onClick={() => u("strength", "other")}>Something else</Chip>
+            </div>
+            {d.strength === "other" && <input className="field" autoFocus placeholder="One word, e.g. climber" value={d.strengthOther} onChange={(e) => u("strengthOther", e.target.value)} maxLength={24} />}
           </>
         )}
 
         {step === 6 && (
           <>
-            <Title hint="The words you use at home make the story sound like your family. Optional.">Home words</Title>
-            <label className="flex flex-col gap-1.5 font-bold text-[15px]">Something you say to {name}
-              <input className="field font-medium" placeholder='e.g. "Habibi, deep breath"' value={d.sayToThem} onChange={(e) => u("sayToThem", e.target.value)} maxLength={120} />
-            </label>
-            <label className="flex flex-col gap-1.5 font-bold text-[15px]">Something {name} says
-              <input className="field font-medium" placeholder='e.g. "I can do it myself!"' value={d.theySay} onChange={(e) => u("theySay", e.target.value)} maxLength={120} />
-            </label>
+            <Title hint="Let your child choose these two. They are theirs.">{name} chooses</Title>
+            {uses("sidekick") && <Field label="The sidekick's name"><input className="field font-medium" placeholder="e.g. Bolt, Zigzag, Fluffy" value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} /></Field>}
+            {uses("power_word") && <Field label="The Power Word"><input className="field font-medium" placeholder="e.g. Blue Calm" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={20} /></Field>}
           </>
         )}
 
-        {step === 7 && (
+        {step === 7 && needsStep7 && (
           <>
-            <Title hint="The hero wins with these strengths.">What is {name} good at?</Title>
-            <div className="flex flex-wrap gap-2">{GOOD_AT.map((p) => <Chip key={p} on={d.goodAt.includes(p)} onClick={() => toggle("goodAt", p)}>{p}</Chip>)}</div>
-            <input className="field" placeholder="Something else" value={d.goodAtOther} onChange={(e) => u("goodAtOther", e.target.value)} maxLength={40} />
+            <Title hint="These are the words the hero says when it gets hard.">What would {name} say?</Title>
+            {uses("need") && meta && (
+              <div className="flex flex-col gap-2"><span className="font-bold text-[15px]">What {name} needs</span>
+                <div className="flex flex-wrap gap-2">{meta.need_choices.map((c) => <Chip key={c} on={d.need === c} onClick={() => u("need", c)}>{c}</Chip>)}</div>
+              </div>
+            )}
+            {uses("ask") && meta && (
+              <div className="flex flex-col gap-2"><span className="font-bold text-[15px]">What {name} asks for</span>
+                <div className="flex flex-wrap gap-2">{meta.ask_choices.map((c) => <Chip key={c} on={d.ask === c} onClick={() => u("ask", c)}>{c}</Chip>)}</div>
+              </div>
+            )}
           </>
         )}
 
         {step === 8 && (
           <>
-            <Title hint="So we can save the story and the PDFs for you.">Last thing: where do we send it?</Title>
-            <label className="flex flex-col gap-1.5 font-bold text-[15px]">Your first name
-              <input className="field font-medium" placeholder="e.g. Ayman" value={d.parentName} onChange={(e) => u("parentName", e.target.value)} maxLength={60} />
-            </label>
-            <label className="flex flex-col gap-1.5 font-bold text-[15px]">WhatsApp number or email
-              <input className="field font-medium" inputMode="email" placeholder="01x xxxx xxxx or you@email.com" value={d.contact} onChange={(e) => u("contact", e.target.value)} maxLength={120} />
-            </label>
+            <Title hint="So we can save the story and the PDF for you.">Last thing: where do we send it?</Title>
+            <Field label="Your first name"><input className="field font-medium" placeholder="e.g. Ayman" value={d.parent_name} onChange={(e) => u("parent_name", e.target.value)} maxLength={60} /></Field>
+            <Field label="WhatsApp number or email"><input className="field font-medium" inputMode="email" placeholder="01x xxxx xxxx or you@email.com" value={d.contact} onChange={(e) => u("contact", e.target.value)} maxLength={120} /></Field>
+            <Field label="A dedication for the first page (optional)"><textarea className="field font-medium min-h-20" placeholder={`e.g. For ${name}, our brave one. Love, Mama and Baba`} value={d.dedication} onChange={(e) => u("dedication", e.target.value)} maxLength={120} /></Field>
             <p className="m-0 text-[13px] leading-[18px] text-ink-soft">We use it only to send this story and to save your stories. No spam.</p>
           </>
         )}
@@ -264,4 +289,27 @@ export function CreateForm({ initialTale }: { initialTale?: string }) {
       </div>
     </div>
   );
+}
+
+function cap(s: string) {
+  return s.trim().replace(/\s+/g, " ").split(" ").map((w) => w.split("-").map((p) => (p ? p[0].toUpperCase() + p.slice(1) : p)).join("-")).join(" ");
+}
+function stepFor(field: string | undefined): number {
+  switch (field) {
+    case "slug": return 1;
+    case "name": case "age": case "gender": return 2;
+    case "place": return 3;
+    case "other": case "other_relation": return 4;
+    case "strength": return 5;
+    case "sidekick": case "power_word": return 6;
+    case "need": case "ask": return 7;
+    default: return 8;
+  }
+}
+function safeRef(): string | undefined {
+  try {
+    const r = new URLSearchParams(location.search).get("ref") || localStorage.getItem("gtales.ref") || undefined;
+    if (r) localStorage.setItem("gtales.ref", r);
+    return r ? r.replace(/[^a-z0-9_-]/gi, "").slice(0, 60) : undefined;
+  } catch { return undefined; }
 }

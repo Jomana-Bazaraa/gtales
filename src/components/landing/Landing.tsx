@@ -134,7 +134,7 @@ export function MeetTheBook() {
             </div>
           ))}
         </div>
-        <Link href="/showcase" className="btn-secondary self-start">Read Adam's story</Link>
+        <Link href="/tales/anger" className="btn-secondary self-start">See the Calm tale</Link>
       </div>
     </section>
   );
