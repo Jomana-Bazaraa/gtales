@@ -20,7 +20,7 @@ export default function TalesPage() {
           <div className="mx-auto max-w-6xl px-4 py-8 md:py-14 flex flex-col gap-3">
             <span className="eyebrow">Superpowers</span>
             <h1 className="text-[30px] leading-9 md:text-[44px] md:leading-[48px] font-bold text-balance">Which superpower does your child need right now?</h1>
-            <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft max-w-2xl">Every superpower has a free story, a colouring book and a parent guide. Pick one and your child's story is ready in two minutes.</p>
+            <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft max-w-2xl">Every superpower has a free story and a parent guide. Pick one and your child's story is ready in two minutes.</p>
           </div>
         </section>
 
@@ -28,7 +28,7 @@ export default function TalesPage() {
           {TALES.map((t) => (
             <Link key={t.slug} href={`/tales/${t.slug}`} className="card overflow-hidden flex flex-row md:flex-col no-underline text-ink">
               {t.cover ? (
-                <Image src={t.cover} alt={t.coverAlt} width={867} height={867} sizes="(max-width: 768px) 130px, 360px" className="w-[130px] md:w-full aspect-square md:aspect-[4/3] object-cover shrink-0" />
+                <Image src={t.cover} alt={t.coverAlt} width={867} height={867} sizes="(max-width: 768px) 130px, 360px" className={`w-[130px] md:w-full object-cover shrink-0 ${t.portrait ? "aspect-[4/5] md:aspect-[4/5] object-top" : "aspect-square md:aspect-[4/3]"}`} />
               ) : (
                 <div className="w-[130px] md:w-full aspect-square md:aspect-[4/3] shrink-0 grid place-items-center text-center p-3 text-[12px] font-bold text-ink-soft bg-surface-tint border-b-2 border-dashed border-line">IMAGE NEEDED: cover of the {t.title} tale</div>
               )}

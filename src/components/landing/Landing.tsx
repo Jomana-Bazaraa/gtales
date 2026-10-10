@@ -153,7 +153,7 @@ export function Superpowers() {
           {TALES.map((t) => (
             <Link key={t.slug} href={`/tales/${t.slug}`} className="w-[160px] md:w-auto flex flex-col rounded-2xl md:rounded-[28px] bg-white overflow-hidden shadow-[0_3px_0_var(--line)] no-underline text-ink">
               {t.cover ? (
-                <Image src={t.cover} alt={t.coverAlt} width={867} height={650} sizes="(max-width: 768px) 160px, 360px" className="w-full aspect-[4/3] object-cover" />
+                <Image src={t.cover} alt={t.coverAlt} width={867} height={867} sizes="(max-width: 768px) 160px, 360px" className={`w-full object-cover ${t.portrait ? "aspect-[4/5] object-top" : "aspect-[4/3]"}`} />
               ) : (
                 <div className="w-full aspect-[4/3] grid place-items-center text-center p-3 text-[12px] md:text-[13px] font-bold text-ink-soft bg-surface-tint border-b-2 border-dashed border-line">
                   IMAGE NEEDED: cover of the {t.title} tale
@@ -228,7 +228,7 @@ export function Pricing() {
             <div className="flex flex-col gap-2">
               <Row ok>Your child's name, interests and home words</Row>
               <Row ok>Interactive pages: riddles and choices</Row>
-              <Row ok>1 digital story PDF + colouring book + parent guide</Row>
+              <Row ok>1 digital story PDF + parent guide</Row>
               <Row ok={false}>Standard pictures, not your child's face</Row>
               <Row ok={false}>A ready-made tale, not written for them</Row>
               <Row ok={false}>Digital only, nothing printed</Row>

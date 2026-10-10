@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: PageProps<"/tales/[slug]">): 
 }
 
 const INSIDE: { icon: IconName; title: string; copy: string }[] = [
-  { icon: "book", title: "A 16-page story", copy: "Your child's name, the things they love and your home words, in a ready-made tale." },
-  { icon: "grid", title: "A colouring book", copy: "The same story in line art, to colour at the table." },
+  { icon: "book", title: "A 15-page story", copy: "Your child's name, their place, their people and their own brave words, in a ready-made tale." },
+  { icon: "grid", title: "Your turn pages", copy: "Riddles, choices and brave steps the hero can't finish without your child." },
   { icon: "heart", title: "A parent guide for this struggle", copy: "What to say, what to try, and what to notice, for this one superpower." },
 ];
 
@@ -51,7 +51,7 @@ export default async function TalePage({ params }: PageProps<"/tales/[slug]">) {
               <span className="text-[13px] font-bold text-ink-soft">Ages 4–8 · Ready in two minutes · No photo, no address</span>
             </div>
             {hasArt ? (
-              <Image src={t.cover!} alt={t.coverAlt} width={867} height={867} priority sizes="(max-width: 768px) 80vw, 420px" className="w-[260px] md:w-[420px] mx-auto aspect-square object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)]" />
+              <Image src={t.cover!} alt={t.coverAlt} width={867} height={867} priority sizes="(max-width: 768px) 80vw, 420px" className={`w-[260px] md:w-[360px] mx-auto object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)] ${t.portrait ? "aspect-[5/7]" : "aspect-square"}`} />
             ) : (
               <div className="w-[260px] md:w-[420px] mx-auto aspect-square grid place-items-center text-center p-4 text-[13px] font-bold text-ink-soft bg-white rounded-2xl border-2 border-dashed border-line">IMAGE NEEDED: cover of the {t.title} tale</div>
             )}
@@ -69,11 +69,11 @@ export default async function TalePage({ params }: PageProps<"/tales/[slug]">) {
             ))}
           </div>
           <div className="grid grid-cols-3 gap-2 md:gap-4">
-            {SAMPLES.map((s, i) =>
+            {(t.samples ?? SAMPLES.map((src, i) => ({ src, alt: ["A story page from the Calm tale", "A Your turn page from the Calm tale", "A story page from the Calm tale"][i] }))).map((s) =>
               hasArt ? (
-                <Image key={s} src={s} alt={["A story page from the Calm tale", "A Your turn page from the Calm tale", "A story page from the Calm tale"][i]} width={867} height={867} sizes="(max-width: 768px) 30vw, 360px" className="w-full aspect-square object-cover rounded-2xl shadow-[0_3px_0_var(--line)]" />
+                <Image key={s.src} src={s.src} alt={s.alt} width={867} height={867} sizes="(max-width: 768px) 30vw, 360px" className={`w-full object-cover rounded-2xl shadow-[0_3px_0_var(--line)] ${t.portrait ? "aspect-[5/4]" : "aspect-square"}`} />
               ) : (
-                <div key={s} className="w-full aspect-square grid place-items-center text-center p-2 text-[11px] md:text-[13px] font-bold text-ink-soft bg-surface-tint rounded-2xl border-2 border-dashed border-line">IMAGE NEEDED: sample page from the {t.title} tale</div>
+                <div key={s.src} className="w-full aspect-square grid place-items-center text-center p-2 text-[11px] md:text-[13px] font-bold text-ink-soft bg-surface-tint rounded-2xl border-2 border-dashed border-line">IMAGE NEEDED: sample page from the {t.title} tale</div>
               ),
             )}
           </div>

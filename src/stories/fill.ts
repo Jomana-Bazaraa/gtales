@@ -88,8 +88,6 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
   if (story.other_rule === "not_sibling" && form.other_relation && ["brother", "sister"].includes(form.other_relation)) {
     throw new FillError("In this tale the other child must be from school or the park", "other_relation");
   }
-  if (story.need_choices.length && form.need && !story.need_choices.includes(form.need)) throw new FillError("Need must be one of the story's choices", "need");
-  if (story.ask_choices.length && form.ask && !story.ask_choices.includes(form.ask)) throw new FillError("Ask must be one of the story's choices", "ask");
 
   const pron = PRON[form.gender];
   const f = (s: string) => fillText(s, values, pron);

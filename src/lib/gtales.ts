@@ -16,6 +16,10 @@ export interface Tale {
   /** Cover image under /public, or null → "IMAGE NEEDED" placeholder (SPEC §2.5) */
   cover: string | null;
   coverAlt: string;
+  /** Portrait (5:7) story covers from the handoff sets, vs the square Series sample */
+  portrait?: boolean;
+  /** Three sample pages shown on the tale page */
+  samples?: { src: string; alt: string }[];
 }
 
 export const TALES: Tale[] = [
@@ -34,8 +38,14 @@ export const TALES: Tale[] = [
     title: "Courage",
     helps: "Worries, nightmares, clinging",
     line: "Your child learns to name the worry so it gets smaller.",
-    cover: null,
-    coverAlt: "Cover of the Courage tale",
+    cover: "/stories/worry/boy/cover.jpg",
+    coverAlt: "Cover of the Courage tale: a boy and his robot friend on a rooftop at night, facing the Big Shadow",
+    portrait: true,
+    samples: [
+      { src: "/stories/worry/boy/p01.jpg", alt: "Bedtime: the power goes off and a big shadow appears on the wall" },
+      { src: "/stories/worry/girl/p08.jpg", alt: "The hero hides from a barking dog, then the light comes back" },
+      { src: "/stories/worry/boy/p13.jpg", alt: "The hero climbs back up and the band shines like a torch" },
+    ],
   },
   {
     slug: "bullied",
@@ -43,8 +53,14 @@ export const TALES: Tale[] = [
     title: "Standing tall",
     helps: "Being teased, left out, afraid of school",
     line: "Your child finds a strong voice and a grown-up to tell.",
-    cover: null,
-    coverAlt: "Cover of the Standing tall tale",
+    cover: "/stories/bullied/girl/cover.jpg",
+    coverAlt: "Cover of the Standing tall tale: a girl and her robot friend on the beach, facing the Big Crab",
+    portrait: true,
+    samples: [
+      { src: "/stories/bullied/girl/p01.jpg", alt: "A seagull grabs the hero's snack on the beach" },
+      { src: "/stories/bullied/girl/p08.jpg", alt: "The Big Crab snaps and the hero stands tall" },
+      { src: "/stories/bullied/girl/p12.jpg", alt: "The hero stands tall, says stop, and tells Mama" },
+    ],
   },
   {
     slug: "lying",

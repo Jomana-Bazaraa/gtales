@@ -21,8 +21,8 @@ export default async function CreatePage({ searchParams }: PageProps<"/create">)
       const has = async (g: "boy" | "girl") => fs.access(path.join(process.cwd(), "public", "stories", storyFolder(t.slug), g, "cover.jpg")).then(() => true, () => false);
       const sets = { boy: await has("boy"), girl: await has("girl") };
       return s && (sets.boy || sets.girl)
-        ? { slug: t.slug, available: true, sets, uses: s.uses, need_choices: s.need_choices, ask_choices: s.ask_choices, other_rule: s.other_rule }
-        : { slug: t.slug, available: false, sets, uses: [], need_choices: [], ask_choices: [], other_rule: null };
+        ? { slug: t.slug, available: true, sets, uses: s.uses, title: s.title, other_rule: s.other_rule }
+        : { slug: t.slug, available: false, sets, uses: [], title: "", other_rule: null };
     }),
   );
   return (

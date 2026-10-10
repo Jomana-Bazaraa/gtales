@@ -29,13 +29,13 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "invalid", issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) }, { status: 400 });
   const f = parsed.data;
   if (f.website) return NextResponse.json({ id: nanoid(12) });
-  const isEmail = f.contact.includes("@");
-  if (isEmail ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.contact) : !/^\+?[0-9 ]{8,20}$/.test(f.contact)) {
-    return NextResponse.json({ error: "invalid", issues: [{ path: "contact", message: "A WhatsApp number or an email" }] }, { status: 400 });
+  // Free story: email only, never a phone number (form brief).
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.contact)) {
+    return NextResponse.json({ error: "invalid", issues: [{ path: "email", message: "Please write an email address." }] }, { status: 400 });
   }
 
   try {
-    assertSafe({ name: f.name, place: f.place, other: f.other, strength: f.strength, sidekick: f.sidekick, power_word: f.power_word });
+    assertSafe({ name: f.name, place: f.place, other: f.other, strength: f.strength, sidekick: f.sidekick, power_word: f.power_word, dedication: f.dedication });
   } catch (e) {
     if (e instanceof SafetyError) return NextResponse.json({ error: "unsafe", field: e.field, message: e.message }, { status: 422 });
     throw e;
@@ -55,22 +55,29 @@ export async function POST(req: Request) {
   const hasSet = await fs.access(path.join(setDir, "cover.jpg")).then(() => true, () => false);
   if (!hasSet) return NextResponse.json({ error: "invalid", issues: [{ path: "gender", message: `The ${f.gender} pictures for this tale are not ready yet.` }] }, { status: 400 });
 
+  // Defaults from the form brief: sidekick → Bolt. `ask` is no longer asked; until the story files drop
+  // {{ask}} it takes the story's first ask_choice so the book never has a hole.
+  const form = {
+    ...f,
+    sidekick: story.uses.includes("sidekick") ? f.sidekick || "Bolt" : f.sidekick,
+    ask: story.uses.includes("ask") ? f.ask || story.ask_choices[0] : f.ask,
+  };
   const t0 = Date.now();
   let filled;
   try {
-    filled = fillStory(story, f);
+    filled = fillStory(story, form);
   } catch (e) {
     if (e instanceof FillError) return NextResponse.json({ error: "invalid", issues: [{ path: e.token ?? "", message: e.message }] }, { status: 400 });
     throw e;
   }
-  const { story: finalStory, polished } = await polishStory(filled, { name: filled.title.split(" ")[0], sidekick: f.sidekick, power_word: f.power_word, place: f.place, other: f.other });
+  const { story: finalStory, polished } = await polishStory(filled, { name: filled.title.split(" ")[0], sidekick: form.sidekick, power_word: form.power_word, place: form.place, other: form.other });
 
   const id = nanoid(12);
   const now = new Date().toISOString();
   const rec: BookRecord = {
     id, slug: f.slug, title: finalStory.title, gender: f.gender, child_name: finalStory.title.split(" and ")[0],
-    form: f, story: finalStory, polished,
-    parent_name: f.parent_name, contact: f.contact.toLowerCase(), ref: f.ref, ip,
+    form, story: finalStory, polished,
+    parent_name: f.parent_name, contact: f.contact.toLowerCase(), dedication: f.dedication, ref: f.ref, ip,
     pdf_url: null, created_at: now, updated_at: now,
   };
   await insertBook(rec);

@@ -82,7 +82,6 @@ test("age in words", () => {
 
 test("throws on missing value and on leftover token", () => {
   assert.throws(() => fillStory(story, { ...base, sidekick: "" }), /sidekick/);
-  assert.throws(() => fillStory(story, { ...base, need: "I need a pony." }), /Need/);
   assert.throws(() => fillText("Hello {{nobody}}", { name: "A" }, {}), /Unknown token/);
 });
 
