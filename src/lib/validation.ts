@@ -21,15 +21,21 @@ export const storyInputSchema = z.object({
   vibe: z.enum(["funny", "magical", "mysterious", "fantasy"]),
   favoriteBook: z.string().trim().max(80).optional(),
   personalDetail: z.string().trim().min(3).max(400),
+  place: z.string().trim().max(60).optional(),
+  food: z.string().trim().max(60).optional(),
+  homeWords: z.object({ parent: z.string().trim().max(120).optional(), child: z.string().trim().max(120).optional() }).optional(),
   parentName: z.string().trim().min(1).max(60),
-  parentEmail: z.string().trim().email().max(120),
-  parentPhone: z.string().trim().max(20).optional(),
+  parentEmail: z.string().trim().email().max(120).optional().or(z.literal("")),
+  parentPhone: z.string().trim().regex(/^\+?[0-9 ]{8,20}$/).optional().or(z.literal("")),
   language: z.enum(["en", "ar"]),
   consent: z.literal(true),
   website: z.string().max(0).optional(), // honeypot
 }).refine((d) => d.struggle !== "other" || (d.struggleOther && d.struggleOther.length >= 10), {
   message: "Please describe the struggle",
   path: ["struggleOther"],
+}).refine((d) => !!(d.parentEmail || d.parentPhone), {
+  message: "Email or WhatsApp number",
+  path: ["parentEmail"],
 });
 
 export const physicalOrderSchema = z.object({

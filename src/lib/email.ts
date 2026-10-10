@@ -55,6 +55,7 @@ export async function sendStoryEmail(rec: StoryRecord, baseUrl: string) {
          ${rec.pdf_color_url ? btn(rec.pdf_color_url, "Color PDF", "#2b2d6b") : ""}
          ${rec.pdf_lineart_url ? btn(rec.pdf_lineart_url, "Activity PDF", "#2b2d6b") : ""}
          <p style="font-size:13px;color:#6b5f58;margin-top:16px">Keep this email — the link is your way back to the story any time. Want it as a printed book? The order form is at the end of the story.</p>`;
+  if (!input.parentEmail) return;
   await send(input.parentEmail, subject, shell(lang, body));
 }
 

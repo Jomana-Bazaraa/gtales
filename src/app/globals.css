@@ -149,3 +149,7 @@ h1, h2, h3, .display {
 .print-book .act .body .text-4xl { font-size: 26pt; }
 .print-book .act .body .h-8, .print-book .act .body .h-7 { height: 10mm; }
 .print-book .act .body .min-h-\[88px\] { min-height: 42mm; font-size: 14pt; }
+
+/* ---- reader: cream paper (SPEC §8) ---- */
+.paper { background-color: var(--paper); background-image: radial-gradient(rgba(61,43,31,.045) 1px, transparent 1px); background-size: 6px 6px; }
+.font-reader { font-family: "Andika", "Nunito Variable", system-ui, sans-serif; }

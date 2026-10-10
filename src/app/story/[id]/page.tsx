@@ -1,32 +1,70 @@
 import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
-import { StoryBook } from "@/components/story/StoryBook";
-import { StoryToolbar } from "@/components/story/StoryToolbar";
-import { PhysicalOrderForm } from "@/components/story/PhysicalOrderForm";
+import { ReadyActions } from "@/components/story/ReadyActions";
+import { SeriesBand } from "@/components/ui/SeriesBand";
 import { getStory } from "@/lib/db";
-import { t } from "@/lib/i18n";
-import { LangProvider } from "@/lib/i18n-client";
-import { baseUrl, PHYSICAL_BOOK_PRICE_EGP } from "@/lib/site";
+import { taleByKey } from "@/lib/gtales";
+import { baseUrl } from "@/lib/site";
 
+/** Ready screen — docs/SPEC.md §7. */
 export default async function StoryPage({ params }: PageProps<"/story/[id]">) {
   const { id } = await params;
   const story = await getStory(id);
   if (!story) notFound();
   if (story.status !== "ready" || !story.assembled) redirect(`/story/${id}/status`);
-  const lang = story.input.language;
   const url = `${await baseUrl()}/story/${id}`;
+  const name = story.input.childName;
+  const tale = taleByKey(story.input.struggle);
+  const cover = story.cover_url ?? story.assembled.pages.find((p) => p.imageUrl)?.imageUrl ?? null;
+  const tips = story.generated?.parent_tips ?? [];
+
   return (
-    <LangProvider lang={lang}>
-      <div dir={lang === "ar" ? "rtl" : "ltr"} className="min-h-full flex flex-col">
-        <Header />
-        <main className="flex-1 mx-auto max-w-3xl px-4 py-6 w-full">
-          {story.input.struggle === "other" && <p className="rounded-2xl bg-coral-soft text-coral-dark text-sm p-3 mb-4">{t("st_ai_notice", lang)}</p>}
-          <StoryToolbar story={story} url={url} />
-          <StoryBook story={story} mode="web" />
-          <PhysicalOrderForm storyId={story.id} childName={story.input.childName} lang={lang} price={PHYSICAL_BOOK_PRICE_EGP} />
-        </main>
-        <Footer />
-      </div>
-    </LangProvider>
+    <>
+      <Header />
+      <main className="flex-1 w-full">
+        <section className="bg-surface-tint">
+          <div className="mx-auto max-w-6xl px-4 py-8 md:py-12 grid md:grid-cols-[1fr_1.2fr] gap-6 md:gap-10 items-center">
+            {cover ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={cover} alt={`The cover of ${story.assembled.title}`} className="w-[240px] md:w-[380px] mx-auto aspect-square object-cover rounded-r-2xl rounded-l-md shadow-[-6px_0_0_var(--ink),0_12px_0_var(--line)]" />
+            ) : (
+              <div className="w-[240px] md:w-[380px] mx-auto aspect-square grid place-items-center text-center p-4 text-[13px] font-bold text-ink-soft bg-white rounded-2xl border-2 border-dashed border-line">IMAGE NEEDED: cover</div>
+            )}
+            <div className="flex flex-col gap-4">
+              <span className="pill bg-mint-soft text-mint self-start">Free story · {tale?.title ?? "Superpower"}</span>
+              <h1 className="text-[30px] leading-9 md:text-[44px] md:leading-[48px] font-bold text-balance">{name}'s story is ready</h1>
+              <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft">{story.assembled.title}. Read it together on the phone, or print the PDF. Keep this link: it is your way back to the story.</p>
+              <ReadyActions story={story} url={url} />
+            </div>
+          </div>
+        </section>
+
+        <section id="guide" className="mx-auto max-w-6xl px-4 py-8 md:py-12 flex flex-col gap-4 scroll-mt-16">
+          <span className="eyebrow">Parent guide</span>
+          <h2 className="text-[24px] leading-7 md:text-[32px] md:leading-9 font-bold">A parent guide for this struggle</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="card p-5 flex flex-col gap-2">
+              <b className="font-bold">How to read it with {name}</b>
+              <ul className="m-0 ps-5 text-[15px] leading-[22px] text-ink-soft flex flex-col gap-1">
+                <li>Read it together, and let {name} solve the "Your turn" page alone.</li>
+                <li>When the hero changes, ask: "What helped?"</li>
+                <li>Come back to the play pages another day. It doesn't have to be all at once.</li>
+              </ul>
+            </div>
+            <div className="card p-5 flex flex-col gap-2">
+              <b className="font-bold">Questions to talk about afterwards</b>
+              <ol className="m-0 ps-5 text-[15px] leading-[22px] text-ink-soft flex flex-col gap-1">{tips.map((q, j) => <li key={j}>{q}</li>)}</ol>
+            </div>
+          </div>
+          <Link href="/tales?ref=share" className="text-[15px] font-extrabold text-sky">Another child at home? A free story for every superpower →</Link>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 pb-10 md:pb-16">
+          <SeriesBand childName={name} />
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }

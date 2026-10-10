@@ -39,8 +39,13 @@ export interface StoryInput {
   vibe: "funny" | "magical" | "mysterious" | "fantasy";
   favoriteBook?: string;
   personalDetail: string;
+  /** GTales free form (SPEC §7): a place they love, favourite food, home words, the companion's name. */
+  place?: string;
+  food?: string;
+  homeWords?: { parent?: string; child?: string };
   parentName: string;
-  parentEmail: string;
+  /** At least one of email / phone (WhatsApp) is required. */
+  parentEmail?: string;
   parentPhone?: string;
   language: Lang;
   consent: boolean;

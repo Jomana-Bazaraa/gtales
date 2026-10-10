@@ -16,8 +16,9 @@ export async function POST(req: Request) {
   if (input.website) return NextResponse.json({ id: nanoid(12) }); // honeypot: pretend success
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const recent = await countRecentByEmailOrIp(input.parentEmail.toLowerCase(), ip, 60);
-  const limit = Number(process.env.RATE_LIMIT_PER_HOUR || 5);
+  // Silent rate limit (SPEC §2.3): never shown as a number to the parent.
+  const recent = await countRecentByEmailOrIp((input.parentEmail || "").toLowerCase() || "-", ip, 60);
+  const limit = Number(process.env.RATE_LIMIT_PER_HOUR || 10);
   if (recent >= limit) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
 
   const id = nanoid(14);
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
     id,
     status: "pending",
     progress: "template",
-    input: { ...input, parentEmail: input.parentEmail.toLowerCase() },
+    input: { ...input, parentEmail: input.parentEmail ? input.parentEmail.toLowerCase() : undefined, parentPhone: input.parentPhone || undefined },
     keeper_id: null,
     generated: null,
     assembled: null,

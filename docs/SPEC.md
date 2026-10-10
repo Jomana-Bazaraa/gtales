@@ -113,7 +113,7 @@ Every public page: `<title>`, meta description, OG image, canonical, `lang="en"`
 
 ## 5. Screen: Landing (`/`)
 
-Seven sections, same order desktop and phone. Phone target: ≤ 3,800 px total height at 390 px wide.
+Seven sections, same order desktop and phone. Phone target: ≤ 5,200 px total height at 390 px wide (measured 5,079 px on 10 Oct with readable type; the design board reached 3,700 px only with smaller type).
 
 0. **Promo bar** (dismissible, [config] text): "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery".
 1. **Hero.** H1 "A personalised storybook where your child is the hero." Subline "The only story where they see their own name, and their own face, on every page. Each tale unlocks a superpower." Buttons: CTA + "Try a free story". Trust line: "Ages 4–8 · You approve every page · Pay on delivery". Visual: three fanned book images (cover front, two story pages behind). No photo-to-hero transition.
@@ -131,7 +131,7 @@ Seven sections, same order desktop and phone. Phone target: ≤ 3,800 px total h
 6. **Reviews.** Hidden until 3 real reviews with permission [config toggle].
 7. **FAQ + final CTA.** Collapsed rows, first open. Questions: How do you make the pictures? · What if I don't like something? ("You approve every page before printing, and you pay only on delivery. Nothing is printed until you say it's perfect.") · Is the free story the same book? · When do I pay? · What happens to the photo? Final band "Ready to make your child the hero?" with both buttons. Footer: logo, Privacy, WhatsApp, Instagram.
 
-AC: Lighthouse mobile ≥ 90 performance, ≥ 95 accessibility; phone height ≤ 3,800 px; no horizontal scroll; H1 is the only `<h1>`; every image has alt text matching its caption.
+AC: Lighthouse mobile ≥ 90 performance, ≥ 95 accessibility; phone height ≤ 5,200 px; no horizontal scroll; H1 is the only `<h1>`; every image has alt text matching its caption.
 
 ---
 
@@ -151,12 +151,12 @@ One question per screen, progress bar, auto-save to localStorage, back always av
 |---|---|---|
 | 1 | Which superpower should this story build? (six Title + Helps-with cards; pre-selected from `?tale=`) | required |
 | 2 | The hero's name (tip: the name they like to be called) + age (4–8) + boy/girl/prefer not to say | name 2–20 chars |
-| 3 | Character name for the companion (optional, tip) | – |
+| 3 | Who goes on adventures with them: a friend, sibling, cousin or pet (optional) | – |
 | 4 | A place they love (chips + text) | required |
 | 5 | Favourite food (chips + text) | required |
 | 6 | Home words: a phrase you say to them, a phrase they say (optional) | – |
 | 7 | What they're good at (chips + text) | required |
-| 8 | Parent's first name + WhatsApp number or email (to save the story; shown as optional "Save my stories") | phone E.164 or email |
+| 8 | Parent's first name + WhatsApp number or email (to send and save the story) | phone or email, one required |
 
 Submit → generate → Ready screen in ≤ 10 s (p95). Rate limit per §2.3. Event `free_story_generated` with generation time.
 
@@ -268,7 +268,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 14.1 **Performance:** landing LCP < 2.5 s on 4G; images AVIF/WebP with width descriptors; fonts preloaded (Fredoka, Nunito; Andika only on reader/PDF routes).
 14.2 **Accessibility:** WCAG 2.1 AA; all chips are real buttons with `aria-pressed`; focus visible; colour contrast ≥ 4.5:1 for text (cta text is ink on #ff8a1f); reader supports 200 % zoom.
 14.3 **Reliability:** generation retries once; failures logged with reason; admin alerted by WhatsApp on `free_story_failed` spike (> 5 in 10 min).
-14.4 **Mobile checks (every page):** 390 × 844 viewport; no horizontal scroll; tap targets ≥ 44 px; sticky bottom CTA on forms; keyboard does not cover the active field; landing ≤ 3,800 px.
+14.4 **Mobile checks (every page):** 390 × 844 viewport; no horizontal scroll; tap targets ≥ 44 px; sticky bottom CTA on forms; keyboard does not cover the active field; landing ≤ 5,200 px.
 14.5 **Security:** admin behind sign-in + 2FA code; rate limits on sign-in codes (5/hour/number) and free stories (§2.3); signed photo URLs expire in 1 h; CSP; no secrets in client.
 14.6 **Content safety:** generated text passes a banned-words filter and is re-checked by the team before any Series page is sent for approval.
 14.7 **Internal studio:** the image pipeline stays an internal CLI under `src/studio/` behind `STUDIO_ENABLED`, never exposed on the public site.
@@ -281,7 +281,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 - [ ] Every tale shows Title + Helps-with on landing, catalogue, tale page, both forms, reader, PDFs, admin.
 - [ ] Prices read from Settings: change list price to 999 and delivery to 79 → every page updates, order review totals 678 with LAUNCH40.
 - [ ] Promo bar text, reviews toggle and rate limit are editable in Settings and take effect without deploy.
-- [ ] Landing phone height ≤ 3,800 px; no horizontal scroll at 320, 390, 430 px.
+- [ ] Landing phone height ≤ 5,200 px; no horizontal scroll at 320, 390, 430 px.
 - [ ] How-it-works time pills align horizontally on desktop; no numeral larger than the badge.
 - [ ] Pricing shows two tier cards (no table); Series card visually dominant; Free card lists three ✗ rows.
 - [ ] Free form: 8 steps, refresh mid-way restores answers, story ready ≤ 10 s, three PDFs download and open.

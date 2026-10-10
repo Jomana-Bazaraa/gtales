@@ -88,7 +88,7 @@ export async function listStories(limit = 200): Promise<StoryRecord[]> {
 
 export async function storiesByEmail(email: string): Promise<StoryRecord[]> {
   const e = email.trim().toLowerCase();
-  if (isMockDb) return (await readAll<StoryRecord>("stories")).filter((x) => x.input.parentEmail.toLowerCase() === e);
+  if (isMockDb) return (await readAll<StoryRecord>("stories")).filter((x) => (x.input.parentEmail || "").toLowerCase() === e);
   const { data } = await supabase().from("stories").select("*").eq("input->>parentEmail", e).order("created_at", { ascending: false });
   return (data as StoryRecord[]) ?? [];
 }

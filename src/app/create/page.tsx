@@ -1,18 +1,21 @@
-import { cookies } from "next/headers";
-import { Footer, Header } from "@/components/SiteChrome";
+import type { Metadata } from "next";
+import { Header } from "@/components/SiteChrome";
 import { CreateForm } from "@/components/form/CreateForm";
-import type { Lang } from "@/lib/i18n";
+import { taleBySlug } from "@/lib/gtales";
 
-export default async function CreatePage() {
-  const store = await cookies();
-  const lang = (store.get("lang")?.value === "ar" ? "ar" : "en") as Lang;
+export const metadata: Metadata = { title: "Try a free story — GTales" };
+
+/** Free story form — docs/SPEC.md §7. `?tale=<slug>` pre-selects step 1. */
+export default async function CreatePage({ searchParams }: PageProps<"/create">) {
+  const sp = await searchParams;
+  const raw = Array.isArray(sp.tale) ? sp.tale[0] : sp.tale;
+  const tale = raw && taleBySlug(raw) ? raw : undefined;
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-6xl px-4 py-6 sm:py-10 w-full">
-        <CreateForm initialLang={lang} />
+      <main className="flex-1 w-full bg-white">
+        <CreateForm initialTale={tale} />
       </main>
-      <Footer />
     </>
   );
 }
