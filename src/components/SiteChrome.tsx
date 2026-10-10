@@ -1,52 +1,65 @@
-"use client";
 import Link from "next/link";
-import { setLangCookie, useLang } from "@/lib/i18n-client";
+import { COPY } from "@/lib/gtales";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <Link href="/" className={`display inline-flex items-center gap-2 text-2xl font-bold text-coral ${className}`}>
-      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden>
-        <rect x="3" y="4" width="24" height="22" rx="6" fill="#e8673f" />
-        <path d="M9 10h12M9 15h12M9 20h7" stroke="#fff8ef" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
-      Estoria
+    <Link href="/" className={`display inline-flex items-center text-[22px] leading-none font-bold text-ink ${className}`} aria-label="GTales home">
+      <span className="text-flame">G</span>Tales
     </Link>
   );
 }
 
-export function Header() {
-  const { t, lang } = useLang();
+const NAV = [
+  ["#how", "How it works"],
+  ["#book", "Meet the book"],
+  ["#powers", "Superpowers"],
+  ["#pricing", "Pricing"],
+  ["#faq", "FAQ"],
+];
+
+export function PromoBar() {
   return (
-    <header className="sticky top-0 z-30 bg-cream/85 backdrop-blur border-b border-line">
-      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between gap-3">
+    <div className="bg-flame text-white text-center text-[13px] md:text-sm font-bold leading-5 px-4 py-2">
+      {COPY.promoBar()}
+    </div>
+  );
+}
+
+export function Header({ landing = false }: { landing?: boolean }) {
+  return (
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-line">
+      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-4">
         <Logo />
-        <nav className="flex items-center gap-2 sm:gap-3">
-          <Link href="/my-stories" className="hidden sm:inline text-sm font-semibold text-ink-soft hover:text-indigo px-2">
-            {t("my_stories")}
-          </Link>
-          <button onClick={() => setLangCookie(lang === "ar" ? "en" : "ar")} className="text-sm font-bold text-indigo rounded-full border-2 border-line bg-white px-3 py-2 min-h-[40px]">
-            {t("switch_lang")}
-          </button>
-          <Link href="/create" className="btn-primary !py-2 !px-4 !min-h-[40px] text-sm">
-            {t("cta_short")}
-          </Link>
-        </nav>
+        {landing && (
+          <nav className="hidden lg:flex items-center gap-5 ml-4 text-[15px] font-bold">
+            {NAV.map(([href, label]) => (
+              <a key={href} href={href} className="text-ink hover:text-sky">{label}</a>
+            ))}
+          </nav>
+        )}
+        <div className="ml-auto flex items-center gap-2">
+          <Link href="/my-stories" className="hidden md:inline text-sm font-bold text-ink-soft hover:text-sky px-2">My stories</Link>
+          <span className="hidden sm:inline"><Link href="/tales" className="btn-ghost !h-10 !px-4 text-sm">{COPY.ctaSecondary}</Link></span>
+          <Link href="/order" className="btn-primary !h-10 !px-4 text-sm">{COPY.ctaPrimary}</Link>
+        </div>
       </div>
     </header>
   );
 }
 
 export function Footer() {
-  const { t } = useLang();
+  const wa = COPY.whatsapp ? `https://wa.me/${COPY.whatsapp}` : "#";
   return (
-    <footer className="mt-16 border-t border-line bg-cream-deep/60">
-      <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-soft">
+    <footer className="mt-12 border-t border-line bg-surface-tint">
+      <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-soft font-medium">
         <Logo className="!text-xl" />
-        <div className="flex gap-4">
-          <Link href="/privacy" className="hover:text-indigo">{t("footer_privacy")}</Link>
-          <Link href="/my-stories" className="hover:text-indigo">{t("my_stories")}</Link>
+        <div className="flex gap-5">
+          <Link href="/privacy" className="hover:text-sky">Privacy</Link>
+          <a href={wa} className="hover:text-sky">WhatsApp</a>
+          <a href="https://instagram.com/gtales.app" className="hover:text-sky">Instagram</a>
+          <Link href="/my-stories" className="hover:text-sky">My stories</Link>
         </div>
-        <span>{t("footer_tag")} · © {new Date().getFullYear()} Estoria</span>
+        <span>© {new Date().getFullYear()} GTales · gtales.app</span>
       </div>
     </footer>
   );

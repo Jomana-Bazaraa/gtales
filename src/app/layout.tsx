@@ -8,14 +8,14 @@ import { LangProvider } from "@/lib/i18n-client";
 import type { Lang } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Estoria — Stories your child lives, not just hears",
+  title: "GTales — Your child is the Hero",
   description:
-    "Personalized interactive storybooks where your child helps a Keeper solve the exact struggle they face. Two free PDFs, instantly.",
+    "Personalised interactive storybooks where your child is the hero and each tale unlocks a superpower.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fff8ef",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };

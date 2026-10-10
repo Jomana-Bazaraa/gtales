@@ -1,21 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  --coral: #e8673f;
-  --coral-dark: #c9532c;
-  --coral-soft: #fbe3d8;
-  --cream: #fff8ef;
-  --cream-deep: #f6ead8;
-  --indigo: #2b2d6b;
-  --indigo-soft: #e4e5f7;
-  --teal: #14b8a6;
-  --teal-soft: #d8f5f0;
-  --ink: #2a2320;
-  --ink-soft: #6b5f58;
-  --line: #ead9c6;
+  /* GTales tokens — docs/SPEC.md §3, design system gtales/tokens.json v2 */
+  --surface: #ffffff;
+  --surface-tint: #f3f1ff;
+  --ink: #1e1b4b;
+  --ink-soft: #5b5880;
+  --line: #e4e1f5;
+  --flame: #ff5c1f;
+  --flame-deep: #e03e0f;
+  --flame-soft: #ffe8dd;
+  --cta: #ff8a1f;
+  --cta-shadow: #d96a00;
+  --sky: #2f4bff;
+  --sky-shadow: #2238c2;
+  --sky-soft: #e6ebff;
+  --sun: #ffcf3d;
+  --sun-soft: #fff6d6;
+  --mint: #0b7a5f;
+  --mint-soft: #d9f7ec;
+  --danger: #c81e3a;
+  --night: #141233;
+  --paper: #fbf5e9;
+  --paper-ink: #3d2b1f;
+
+  /* Legacy aliases used by older screens; map onto the new palette */
+  --coral: var(--flame);
+  --coral-dark: var(--flame-deep);
+  --coral-soft: var(--flame-soft);
+  --cream: var(--surface);
+  --cream-deep: var(--surface-tint);
+  --indigo: var(--sky);
+  --indigo-soft: var(--sky-soft);
+  --teal: var(--mint);
+  --teal-soft: var(--mint-soft);
 }
 
 @theme inline {
+  --color-surface: var(--surface);
+  --color-surface-tint: var(--surface-tint);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-flame: var(--flame);
+  --color-flame-deep: var(--flame-deep);
+  --color-flame-soft: var(--flame-soft);
+  --color-cta: var(--cta);
+  --color-cta-shadow: var(--cta-shadow);
+  --color-sky: var(--sky);
+  --color-sky-shadow: var(--sky-shadow);
+  --color-sky-soft: var(--sky-soft);
+  --color-sun: var(--sun);
+  --color-sun-soft: var(--sun-soft);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-danger: var(--danger);
+  --color-night: var(--night);
+  --color-paper: var(--paper);
+  --color-paper-ink: var(--paper-ink);
   --color-coral: var(--coral);
   --color-coral-dark: var(--coral-dark);
   --color-coral-soft: var(--coral-soft);
@@ -25,9 +67,6 @@
   --color-indigo-soft: var(--indigo-soft);
   --color-teal: var(--teal);
   --color-teal-soft: var(--teal-soft);
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-line: var(--line);
   --font-sans: "Nunito Variable", "Cairo Variable", system-ui, sans-serif;
   --font-display: "Fredoka Variable", "Cairo Variable", system-ui, sans-serif;
   --radius-blob: 1.75rem;
@@ -58,16 +97,23 @@ h1, h2, h3, .display {
   letter-spacing: 0;
 }
 
-.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-coral text-white shadow-[0_6px_0_var(--coral-dark)] hover:translate-y-[1px] hover:shadow-[0_5px_0_var(--coral-dark)]; }
-.btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-indigo text-white hover:bg-[#3b3e8c]; }
-.btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none min-h-12 bg-white text-indigo border-2 border-line hover:border-indigo; }
+@layer components {
+.btn-primary { @apply box-border inline-flex items-center justify-center gap-2 rounded-full h-12 px-5 font-extrabold text-base leading-none whitespace-nowrap transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none bg-cta text-ink shadow-[0_4px_0_var(--cta-shadow)] hover:translate-y-[1px] hover:shadow-[0_3px_0_var(--cta-shadow)]; }
+.btn-secondary { @apply box-border inline-flex items-center justify-center gap-2 rounded-full h-12 px-5 font-extrabold text-base leading-none whitespace-nowrap transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none bg-sky text-white shadow-[0_4px_0_var(--sky-shadow)] hover:translate-y-[1px] hover:shadow-[0_3px_0_var(--sky-shadow)]; }
+.btn-ghost { @apply box-border inline-flex items-center justify-center gap-2 rounded-full h-12 px-5 font-extrabold text-base leading-none whitespace-nowrap transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none bg-white text-sky border-2 border-line hover:border-sky; }
 
-.card { @apply rounded-[var(--radius-blob)] bg-white border border-line shadow-[0_2px_0_var(--line)]; }
+.card { @apply rounded-[var(--radius-blob)] bg-white shadow-[0_3px_0_var(--line)]; }
+.eyebrow { @apply text-[13px] font-extrabold uppercase tracking-[0.08em] text-sky; }
+.pill { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-extrabold uppercase tracking-[0.08em]; }
+.scroller { @apply flex gap-2.5 overflow-x-auto -mx-4 px-4 pb-2 snap-x snap-mandatory; scrollbar-width: none; }
+.scroller::-webkit-scrollbar { display: none; }
+.scroller > * { @apply snap-start shrink-0; }
 
-.field { @apply w-full rounded-2xl border-2 border-line bg-white px-4 py-3 text-base outline-none focus:border-coral min-h-12; }
+.field { @apply box-border w-full rounded-2xl border-2 border-line bg-white px-4 py-3 text-base outline-none focus:border-flame min-h-12; }
 
-.chip { @apply inline-flex items-center rounded-full border-2 border-line bg-white px-4 py-2 text-sm font-semibold cursor-pointer select-none transition min-h-11; }
-.chip-on { @apply border-coral bg-coral-soft text-coral-dark; }
+.chip { @apply box-border inline-flex items-center gap-1.5 rounded-full border-2 border-line bg-white px-3.5 py-2 text-[15px] font-bold cursor-pointer select-none transition min-h-11; }
+.chip-on { @apply border-flame bg-flame-soft text-flame-deep; }
+}
 
 @keyframes breathe {
   0%, 100% { transform: scale(0.6); }
