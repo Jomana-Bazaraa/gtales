@@ -48,7 +48,7 @@ export function BookReady({ book, url }: { book: BookRecord; url: string }) {
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-10 md:pb-16">
-          <SeriesBand childName={name} />
+          <SeriesBand childName={name} href={`/order?story=${book.id}`} />
         </section>
       </main>
       <Footer />

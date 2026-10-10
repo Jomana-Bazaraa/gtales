@@ -110,10 +110,10 @@ export interface Pricing {
 
 export function getPricing(): Pricing {
   return {
-    listPrice: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 949),
+    listPrice: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 749),
     promoCode: process.env.NEXT_PUBLIC_PROMO_CODE || "LAUNCH40",
     promoPercent: num(process.env.NEXT_PUBLIC_PROMO_PERCENT, 40),
-    delivery: num(process.env.NEXT_PUBLIC_DELIVERY_EGP, 69),
+    delivery: num(process.env.NEXT_PUBLIC_DELIVERY_EGP, 89),
   };
 }
 
@@ -149,8 +149,8 @@ export const PROMISES: Promise_[] = [
   },
   {
     id: "five",
-    title: "Five books plus a parent guide",
-    copy: "Five books, not one. Plus a complete parent guide to help you support your child at home.",
+    title: "Three books plus a parent guide",
+    copy: "Three books, not one. Plus a complete parent guide to help you support your child at home.",
   },
   {
     id: "crafted",

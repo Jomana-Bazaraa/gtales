@@ -155,3 +155,34 @@ export interface BookRecord {
   created_at: string;
   updated_at: string;
 }
+
+/** Series order (SPEC §9–10). */
+export type OrderStatus = "ordered" | "being_made" | "awaiting_approval" | "approved" | "printing" | "shipped" | "delivered_paid" | "cancelled";
+export interface OrderPerson { who: string; name: string; description?: string; photo_key?: string }
+export interface OrderBook { struggle: string; context?: string; people: OrderPerson[]; setting?: string }
+export interface OrderRecord {
+  id: string;
+  status: OrderStatus;
+  edit_requested: boolean;
+  child: { name: string; age: number; gender: "boy" | "girl" };
+  photos: { face?: string; body?: string };
+  strengths: string[];
+  books: OrderBook[]; // 1–3
+  world: { favourites: string[]; notes?: string };
+  words: { parent?: string; child?: string; nicknames?: string };
+  dedication?: string;
+  activities: string[];
+  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string };
+  promo_code?: string;
+  list_price: number;
+  discount: number;
+  delivery: number;
+  total: number;
+  free_story_id?: string;
+  ref?: string;
+  notes?: string;
+  courier_confirmation?: string;
+  photos_deleted_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}

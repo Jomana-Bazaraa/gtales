@@ -60,9 +60,9 @@ function FannedBooks() {
 /* ============ 2. How it works ============ */
 const STEPS: { icon: IconName; tint: string; color: string; time: string; title: string; copy: string }[] = [
   { icon: "person", tint: "bg-flame-soft", color: "text-flame-deep", time: "10 minutes", title: "Tell us about your child", copy: "Name, photo, their people, what's hard right now." },
-  { icon: "book", tint: "bg-sky-soft", color: "text-sky", time: "5 days", title: "We create their story", copy: "Five tales with their face in every picture." },
+  { icon: "book", tint: "bg-sky-soft", color: "text-sky", time: "5 days", title: "We create their story", copy: "Three tales with their face in every picture." },
   { icon: "pencil", tint: "bg-sun-soft", color: "text-cta-shadow", time: "Until it's perfect", title: "You approve every page", copy: "On WhatsApp. Change anything you like." },
-  { icon: "home", tint: "bg-mint-soft", color: "text-mint", time: "5 days after approval", title: "Delivered to your door", copy: "Five printed books. Pay the courier." },
+  { icon: "home", tint: "bg-mint-soft", color: "text-mint", time: "5 days after approval", title: "Delivered to your door", copy: "Three printed books. Pay the courier." },
 ];
 
 export function HowItWorks() {
@@ -71,7 +71,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-16 flex flex-col gap-8 md:gap-10">
         <div className="text-center flex flex-col items-center gap-2">
           <span className="eyebrow">How it works</span>
-          <h2 className="text-[28px] leading-8 md:text-[38px] md:leading-[42px] font-bold">Four steps to five printed books</h2>
+          <h2 className="text-[28px] leading-8 md:text-[38px] md:leading-[42px] font-bold">Four steps to three printed books</h2>
         </div>
         <ol className="relative grid gap-5 md:grid-cols-4 md:gap-6">
           <span aria-hidden className="hidden md:block absolute left-[12.5%] right-[12.5%] top-9 border-t-[3px] border-dashed border-line" />
@@ -147,7 +147,7 @@ export function Superpowers() {
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-20 flex flex-col gap-6 md:gap-8">
         <div className="text-center flex flex-col items-center gap-2">
           <h2 className="text-[32px] leading-9 md:text-[44px] md:leading-[48px] font-bold">Six tales. Six superpowers.</h2>
-          <p className="m-0 text-base md:text-lg text-[#b9b5d9] max-w-[560px]">Every tale helps your child grow one strength. Pick the five that matter most.</p>
+          <p className="m-0 text-base md:text-lg text-[#b9b5d9] max-w-[560px]">Every tale helps your child grow one strength. Pick the three that matter most.</p>
         </div>
         <div className="scroller md:grid md:grid-cols-3 md:gap-6 md:mx-0 md:px-0 md:pb-0 md:overflow-visible text-ink">
           {TALES.map((t) => (
@@ -198,7 +198,7 @@ export function Pricing() {
           {/* The Series first on phones (Series-first positioning), second on desktop */}
           <div className="relative order-1 md:order-2 flex flex-col gap-3 rounded-[24px] md:rounded-[28px] bg-white border-[3px] border-flame p-5 md:p-7 shadow-[0_3px_0_var(--line)]">
             <span className="pill bg-sun text-ink absolute -top-3.5 left-5 md:left-7">The Series · printed · most loved</span>
-            <h3 className="mt-2 text-[22px] leading-[26px] md:text-[28px] md:leading-8 font-bold">Five printed books + a complete parent guide</h3>
+            <h3 className="mt-2 text-[22px] leading-[26px] md:text-[28px] md:leading-8 font-bold">Three printed books + a complete parent guide</h3>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-ink-soft line-through text-lg md:text-xl">{egp(p.listPrice)}</span>
               <span className="display text-[32px] md:text-[40px] font-bold leading-none">{egp(p.net)}</span>
@@ -211,8 +211,8 @@ export function Pricing() {
               <Row ok>Written from scratch around their strengths and struggles</Row>
               <Row ok className="hidden md:flex">A family memory turned into a story</Row>
               <Row ok className="hidden md:flex">Interactive pages they play through</Row>
-              <Row ok>Five printed books, delivered to your door</Row>
-              <Row ok className="hidden md:flex">One complete parent guide for all five</Row>
+              <Row ok>Three printed books, delivered to your door</Row>
+              <Row ok className="hidden md:flex">One complete parent guide for all three</Row>
               <Row ok>You approve every page on WhatsApp, unlimited changes</Row>
             </div>
             <div className="mt-auto pt-2 flex flex-col sm:flex-row sm:items-center gap-3">

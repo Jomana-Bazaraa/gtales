@@ -6,7 +6,7 @@ import { COPY } from "@/lib/gtales";
 export const metadata: Metadata = {
   title: "GTales — A personalised storybook where your child is the hero",
   description:
-    "Five printed books with your child's face in every picture, built around their strengths and struggles. You approve every page. Pay on delivery. Try a free story first.",
+    "Three printed books with your child's face in every picture, built around their strengths and struggles. You approve every page. Pay on delivery. Try a free story first.",
 };
 
 /** Landing page — docs/SPEC.md §5. Seven sections, same order on phone and desktop. */

@@ -49,7 +49,7 @@ create table if not exists public.orders (
   status text not null default 'ordered' check (status in ('ordered','being_made','awaiting_approval','approved','printing','shipped','delivered_paid','cancelled')),
   edit_requested boolean not null default false,
   child jsonb not null,          -- name, nickname, age, gender, three words
-  tales text[] not null,         -- five tale keys
+  tales text[] not null,         -- three tale keys
   answers jsonb not null,        -- struggles, strengths, world, adventure, home words, memory, reading, dedication
   people jsonb not null default '[]',  -- loved ones: name, relation, detail, photo_key
   photos jsonb not null default '{}',  -- hero photo keys (private bucket)
@@ -122,7 +122,7 @@ create table if not exists public.settings (
   updated_at timestamptz not null default now()
 );
 insert into public.settings (key, value) values
-  ('list_price_egp', '949'), ('delivery_egp', '69'), ('default_promo', '"LAUNCH40"'), ('rate_limit_per_hour', '10'),
+  ('list_price_egp', '749'), ('delivery_egp', '89'), ('default_promo', '"LAUNCH40"'), ('rate_limit_per_hour', '10'),
   ('promo_bar', '"Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery"'), ('reviews_visible', 'false'),
   ('production_days', '5'), ('delivery_days', '5'), ('whatsapp_number', '""')
 on conflict (key) do nothing;

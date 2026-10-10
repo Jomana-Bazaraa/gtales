@@ -5,7 +5,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import type { BookRecord, PhysicalOrder, StoryRecord } from "./types";
+import type { BookRecord, OrderRecord, PhysicalOrder, StoryRecord } from "./types";
 
 export const isMockDb = !process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -21,7 +21,7 @@ export function supabase(): SupabaseClient {
 
 // ---------- mock store: one JSON file per record (safe across Next's worker processes) ----------
 const DATA_DIR = path.join(process.cwd(), ".data");
-type Kind = "stories" | "orders" | "tokens" | "books";
+type Kind = "stories" | "orders" | "tokens" | "books" | "series";
 const dirOf = (kind: Kind) => path.join(DATA_DIR, kind);
 
 async function writeJson(kind: Kind, id: string, data: unknown) {
@@ -204,4 +204,61 @@ export async function countRecentBooks(ip: string, contact: string, windowMinute
   }
   const { count } = await supabase().from("books").select("id", { count: "exact", head: true }).gt("created_at", since).or(`ip.eq.${ip},contact.eq.${contact || "-"}`);
   return count ?? 0;
+}
+
+// ---------- Series orders (SPEC §9–10) ----------
+export async function insertOrder(o: OrderRecord): Promise<void> {
+  if (isMockDb) return writeJson("series", o.id, o);
+  const { error } = await supabase().from("orders").insert(o);
+  if (error) throw error;
+}
+export async function updateOrder(id: string, patch: Partial<OrderRecord>): Promise<void> {
+  if (isMockDb) {
+    const cur = await readJson<OrderRecord>("series", id);
+    if (cur) await writeJson("series", id, { ...cur, ...patch, updated_at: new Date().toISOString() });
+    return;
+  }
+  const { error } = await supabase().from("orders").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
+}
+export async function getOrder(id: string): Promise<OrderRecord | null> {
+  if (isMockDb) return readJson<OrderRecord>("series", id);
+  const { data } = await supabase().from("orders").select("*").eq("id", id).maybeSingle();
+  return (data as OrderRecord) ?? null;
+}
+export async function listOrders(limit = 300): Promise<OrderRecord[]> {
+  if (isMockDb) return (await readAll<OrderRecord>("series")).slice(0, limit);
+  const { data } = await supabase().from("orders").select("*").order("created_at", { ascending: false }).limit(limit);
+  return (data as OrderRecord[]) ?? [];
+}
+export async function ordersByWhatsapp(whatsapp: string): Promise<OrderRecord[]> {
+  if (isMockDb) return (await readAll<OrderRecord>("series")).filter((o) => o.parent.whatsapp === whatsapp);
+  const { data } = await supabase().from("orders").select("*").eq("parent->>whatsapp", whatsapp).order("created_at", { ascending: false });
+  return (data as OrderRecord[]) ?? [];
+}
+
+/** Private photos (hero, loved ones): never a public URL. Read back through signed URLs for admin only. */
+export async function putPrivatePhoto(key: string, bytes: Buffer, contentType: string): Promise<string> {
+  if (isMockDb) {
+    const dir = path.join(DATA_DIR, "photos", path.dirname(key));
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(DATA_DIR, "photos", key), bytes);
+    return key;
+  }
+  const { error } = await supabase().storage.from("photos").upload(key, bytes, { contentType, upsert: true });
+  if (error) throw error;
+  return key;
+}
+export async function privatePhotoUrl(key: string): Promise<string> {
+  if (isMockDb) return `/api/admin/photos/${key}`;
+  const { data } = await supabase().storage.from("photos").createSignedUrl(key, 3600);
+  return data?.signedUrl ?? "";
+}
+export async function readPrivatePhoto(key: string): Promise<Buffer | null> {
+  try { return await fs.readFile(path.join(DATA_DIR, "photos", key)); } catch { return null; }
+}
+export async function deletePrivatePhotos(keys: string[]): Promise<void> {
+  if (!keys.length) return;
+  if (isMockDb) { for (const k of keys) await fs.rm(path.join(DATA_DIR, "photos", k), { force: true }); return; }
+  await supabase().storage.from("photos").remove(keys);
 }

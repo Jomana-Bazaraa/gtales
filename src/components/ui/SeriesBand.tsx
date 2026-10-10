@@ -7,14 +7,14 @@ const ROWS: { icon: IconName; text: string }[] = [
   { icon: "person", text: "Their face and the people they love in every picture" },
   { icon: "bolt", text: "A story built around their strengths, not just their name" },
   { icon: "heart", text: "A memory you create together, turned into a tale" },
-  { icon: "book", text: "Five books plus a complete parent guide" },
+  { icon: "book", text: "Three books plus a complete parent guide" },
 ];
 
 /**
  * "Make it truly theirs" — the route from free to paid (SPEC §6 struggle page, §7 ready screen).
  * Four icon rows, price, compact promises, one button.
  */
-export function SeriesBand({ childName, className = "" }: { childName?: string; className?: string }) {
+export function SeriesBand({ childName, className = "", href = "/order" }: { childName?: string; className?: string; href?: string }) {
   const p = priceBreakdown();
   return (
     <section className={`rounded-[24px] md:rounded-[28px] bg-white border-[3px] border-flame p-5 md:p-7 flex flex-col gap-4 shadow-[0_3px_0_var(--line)] ${className}`}>
@@ -37,7 +37,7 @@ export function SeriesBand({ childName, className = "" }: { childName?: string; 
         <span className="text-sm font-bold text-ink-soft">+ {egp(p.delivery)} delivery · pay on delivery</span>
       </div>
       <Promises variant="compact" />
-      <Link href="/order" className="btn-primary w-full md:w-auto md:self-start md:!h-14 md:!px-7 md:text-lg">{COPY.ctaPrimary}</Link>
+      <Link href={href} className="btn-primary w-full md:w-auto md:self-start md:!h-14 md:!px-7 md:text-lg">{COPY.ctaPrimary}</Link>
     </section>
   );
 }

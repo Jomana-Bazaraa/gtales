@@ -44,7 +44,7 @@ export default function TalesPage() {
 
         <section className="bg-surface-tint">
           <div className="mx-auto max-w-6xl px-4 py-8 md:py-12 flex flex-col gap-4">
-            <h2 className="text-[24px] leading-7 md:text-[32px] md:leading-9 font-bold">Five printed books with your child's face in every picture.</h2>
+            <h2 className="text-[24px] leading-7 md:text-[32px] md:leading-9 font-bold">Three printed books with your child's face in every picture.</h2>
             <Promises variant="compact" className="md:grid md:grid-cols-2 md:gap-x-8" />
             <Link href="/order" className="btn-primary self-start">{COPY.ctaPrimary}</Link>
           </div>

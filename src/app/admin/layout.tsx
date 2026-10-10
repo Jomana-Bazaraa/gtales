@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           <span className="text-xs font-bold text-ink-soft uppercase tracking-wider">Admin</span>
           <nav className="flex gap-4 text-sm font-semibold ms-auto">
             <Link href="/admin" className="hover:text-coral">Stories</Link>
-            <Link href="/admin/orders" className="hover:text-coral">Printed orders</Link>
+            <Link href="/admin/series" className="hover:text-coral">Series orders</Link>
             <form action="/api/admin/logout" method="post">
               <button className="text-ink-soft hover:text-coral">Log out</button>
             </form>

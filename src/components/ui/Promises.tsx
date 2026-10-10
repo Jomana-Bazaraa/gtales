@@ -44,7 +44,7 @@ function shortCopy(p: Promise_) {
   switch (p.id) {
     case "review": return "Every page comes to you on WhatsApp. Change anything before printing.";
     case "cod": return "Nothing to pay online. Pay the courier at your door.";
-    case "five": return "Five printed books and one complete parent guide.";
+    case "five": return "Three printed books and one complete parent guide.";
     case "crafted": return "Their face, their people, their struggle, their dream adventure.";
     case "play": return "Riddles, mazes and choices only your child can solve.";
   }
