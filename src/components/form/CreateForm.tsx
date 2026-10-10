@@ -13,6 +13,7 @@ import { Icon } from "@/components/ui/Icon";
 export interface TaleMeta {
   slug: string;
   available: boolean;
+  sets: { boy: boolean; girl: boolean };
   uses: string[];
   need_choices: string[];
   ask_choices: string[];
@@ -100,6 +101,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
     switch (s) {
       case 1: return d.slug ? (meta?.available === false ? "This tale is almost ready. Please pick another superpower for now." : null) : "Pick a superpower to continue.";
       case 2: {
+        if (meta && !meta.sets[d.gender]) return `The ${d.gender} pictures for this tale are coming soon. Please pick another superpower or the other option for now.`;
         const n = d.name.trim();
         if (!n) return "Please add the hero's name.";
         if (n.length > 14) return "Up to 14 letters, please.";
@@ -200,8 +202,9 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
             <input className="field text-xl" autoFocus placeholder="e.g. Adam" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} />
             <div className="grid grid-cols-2 gap-2.5">
               {(["boy", "girl"] as const).map((g) => (
-                <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`rounded-2xl border-[3px] p-4 text-center font-bold text-lg ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>
+                <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`rounded-2xl border-[3px] p-4 text-center font-bold text-lg flex flex-col items-center gap-1 ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"} ${meta && !meta.sets[g] ? "opacity-70" : ""}`}>
                   {g === "boy" ? "Boy" : "Girl"}
+                  {meta && !meta.sets[g] && <span className="pill bg-sun-soft text-ink !text-[10px]">Coming soon</span>}
                 </button>
               ))}
             </div>

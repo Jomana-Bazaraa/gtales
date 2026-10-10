@@ -1,24 +1,30 @@
 # GTales handoff pack
 
-Everything Claude Code needs to build personalized books. Open `template/demo.html` in a browser to see a working book.
+Everything Claude Code needs to build personalized books. Open `template/demo-worry-boy.html` or `demo-worry-girl.html` in a browser to see a working book.
 
 ## What's inside
 
 ```
 gtales-handoff/
-  README.md                  this file
-  CLAUDE_CODE_PROMPT.md      paste this into Claude Code
+  README.md                       this file
+  CLAUDE_CODE_PROMPT.md           paste this into Claude Code
   stories/
-    worry.json               Story 2, finished. The other stories follow the same format.
+    worry.json                    Story 2 (Big Shadow)
+    bullied.json                  Story 3 (Big Crab)
   images/
-    worry/boy/               cover.jpg, p01.jpg ... p15.jpg, back.jpg
+    worry/boy/   worry/girl/      cover.jpg, p01.jpg ... p15.jpg, back.jpg
+    bullied/girl/                 (boy set still to come)
   template/
-    book.css                 the page design (A4, picture on top, text at the bottom)
-    render.js                fills the story with the form values and builds the pages
-    demo.html                working example with (Name)-style placeholders
-    fonts/                   Literata and Fredoka, embedded so print looks the same everywhere
+    book.css                      the page design
+    render.js                     fills the story with form values and builds the pages
+    demo-worry-boy.html           working examples with (Name)-style placeholders
+    demo-worry-girl.html
+    demo-bullied-girl.html
+    fonts/
   reference/
-    worry-boy-template.pdf   what the finished book must look like
+    worry-boy-template.pdf        what finished books must look like
+    worry-girl-template.pdf
+    bullied-girl-template.pdf
 ```
 
 ## Rules

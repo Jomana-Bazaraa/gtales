@@ -6,21 +6,32 @@ import { renderBookHtml } from "../render";
 import { fillStory } from "../fill";
 import { storySchema, type StoryForm } from "../schema";
 
+import { readdirSync } from "node:fs";
+import { storyFolder } from "../images";
+
 const file = path.join(process.cwd(), "stories", "worry.json");
 const story = existsSync(file) ? storySchema.parse(JSON.parse(readFileSync(file, "utf8"))) : null;
 
 const base: StoryForm = { slug: "worry", name: "Karim", gender: "boy", age: 6, half: false, place: "Maadi", other: "Mama", other_relation: "friend", strength: "builder", sidekick: "Bolt", power_word: "Blue Calm", need: "I need a hug.", ask: "Can you sit with me?" };
 
-for (const name of ["Karim", "Jana", "Abdelrahman", "Lulu"]) {
+// Every story that has images, each available gender, the four names from the brief.
+const storiesDir = path.join(process.cwd(), "stories");
+const slugs = existsSync(storiesDir) ? readdirSync(storiesDir).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, "")) : [];
+for (const slug of slugs) {
+  const st = storySchema.parse(JSON.parse(readFileSync(path.join(storiesDir, `${slug}.json`), "utf8")));
   for (const gender of ["boy", "girl"] as const) {
-    test(`worry: ${name} ${gender} renders with no holes`, { skip: !story && "stories/worry.json not present" }, async () => {
-      const filled = fillStory(story!, { ...base, name, gender });
-      const html = await renderBookHtml(filled, { ...base, name, gender });
-      assert.ok(!/\{\{|\}\}/.test(html), "no {{ or }}");
-      assert.ok(!/undefined/.test(html), "no undefined");
-      assert.equal((html.match(/class="gt-page/g) ?? []).length, 17, "cover + 15 + back");
-      assert.ok(html.includes(`Made for ${name}`));
-    });
+    const hasSet = existsSync(path.join(process.cwd(), "public", "stories", storyFolder(slug), gender, "cover.jpg"));
+    for (const name of ["Karim", "Jana", "Abdelrahman", "Lulu"]) {
+      test(`${slug} ${gender}: ${name} renders with no holes`, { skip: !hasSet && `${slug}/${gender} image set not present` }, async () => {
+        const form: StoryForm = { ...base, slug, name, gender, other_relation: st.other_rule === "not_sibling" ? "school" : "friend", need: st.need_choices[0], ask: st.ask_choices[0] };
+        const filled = fillStory(st, form);
+        const html = await renderBookHtml(filled, form);
+        assert.ok(!/\{\{|\}\}/.test(html), "no {{ or }}");
+        assert.ok(!/undefined/.test(html), "no undefined");
+        assert.equal((html.match(/class="gt-page/g) ?? []).length, 17, "cover + 15 + back");
+        assert.ok(html.includes(`Made for ${name}`));
+      });
+    }
   }
 }
 

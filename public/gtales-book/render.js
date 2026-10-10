@@ -40,7 +40,7 @@
     const paras = p.text.map(x => `<p>${fill(x, t)}</p>`);
     if (p.screen) paras.splice(p.screen_after ?? 1, 0, `<p class="gt-screen">${fill(p.screen, t)}</p>`);
     if (p.sign) paras.push(`<p class="gt-sign">${fill(p.sign, t)}</p>`);
-    const nodrop = p.text[0].trim().startsWith('"') ? ' nodrop' : '';
+    const nodrop = /^["(]/.test(fill(p.text[0], t).replace(/&quot;/g,'"').trim()) ? ' nodrop' : '';
     return `<div class="gt-story${nodrop}">${paras.join('')}</div>`;
   }
 

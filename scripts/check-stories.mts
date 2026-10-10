@@ -26,8 +26,8 @@ for (const f of files) {
     const need = ["cover.jpg", "back.jpg", ...s.pages.map((p) => p.image ?? `p${String(p.n).padStart(2, "0")}.jpg`)];
     const have = new Set(await fs.readdir(imgDir).catch(() => []));
     const missing = need.filter((n) => !have.has(n));
-    if (missing.length) console.log(`${g === "boy" ? "✗" : "⚠"} ${f}: ${g} set missing ${missing.length} images (${missing.slice(0, 3).join(", ")}…)${g === "girl" ? " — girl books are refused until it exists" : ""}`), g === "boy" && bad++;
+    if (missing.length) console.log(`⚠ ${f}: ${g} set missing ${missing.length} images (${missing.slice(0, 3).join(", ")}…) — ${g} books for this tale are "coming soon" until it exists`);
   }
-  if (!bad) console.log(`✓ ${f}`);
+  console.log(`✓ ${f} parsed; tokens and "uses" consistent`);
 }
 process.exit(bad ? 1 : 0);

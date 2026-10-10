@@ -181,7 +181,7 @@ Schema (zod in `src/stories/schema.ts`):
 ```
 Challenge types: `choice` (tap an answer), `riddle` (choice plus riddle lines), `steps` (the 4-step Combo on page 12, each ticked), `boxes` (tick N boxes), `say` (say it out loud, no right answer). The bullying tale has `other_rule: "not_sibling"`.
 
-Images: `public/stories/<slug>/<boy|girl>/cover.jpg, back.jpg, p01.jpg … p15.jpg`. Handoff README: pages 4:5 portrait 2480 × 3100 (the picture box is about 216 × 238 mm), covers 5:7 2480 × 3508. (The first delivered set, worry/boy, is 2550 × 2040 landscape; the template crops it with `object-fit: cover`, which works but shows less of the picture.) Extra page fields from the handoff: `screen` (+ `screen_after`) for the band's screen text, challenge `tag` and `done`, `**bold**` inside steps, story `back_blurb` and `struggle`.
+Images: `public/stories/<slug>/<boy|girl>/cover.jpg, back.jpg, p01.jpg … p15.jpg`. Handoff README: pages 4:5 portrait 2480 × 3100 (the picture box is about 216 × 238 mm), covers 5:7 2480 × 3508. Decision (10 Oct): the delivered landscape page sets (about 2550 × 2040) are final; the template crops them with `object-fit: cover`. Extra page fields from the handoff: `screen` (+ `screen_after`) for the band's screen text, challenge `tag` and `done`, `**bold**` inside steps, story `back_blurb` and `struggle`.
 
 **Design is the team's template, used unchanged (handoff rule 2):** `public/gtales-book/book.css`, `render.js` and the embedded Literata + Fredoka fonts. The app never restyles pages. `render.js` fills the tokens and builds cover + 15 pages + back cover; `fitPages()` sizes each picture so it ends where the text begins and warns on "too much text". The reference PDF to compare against is `docs/reference/worry-boy-template.pdf`.
 
@@ -200,7 +200,7 @@ AC: a check script confirms every `(…)` in the source became a token; every ta
 | 7 | Need and Ask | from the tale's own `need_choices` / `ask_choices`; shown only when the tale uses them (step skipped otherwise) |
 | 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
-Boy or girl picks the image set; if a tale's girl set is missing the girl book is refused with a clear message, never the boy pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
+Boy or girl picks the image set; a gender whose set is missing shows "Coming soon" in the form and is refused by the API, never substituted with the other gender's pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
 
 ### 7.3 fillStory (no AI, always works)
 
@@ -359,6 +359,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.3 (10 Oct 2026): second handoff: worry girl set, bullied (Big Crab) story + girl set, updated template (blurb panel, drop-cap rule); landscape page art is final; per-gender "coming soon".
 - 1.2 (10 Oct 2026): handoff pack adopted: team template (book.css + render.js + fonts) is the only design, 17-page A4 PDF, screen version = template scaled with tappable challenges, worry tale + boy set in repo, girl set refused until delivered, dedication dropped.
 - 1.1 (10 Oct 2026): free tier = text-only personalisation engine (story JSON, fillStory, optional AI polish, fixed boy/girl art), new 8-step form fields, A4 16-page PDF rules, catalogue age filter removed, LAN dev origins.
 - 1.0 (10 Oct 2026): first consolidated spec. Price 949/569/69, no refund, 15-step order form (struggles and strengths split), passwordless sign-in and order tracker, how-it-works tiles, tier cards instead of comparison table.

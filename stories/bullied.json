@@ -1,0 +1,198 @@
+{
+  "slug": "bullied",
+  "struggle": "Being bullied",
+  "title": "{{name}} and the Big Crab",
+  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "ask", "strength"],
+  "other_rule": "not_sibling",
+  "need_choices": [],
+  "ask_choices": ["Can you help me?", "Can you talk to my teacher?", "Can you come with me?", "Can you stay close?"],
+  "back_blurb": [
+    "When {{other}} takes {{name}}'s ball, {{name}} goes quiet and tells no one.",
+    "But on a magic beach, a big crab is taking everyone's shells.",
+    "Can {{name}} find a strong voice, and the Lifeguard Whistle, before the water comes in?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "It was a sunny day at the club in {{place}}. {{name}}, {{age}}, had a new ball.",
+        "Then {{other}} grabbed it. \"Ha! Baby can't catch it!\"",
+        "Other kids laughed too. {{name}}'s band went grey."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "{{name}} did not say a word. {{He}} went home and shut the door.",
+        "{{He}} did not tell anyone."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Did {{name}} do something wrong?",
+        "options": [
+          { "label": "No", "correct": true, "response": "That's right. When someone is mean, it is never your fault." },
+          { "label": "Yes", "correct": false, "response": "No! {{other}} was mean. {{name}} did nothing wrong." }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up, and the big seashell began to hum.",
+        "{{name}} held it to {{his}} ear. Whoosh! The sea pulled {{him}} in."
+      ],
+      "sign": "A sign said: Snap hid the Lifeguard Whistle. The water is coming in!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "{{name}} stood tall. \"I am here!\" A shiny bubble shield popped up around {{him}}."
+      ],
+      "screen": "STRONG VOICE = SHIELD UP · HIDING = SHIELD DOWN",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "What makes the shield come up?",
+        "options": [
+          { "label": "A strong voice", "correct": true, "response": "Yes! Stand tall, speak loud, shield up." },
+          { "label": "Hiding", "correct": false, "response": "Hiding makes the shield go down. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "Little crabs were stuck behind a big rock.",
+        "\"Can I help?\" {{name}} said in a strong voice.",
+        "Bump, bump, BUMP! {{His}} shield pushed the rock away."
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "A tiny hermit crab was crying. She had no shell.",
+        "\"I'm Lulu. Snap took my shell, and he hid the whistle so no one can call Teta Turtle.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Look at the sand. Which way did Snap go?",
+        "options": [
+          { "label": "The big claw marks", "correct": true, "response": "Yes! Big crab, big marks. Let's go!" },
+          { "label": "The little footprints", "correct": false, "response": "Those are too small for Snap. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "A seagull grabbed {{name}}'s snack. \"Ha ha! Too slow!\"",
+        "\"Stinky bird!\" {{name}} shouted, and {{his}} shield went down.",
+        "Then {{he}} stood tall. \"Stop. I don't like that.\" And {{he}} walked away."
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "In the sand was a shell with words on it. \"Read it, quick!\" said {{sidekick}}."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "riddle": ["When someone is mean, I am the thing to do.", "I am not a tattle. I keep you safe too. What am I?"],
+        "options": [
+          { "label": "Telling a grown-up", "correct": true, "response": "Telling! {{name}} kept the riddle in {{his}} pocket." },
+          { "label": "Being mean back", "correct": false, "response": "That makes things worse. Try again." },
+          { "label": "Keeping it secret", "correct": false, "response": "Secrets keep you alone. Try again." }
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There was Snap, the biggest crab, on a pile of shells.",
+        "Next to him was the Lifeguard Whistle! \"Mine, mine, all mine!\"",
+        "But look. Snap had a little band too."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Snap ran into a cave. \"You can't find me!\"",
+        "{{name}} took one slow breath. \"I will find the whistle. Then I will tell.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Trace the tunnels with your finger. Which one leads to the whistle?",
+        "options": [
+          { "label": "Pink shells", "correct": false, "response": "Dead end! Try another." },
+          { "label": "Blue shells", "correct": true, "response": "The blue tunnel! There's the whistle." },
+          { "label": "Yellow shells", "correct": false, "response": "Dead end! Try again." }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "Snap grabbed {{sidekick}} with his big claw. \"Ha! Tiny baby!\"",
+        "{{name}} froze. {{His}} shield went down.",
+        "The water rushed in, up to {{his}} knees!"
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "\"I won't hide this time,\" said {{name}}.",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Stand tall and say it loud:** \"Stop. I don't like that.\""
+        ],
+        "done": "{{His}} shield came up, bigger and shinier than ever!"
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "\"STOP. I don't like that!\" said {{name}}, loud and strong. Snap let {{sidekick}} go.",
+        "{{name}} grabbed the whistle and blew. Tweeeet!",
+        "Teta Turtle swam in fast. \"Thank you for telling me,\" she said, and pushed the water back."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "\"Nobody plays with me,\" Snap said quietly. \"So I take things.\"",
+        "\"Taking is not OK,\" said Teta Turtle. Snap gave back the shells. \"Sorry.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "multi": true,
+        "question": "Who can you tell when someone is mean? Tick every one.",
+        "options": [
+          { "label": "Mama or Baba", "correct": true, "response": "Yes!" },
+          { "label": "A teacher", "correct": true, "response": "Yes!" },
+          { "label": "Teta or Gedo", "correct": true, "response": "Yes!" },
+          { "label": "A seagull", "correct": false, "response": "Ha! No. Tell a big person." }
+        ],
+        "done": "Yes! There are lots of big people who can help."
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back at the club, {{other}} grabbed the ball again. \"Baby!\"",
+        "{{name}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
+        "{{He}} stood tall. \"Stop. I don't like that.\" Then {{he}} told Mama. \"{{ask}}\"",
+        "Mama helped, and the ball came back. {{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
+      ]
+    }
+  ]
+}
