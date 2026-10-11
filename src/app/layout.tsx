@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/i18n-client";
 import { PageViewBeacon } from "@/components/PageViewBeacon";
 import type { Lang } from "@/lib/i18n";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "GTales — Your child is the Hero",
@@ -33,6 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <LangProvider lang={lang}>{children}</LangProvider>
         <PageViewBeacon />
+        <SpeedInsights />
       </body>
     </html>
   );
