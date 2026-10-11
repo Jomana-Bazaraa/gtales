@@ -74,8 +74,14 @@ export const TALES: Tale[] = [
     title: "Honesty",
     helps: "Small fibs that are getting bigger",
     line: "Your child learns that the truth is lighter to carry.",
-    cover: null,
-    coverAlt: "Cover of the Honesty tale",
+    cover: "/stories-web/lying/boy/cover.jpg",
+    coverAlt: "Cover of the Honesty tale: a boy and his robot friend with the Rainbow Kite",
+    portrait: true,
+    samples: [
+      { src: "/stories-web/lying/girl/p01.jpg", alt: "Friday at Teta's house: a ball bounces and a tea glass breaks" },
+      { src: "/stories-web/lying/boy/p08.jpg", alt: "A little card in the nest with a riddle on it" },
+      { src: "/stories-web/lying/girl/p12.jpg", alt: "On a dark low cloud, the hero remembers the Power Word" },
+    ],
   },
   {
     slug: "feelings",
@@ -98,8 +104,14 @@ export const TALES: Tale[] = [
     title: "Kindness and friendship",
     helps: "Sharing, taking turns, making friends",
     line: "Your child learns to share the game, not just the ball.",
-    cover: null,
-    coverAlt: "Cover of the Kindness and friendship tale",
+    cover: "/stories-web/friendship/girl/cover.jpg",
+    coverAlt: "Cover of the Kindness and friendship tale: a girl and her robot friend at the Eid swings",
+    portrait: true,
+    samples: [
+      { src: "/stories-web/friendship/boy/p01.jpg", alt: "Eid: a brand new red car and a friend asking for a turn" },
+      { src: "/stories-web/friendship/girl/p08.jpg", alt: "A note inside the big bubble with a riddle on it" },
+      { src: "/stories-web/friendship/boy/p12.jpg", alt: "The hero lets go and remembers the Power Word" },
+    ],
   },
 ];
 

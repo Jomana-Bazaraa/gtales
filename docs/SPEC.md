@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.6 · 11 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.7 · 11 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -351,6 +351,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.7 (11 Oct 2026): remaining five image sets delivered (feelings boy, lying boy+girl, friendship boy+girl) — all 12 sets live; Honesty and Kindness & friendship get covers and samples; no "coming soon" tales remain.
 - 1.6 (11 Oct 2026): full handoff adopted — all six story files (anger, worry, bullied, lying, feelings, friendship) without `{{ask}}`/`ask_choices`/`need_choices`; `ask` removed from the engine, form and API. Image sets delivered: anger boy+girl, worry boy+girl, bullied boy+girl, feelings girl (7 of 12; feelings boy, lying and friendship are "coming soon" per gender). Two image trees: `public/stories/` full size for the PDF, `public/stories-web/` 1200 px copies for the reader, covers and samples (`storyImage(..., variant)`, `renderBookHtml(..., "web"|"print")`). Reference PDFs, parent guides and template demos under `docs/reference/`. Age stays 2–10 (the handoff FORM_PROMPT still says 4–8; Ayman's 10 Oct decision wins).
 - 1.5 (10 Oct 2026): ages 2–10 everywhere (was 4–8; free engine accepts 2–10 too). Hero screen: photo optional with an optional text description instead, full-body photo removed, three-books note on screen 1. Price footer shown only on the delivery and review screens. Meet the book and hero fan use rendered template pages; the 20×20 Series mock-up (`public/book/`) is retired and Calm has no cover until its pack arrives.
 - 1.4 (10 Oct 2026): Series is three books (was five): list 749, LAUNCH40 → 449, delivery 89, total 538. Order form restructured per Ayman's review (see §9).
