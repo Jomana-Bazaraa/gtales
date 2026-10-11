@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 
-export const TOKENS = ["name", "age", "place", "other", "sidekick", "power_word", "need", "ask", "strength"] as const;
+export const TOKENS = ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength"] as const;
 export type Token = (typeof TOKENS)[number];
 export const PRONOUNS = ["he", "him", "his", "He", "Him", "His"] as const;
 
@@ -43,7 +43,6 @@ export const storySchema = z.object({
   back_blurb: z.array(z.string()).default([]),
   uses: z.array(z.enum(TOKENS)),
   need_choices: z.array(z.string()).default([]),
-  ask_choices: z.array(z.string()).default([]),
   other_rule: z.enum(["not_sibling"]).nullable().default(null),
   pages: z.array(pageSchema).length(15),
 });
@@ -70,7 +69,6 @@ export const formSchema = z.object({
   sidekick: z.string().trim().min(1).max(12).optional(),
   power_word: z.string().trim().min(1).max(20).optional(),
   need: z.string().optional(),
-  ask: z.string().optional(),
   dedication: z.string().trim().max(120).optional(),
 });
 export type StoryForm = z.infer<typeof formSchema>;

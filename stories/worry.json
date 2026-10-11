@@ -2,10 +2,17 @@
   "slug": "worry",
   "struggle": "Worry and fear",
   "title": "{{name}} and the Big Shadow",
-  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "ask", "strength"],
+  "uses": [
+    "name",
+    "age",
+    "place",
+    "other",
+    "sidekick",
+    "power_word",
+    "need",
+    "strength"
+  ],
   "other_rule": null,
-  "need_choices": ["I need a hug.", "I need a light.", "I need you to stay.", "I need to talk."],
-  "ask_choices": ["Can you turn on the torch?", "Can you sit with me?", "Can you hold my hand?", "Can you check with me?"],
   "back_blurb": [
     "When the power goes out, {{name}} sees a big, scary shadow on the wall.",
     "Up on the roof, the Big Fanous has gone dark.",
@@ -31,8 +38,16 @@
         "type": "choice",
         "question": "Look at the band. Is the cloud big or small?",
         "options": [
-          { "label": "Big", "correct": true, "response": "Yes. Big cloud, big worry." },
-          { "label": "Small", "correct": false, "response": "Look again. It's very big!" }
+          {
+            "label": "Big",
+            "correct": true,
+            "response": "Yes. Big cloud, big worry."
+          },
+          {
+            "label": "Small",
+            "correct": false,
+            "response": "Look again. It's very big!"
+          }
         ]
       }
     },
@@ -56,8 +71,16 @@
         "type": "choice",
         "question": "What makes the worry cloud smaller?",
         "options": [
-          { "label": "Saying the worry out loud", "correct": true, "response": "Yes! Say it, and it shrinks." },
-          { "label": "Hiding under a blanket", "correct": false, "response": "Hiding keeps the cloud big. Try again." }
+          {
+            "label": "Saying the worry out loud",
+            "correct": true,
+            "response": "Yes! Say it, and it shrinks."
+          },
+          {
+            "label": "Hiding under a blanket",
+            "correct": false,
+            "response": "Hiding keeps the cloud big. Try again."
+          }
         ]
       }
     },
@@ -79,8 +102,16 @@
         "type": "choice",
         "question": "Which way did the Big Shadow go?",
         "options": [
-          { "label": "Where the lights are off", "correct": true, "response": "Yes! The lights went out where he passed." },
-          { "label": "Where the lights are on", "correct": false, "response": "Those lights are still bright. Try again." }
+          {
+            "label": "Where the lights are off",
+            "correct": true,
+            "response": "Yes! The lights went out where he passed."
+          },
+          {
+            "label": "Where the lights are on",
+            "correct": false,
+            "response": "Those lights are still bright. Try again."
+          }
         ]
       }
     },
@@ -100,11 +131,26 @@
       "challenge": {
         "type": "riddle",
         "question": "Help {{name}} read the riddle.",
-        "riddle": ["I am big on the wall, but small in real life.", "Turn on the light, and I go away. What am I?"],
+        "riddle": [
+          "I am big on the wall, but small in real life.",
+          "Turn on the light, and I go away. What am I?"
+        ],
         "options": [
-          { "label": "A shadow", "correct": true, "response": "A shadow! {{name}} kept the riddle in {{his}} pocket." },
-          { "label": "A giant", "correct": false, "response": "Giants don't go away when you turn on the light!" },
-          { "label": "A ghost", "correct": false, "response": "Close! But this one is made by the light." }
+          {
+            "label": "A shadow",
+            "correct": true,
+            "response": "A shadow! {{name}} kept the riddle in {{his}} pocket."
+          },
+          {
+            "label": "A giant",
+            "correct": false,
+            "response": "Giants don't go away when you turn on the light!"
+          },
+          {
+            "label": "A ghost",
+            "correct": false,
+            "response": "Close! But this one is made by the light."
+          }
         ]
       }
     },
@@ -126,9 +172,21 @@
         "type": "choice",
         "question": "Trace the planks with your finger. Which path gets to the top?",
         "options": [
-          { "label": "Blue", "correct": false, "response": "Oops! That one stops in the air." },
-          { "label": "Green", "correct": true, "response": "Yes! Step, step, step, all the way across." },
-          { "label": "Pink", "correct": false, "response": "That path goes back down. Try again." }
+          {
+            "label": "Blue",
+            "correct": false,
+            "response": "Oops! That one stops in the air."
+          },
+          {
+            "label": "Green",
+            "correct": true,
+            "response": "Yes! Step, step, step, all the way across."
+          },
+          {
+            "label": "Pink",
+            "correct": false,
+            "response": "That path goes back down. Try again."
+          }
         ]
       }
     },
@@ -185,7 +243,7 @@
       "text": [
         "Back in bed, {{name}} saw the shadow again.",
         "{{He}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
-        "\"{{other}}, I'm scared. {{ask}}\" The torch went on. It was only {{his}} coat and hat!",
+        "\"{{other}}, I'm scared. Can you turn on the torch?\" The torch went on. It was only {{his}} coat and hat!",
         "{{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
       ]
     }

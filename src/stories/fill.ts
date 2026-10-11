@@ -79,7 +79,6 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
     sidekick: form.sidekick ? capitaliseName(form.sidekick) : "",
     power_word: (form.power_word ?? "").trim(),
     need: (form.need ?? "").trim(),
-    ask: (form.ask ?? "").trim(),
     strength: (form.strength ?? "").trim().toLowerCase(),
   };
   for (const t of story.uses) {
@@ -108,7 +107,6 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
     title: f(story.title),
     back_blurb: story.back_blurb.map(f),
     need_choices: story.need_choices.map(f),
-    ask_choices: story.ask_choices.map(f),
     pages: story.pages.map((p) => ({
       ...p,
       text: p.text.map(f),

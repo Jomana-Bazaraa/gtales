@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.5 · 10 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.6 · 11 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -160,7 +160,6 @@ Source: the team's six story texts (anger, worry/anxiety, bullied, lying, feelin
 | (Sidekick) | `{{sidekick}}` |
 | (Power Word) | `{{power_word}}` |
 | (Need) | `{{need}}` |
-| (Ask) | `{{ask}}` |
 | (Strength) | `{{strength}}` |
 | he / him / his / He / His (hero only) | `{{he}} {{him}} {{his}} {{He}} {{His}}` |
 
@@ -170,8 +169,7 @@ Schema (zod in `src/stories/schema.ts`):
 ```json
 {
   "slug": "worry", "title": "{{name}} and the Big Shadow",
-  "uses": ["name","age","place","other","sidekick","power_word","need","ask","strength"],
-  "need_choices": ["I need a hug.", "..."], "ask_choices": ["Can you sit with me?", "..."],
+  "uses": ["name","age","place","other","sidekick","power_word","need","strength"],
   "other_rule": null | "not_sibling",
   "pages": [{ "n": 1, "image": "p01.jpg", "text": ["..."], "sign": null | "italic text drawn on the picture",
               "challenge": null | { "type": "choice|riddle|steps|boxes|say", "question": "...", "riddle": ["..."],
@@ -197,7 +195,7 @@ AC: a check script confirms every `(…)` in the source became a token; every ta
 | 4 | The other child: name + relation | brother, sister, cousin, friend; bullying tale only: a child at school or the park (`other_rule`) |
 | 5 | What they're great at | noun that fits "Best ___ in Maadi": builder, artist, football player, swimmer, dancer, helper, reader, singer, or other (free text noun) |
 | 6 | The child chooses: sidekick name · Power Word | sidekick 1–12 chars; power word 1–20 chars |
-| 7 | Need and Ask | from the tale's own `need_choices` / `ask_choices`; shown only when the tale uses them (step skipped otherwise) |
+| 7 | Need | the form's own six sentences (a hug, talking, quiet time…); shown only when the tale uses `need` (step skipped otherwise). `ask` no longer exists. |
 | 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
 Boy or girl picks the image set; a gender whose set is missing shows "Coming soon" in the form and is refused by the API, never substituted with the other gender's pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
@@ -353,6 +351,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.6 (11 Oct 2026): full handoff adopted — all six story files (anger, worry, bullied, lying, feelings, friendship) without `{{ask}}`/`ask_choices`/`need_choices`; `ask` removed from the engine, form and API. Image sets delivered: anger boy+girl, worry boy+girl, bullied boy+girl, feelings girl (7 of 12; feelings boy, lying and friendship are "coming soon" per gender). Two image trees: `public/stories/` full size for the PDF, `public/stories-web/` 1200 px copies for the reader, covers and samples (`storyImage(..., variant)`, `renderBookHtml(..., "web"|"print")`). Reference PDFs, parent guides and template demos under `docs/reference/`. Age stays 2–10 (the handoff FORM_PROMPT still says 4–8; Ayman's 10 Oct decision wins).
 - 1.5 (10 Oct 2026): ages 2–10 everywhere (was 4–8; free engine accepts 2–10 too). Hero screen: photo optional with an optional text description instead, full-body photo removed, three-books note on screen 1. Price footer shown only on the delivery and review screens. Meet the book and hero fan use rendered template pages; the 20×20 Series mock-up (`public/book/`) is retired and Calm has no cover until its pack arrives.
 - 1.4 (10 Oct 2026): Series is three books (was five): list 749, LAUNCH40 → 449, delivery 89, total 538. Order form restructured per Ayman's review (see §9).
 - 1.3 (10 Oct 2026): second handoff: worry girl set, bullied (Big Crab) story + girl set, updated template (blurb panel, drop-cap rule); landscape page art is final; per-gender "coming soon".

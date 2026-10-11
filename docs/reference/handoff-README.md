@@ -1,6 +1,6 @@
 # GTales handoff pack
 
-Everything Claude Code needs to build personalized books. Open `template/demo-worry-boy.html` or `demo-worry-girl.html` in a browser to see a working book.
+Everything Claude Code needs to build personalized books. Open any `template/demo-*.html` file in a browser to see a working book.
 
 ## What's inside
 
@@ -8,23 +8,36 @@ Everything Claude Code needs to build personalized books. Open `template/demo-wo
 gtales-handoff/
   README.md                       this file
   CLAUDE_CODE_PROMPT.md           paste this into Claude Code
+  FORM_PROMPT.md                  the parent form, question by question
   stories/
+    anger.json                    Story 1 (Great Blocktown Smash)
     worry.json                    Story 2 (Big Shadow)
     bullied.json                  Story 3 (Big Crab)
+    lying.json                    Story 4 (Rainbow Kite)
+    feelings.json                 Story 5 (Dust Storm)
+    friendship.json               Story 6 (Eid Swings)
   images/
+    anger/boy/   anger/girl/
     worry/boy/   worry/girl/      cover.jpg, p01.jpg ... p15.jpg, back.jpg
-    bullied/girl/                 (boy set still to come)
+    bullied/boy/ bullied/girl/
+    feelings/girl/
+    friendship/boy/               (more sets arrive as they're made)
   template/
     book.css                      the page design
     render.js                     fills the story with form values and builds the pages
+    demo-anger-boy.html   demo-anger-girl.html
     demo-worry-boy.html           working examples with (Name)-style placeholders
     demo-worry-girl.html
-    demo-bullied-girl.html
+    demo-bullied-boy.html   demo-bullied-girl.html
+    demo-feelings-girl.html   demo-friendship-boy.html
     fonts/
+  parent-guides/                  the three parent guide PDFs (anger, worry, bullied)
   reference/
+    anger-boy-template.pdf   anger-girl-template.pdf
     worry-boy-template.pdf        what finished books must look like
     worry-girl-template.pdf
-    bullied-girl-template.pdf
+    bullied-boy-template.pdf   bullied-girl-template.pdf
+    feelings-girl-template.pdf   friendship-boy-template.pdf
 ```
 
 ## Rules
@@ -52,7 +65,7 @@ Gemini usually makes about 1024 px images. Before printing, enlarge them with an
 
 ## Story JSON format (short version)
 
-- `{{name}}`, `{{age}}`, `{{place}}`, `{{other}}`, `{{sidekick}}`, `{{power_word}}`, `{{need}}`, `{{ask}}`, `{{strength}}` are form values.
+- `{{name}}`, `{{age}}`, `{{place}}`, `{{other}}`, `{{sidekick}}`, `{{power_word}}`, `{{need}}`, `{{strength}}` are form values.
 - `{{he}}`, `{{him}}`, `{{his}}`, `{{He}}`, `{{His}}` are the hero's pronouns. The renderer swaps them for girls.
 - `(Other)` never gets a pronoun.
 - `**bold**` inside a step becomes bold text.

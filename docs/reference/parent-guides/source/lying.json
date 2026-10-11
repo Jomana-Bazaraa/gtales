@@ -1,0 +1,435 @@
+{
+ "slug": "lying",
+ "number": "04",
+ "topic_label": "Lying",
+ "title": "Light as a Feather",
+ "subtitle": "Why young children fib, and simple daily steps that make telling the truth feel safe and easy.",
+ "band_legend": "Feather = truth, you float · Stone = fib, you sink",
+ "first_breath": "Almost every child tells lies, and a first fib does not mean your child is a bad person. Lying shows a new thinking skill in the brain. What your child still needs to learn is that the truth is safe at home, and you can teach that.",
+ "understand": {
+  "heading": "Understanding lying",
+  "paras": [
+   "A lie is saying something you know is not true so another person believes it. Children aged 4 to 8 tell many kinds: small fibs to avoid trouble, blaming a brother or sister, saying “No” when the chocolate is on their face, and big made-up stories. Children under about 7 often mix up play and real life, so many tall tales are pretend, not real lies.",
+   "To lie, the brain must do two hard jobs. First, your child must understand that you have your own thoughts, and that you can believe something false (scientists call this “theory of mind”). Second, your child must hold back the truth and keep a plan in mind (called “executive function”, the brain’s control and planning skills). In studies, children with stronger control skills lied more, and teaching 3-year-olds about other people’s thoughts made them start to lie. So lying is a sign of a growing brain. The job now is to make honesty the easier choice."
+  ],
+  "chart": {
+   "title": "Children told the truth most when they felt safe and knew the adult would be happy",
+   "caption": "% of children aged 4–8 who peeked at a hidden toy and then lied about it, by what the adult said before asking. About 372 children.",
+   "bars": [
+    {
+     "label": "Nothing said about honesty",
+     "value": 87,
+     "display": "87%"
+    },
+    {
+     "label": "“You’ll be in trouble” + “Do the right thing”",
+     "value": 86,
+     "display": "86%"
+    },
+    {
+     "label": "“You’ll be in trouble” + “I’ll be happy if you tell the truth”",
+     "value": 61,
+     "display": "~61%"
+    },
+    {
+     "label": "“I won’t be cross” + “Do the right thing”",
+     "value": 45,
+     "display": "~45%"
+    },
+    {
+     "label": "“I won’t be cross” + “I’ll be happy if you tell the truth”",
+     "value": 35,
+     "display": "35%"
+    }
+   ],
+   "source": "Talwar, Arruda & Yachison, 2015, Journal of Experimental Child Psychology (summary by Parenting Science)"
+  },
+  "chart2": {
+   "title": "Most children who peeked then lied about it",
+   "caption": "372 children aged 4–8 were left alone with a toy and asked not to peek. 67.5% peeked, and 66.5% of those then lied. Shares worked out from those two numbers.",
+   "segments": [
+    {
+     "label": "Did not peek",
+     "pct": 32.5
+    },
+    {
+     "label": "Peeked, then told the truth",
+     "pct": 22.6
+    },
+    {
+     "label": "Peeked, then lied",
+     "pct": 44.9
+    }
+   ],
+   "source": "Talwar, Arruda & Yachison, 2015, as reported by TIME (2014)"
+  }
+ },
+ "ages": [
+  {
+   "age": "4–5",
+   "common": "Big made-up stories and pretend play mixed with real life. Quick “No!” fibs to avoid trouble. Lies are easy to spot: in one study of 2- and 3-year-olds, 76% of liars blurted out the name of the toy they said they never saw.",
+   "clues": "The same fib every day about one thing, such as hiding food or toilet accidents. This can mean your child is scared of that topic, not sneaky."
+  },
+  {
+   "age": "6–7",
+   "common": "Blaming a brother, sister or friend. Fibs about homework, screens or sweets. Lies get better because the brain can now plan what to say next.",
+   "clues": "Lies told with no sign of worry or sorry. Lying that comes with fear of a teacher or big anger at home."
+  },
+  {
+   "age": "8",
+   "common": "Fewer lies over all, but better ones. Your child may pretend not to know things to cover a lie. Your child now understands that lies hurt trust.",
+   "clues": "Lying a lot to hide bigger problems, such as trouble at school, being bullied, or taking things. Lying together with fights, cruelty or no friends."
+  }
+ ],
+ "surprise": {
+  "kicker": "The surprising part",
+  "headline": "Fear of punishment does not stop lying. It trains children to lie more, and to lie better.",
+  "text": "Scientists compared two schools in West Africa with 3- and 4-year-olds. In the strict school, children were hit for small mistakes. There, 94% of the children who peeked lied, compared with 55% in the school that used time-outs and talks. Children from the strict school were also much better liars, almost as skilled as 6- and 7-year-olds. So the hidden cause of many lies is not a bad heart: it is a child who is afraid of what happens after the truth.",
+  "cite": "Talwar & Lee, 2011"
+ },
+ "iceberg": {
+  "intro": "The lie is what you see on top. Under the water, there is usually a reason your child cannot say yet.",
+  "tip_words": [
+   "“I didn’t do it!”",
+   "Blaming a sibling",
+   "Denying the obvious",
+   "Tall tales"
+  ],
+  "causes": [
+   {
+    "title": "Fear of trouble",
+    "text": "Your child expects shouting, hitting or losing something loved. The lie is a shield. Children who expect punishment lie more often.",
+    "cite": "Talwar & Lee, 2011"
+   },
+   {
+    "title": "A growing brain",
+    "text": "Your child has just learned that you cannot see inside their head. Trying out lies is part of this new skill. Children with stronger thinking and control skills lie more at first.",
+    "cite": "Evans & Lee, 2013"
+   },
+   {
+    "title": "Wanting to please",
+    "text": "Your child hates to see you sad or angry with them. A fib feels like a way to keep you happy. Young children tell the truth more when they believe it will make the adult happy.",
+    "cite": "Talwar, Arruda & Yachison, 2015"
+   },
+   {
+    "title": "Copying adults",
+    "text": "Children notice our small lies, like “The shop has no more sweets” or “The doctor won’t hurt.” Adults who were often lied to as children reported lying more to their parents.",
+    "cite": "Setoh et al., 2020"
+   },
+   {
+    "title": "Pretend and real",
+    "text": "Children under about 7 often mix up imagination and real life. Many tall tales are play, not tricks.",
+    "cite": "Cincinnati Children’s"
+   },
+   {
+    "title": "Shame about mistakes",
+    "text": "Your child may feel “If I did a bad thing, I am bad.” Hiding the mistake protects how they feel about themselves. Children need to hear that everyone makes mistakes."
+   }
+  ]
+ },
+ "warning": {
+  "text": "Many parents warn, “If you lie, you will be in big trouble.” In studies, the threat of punishment made children lie more, and in a strict, hitting school, children became skilled liars.",
+  "cite": "Talwar & Lee, 2011"
+ },
+ "moment": {
+  "name": "Calm, Clear, Credit, Correct",
+  "intro": "You have caught a fib. Your goal is not to win. Your goal is to make the truth feel safe next time.",
+  "steps": [
+   {
+    "title": "Calm first",
+    "text": "Take one slow breath before you speak. A calm face tells your child the truth is safe here."
+   },
+   {
+    "title": "Say what you see",
+    "text": "Don’t ask a trap question like “Did you break it?” when you already know. Say, “I see the cup is broken. Let’s talk about it.”"
+   },
+   {
+    "title": "Credit the truth",
+    "text": "Say, “I won’t be cross. I will be really happy if you tell me what happened.” When the truth comes, thank your child warmly."
+   },
+   {
+    "title": "Correct together",
+    "text": "Fix the problem as a team: clean up, say sorry to the sibling, or glue the cup. The lesson is the repair, not the pain."
+   }
+  ],
+  "why": "In one study, children told “I won’t be cross” and “I’ll be happy if you tell the truth” lied far less: 35% instead of 87% (Talwar, Arruda & Yachison, 2015).",
+  "say": [
+   [
+    "“I can see the cup is broken. Thank you for helping me understand what happened.”",
+    "“Did you break this? Don’t lie to me!”"
+   ],
+   [
+    "“You won’t be in trouble for telling me. I’ll be so happy to hear the truth.”",
+    "“If you’re lying, you’re in big trouble.”"
+   ],
+   [
+    "“Let’s try that again. Use your Combo and tell me the true way.”",
+    "“You’re a liar.”"
+   ],
+   [
+    "“Everyone makes mistakes. Telling me about it is very brave.”",
+    "“How could you do something so bad?”"
+   ],
+   [
+    "“Is this a pretend story or a true story? Both are fine, just tell me which.”",
+    "“Stop making things up!”"
+   ]
+  ],
+  "after_title": "After the fib: the 4 Rs",
+  "after": [
+   {
+    "r": "Reconnect",
+    "text": "Give a hug or sit close, so your child knows your love did not change."
+   },
+   {
+    "r": "Repair",
+    "text": "Fix what happened together, like cleaning up or saying sorry to a sibling."
+   },
+   {
+    "r": "Remember",
+    "text": "Later, tell the story back kindly: “You felt scared, and then you told the truth.”"
+   },
+   {
+    "r": "Rehearse",
+    "text": "Practise the Combo words once: “The truth is, I did it. I’m sorry.”"
+   }
+  ]
+ },
+ "everyday": {
+  "intro": "Honesty grows in small daily moments, long before the next broken cup. These habits make the truth the easy choice.",
+  "habits": [
+   {
+    "title": "Praise the truth out loud",
+    "text": "When your child tells you a hard truth, thank them before you deal with the problem. “Thank you for telling me. That was brave.” Children tell the truth more when they know it makes you happy."
+   },
+   {
+    "title": "Tell stories that reward honesty",
+    "text": "Pick stories where telling the truth leads to praise, like a child who admits breaking something and is thanked. In one study, a classic story like this made children about 3 times more likely to tell the truth. Scary stories, like the boy who cried wolf, did not help."
+   },
+   {
+    "title": "Ask for a promise",
+    "text": "Before a hard question, ask gently: “Can you promise to tell me the truth?” In Victoria Talwar’s research, children who promised were about half as likely to lie."
+   },
+   {
+    "title": "Keep your own word",
+    "text": "Try not to use “handy” lies, like “The park is closed” or “The police will take you.” Tell the real reason in simple words. Your child learns honesty from watching you."
+   },
+   {
+    "title": "Use calm, fair rules",
+    "text": "Choose small, clear results for mistakes, like helping to clean up. Never hit or shame. Children in a school with harsh hitting lied more and lied better."
+   },
+   {
+    "title": "Make room for pretend",
+    "text": "Enjoy tall tales as play, and help your child name them: “That’s a great pretend story!” This teaches the difference between pretend and true without shame."
+   }
+  ],
+  "proof": {
+   "text": "In a study of about 372 children aged 4 to 8, the lowest lying rate came when adults said they would not be cross and would be happy to hear the truth. Lying fell from 87% to 35% with these two simple sentences.",
+   "cite": "Talwar, Arruda & Yachison, 2015"
+  }
+ },
+ "activities": [
+  {
+   "name": "Feather or Stone",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "A real feather (or a scrap of tissue) and a small stone",
+   "steps": [
+    "Hold the feather in one hand and the stone in the other.",
+    "Say a short sentence, like “I ate an elephant for breakfast” or “I have two eyes.”",
+    "Your child lifts the feather for true or the stone for false.",
+    "Let your child make up sentences for you to judge.",
+    "End with: “The truth feels light, like the band’s feather.”"
+   ],
+   "why": "Playing true-or-pretend helps your child see the difference between real and made-up, which young children are still learning (AACAP)."
+  },
+  {
+   "name": "Combo Practice",
+   "ages": "4–8",
+   "time": "3 min",
+   "materials": "None",
+   "steps": [
+    "Pretend a toy “broke” a pretend cup.",
+    "Your child does the Combo: freeze and hug your tummy, take three slow breaths, say the Power Word.",
+    "Then your child says: “The truth is, I did it. I’m sorry.”",
+    "You answer, “Thank you for telling me! Let’s fix it together.”",
+    "Swap roles so your child hears you say it too."
+   ],
+   "why": "Practising the words when calm makes them easier to find when your child feels scared. Hearing praise for the truth increases honesty (Lee et al., 2014)."
+  },
+  {
+   "name": "Thank-You Jar",
+   "ages": "4–8",
+   "time": "1 min a day",
+   "materials": "A jar and dried beans, buttons or paper feathers",
+   "steps": [
+    "Each time anyone in the family tells a hard truth, add one feather to the jar.",
+    "Say what happened: “Youssef told me he spilled the juice. Feather!”",
+    "Parents add feathers for their own truths too.",
+    "When the jar is full, have a small family treat, like a picnic."
+   ],
+   "why": "Children are more honest when they believe telling the truth will make the adult happy (Talwar, Arruda & Yachison, 2015)."
+  },
+  {
+   "name": "Honesty Hero Story",
+   "ages": "5–8",
+   "time": "10 min",
+   "materials": "Paper, crayons",
+   "steps": [
+    "Tell a short family story: a child breaks Teta’s favourite vase, tells the truth, and Teta hugs them and says “Thank you for telling me.”",
+    "Ask, “How did Teta feel when she heard the truth?”",
+    "Draw a new story with your child as the hero who tells a hard truth.",
+    "End the drawing with a happy grown-up saying “Thank you.”"
+   ],
+   "why": "Only stories where honesty brings praise made children more truthful. A story like this made them about 3 times more likely to tell the truth (Lee et al., 2014)."
+  },
+  {
+   "name": "Mind-Reading Game",
+   "ages": "4–6",
+   "time": "5 min",
+   "materials": "An empty biscuit box with a small toy hidden inside",
+   "steps": [
+    "Show your child the box and ask, “What’s inside?”",
+    "Open it and show the toy.",
+    "Close it and ask, “What will Grandma think is inside?”",
+    "Talk about how people can believe something that is not true.",
+    "Say, “That’s why we tell people what is really true, so they know.”"
+   ],
+   "why": "This trick-box game trains the skill of understanding other people’s thoughts, which is the same skill children use to choose lying or honesty (Ding et al., 2015)."
+  },
+  {
+   "name": "Heavy Backpack Walk",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "A small bag and a few stones or heavy books",
+   "steps": [
+    "Your child wears an empty bag and walks across the room. Easy!",
+    "Add one stone for each “pretend fib” you name together: “I didn’t spill it.”",
+    "Walk again. Notice how heavy it feels.",
+    "Take out a stone each time your child says the true sentence instead.",
+    "Talk about how a fib stays with you, but the truth makes you light."
+   ],
+   "why": "This turns the story’s feather-and-stone idea into a body feeling your child can remember."
+  },
+  {
+   "name": "Promise Handshake",
+   "ages": "4–8",
+   "time": "1 min",
+   "materials": "None",
+   "steps": [
+    "Invent a special family handshake together.",
+    "Before a hard question, offer the handshake: “Promise to tell me the truth?”",
+    "Say right away: “You won’t be in trouble for telling me.”",
+    "Listen, then thank your child for keeping the promise."
+   ],
+   "why": "In Talwar’s studies, children who promised to tell the truth were about half as likely to lie (McGill Reporter)."
+  }
+ ],
+ "story": {
+  "before": "Read the title together and ask, “Have you ever been scared to tell the truth?” Share a small time when you felt that way too. Show your child the band and explain: the feather means truth, the stone means a fib.",
+  "during": "When the hero breaks Teta’s tea glass and blames someone else, pause and ask, “How does that heavy tummy feel?” Watch the stones fall off each time the hero tells the truth. When Fefo the fox says “Not me!”, ask, “Why is Fefo sinking?” On page 12, do the Combo together: freeze and hug your tummy, three slow breaths, the Power Word, and “The truth is, I did it. I’m sorry.”",
+  "after": "Talk about the ending: how did Teta feel when she heard the truth? Say clearly, “In our home, I will always thank you for the truth, even when something breaks.” Then practise the Combo once together.",
+  "plan": [
+   "Day 1: Read the story together and talk about the feather and the stone on the band.",
+   "Day 2: Play Feather or Stone, then do Combo Practice with a pretend broken cup.",
+   "Day 3: Start the Thank-You Jar and add a feather for every true story today.",
+   "Day 4: Tell an Honesty Hero Story and draw your child as the hero.",
+   "Day 5: Play the Mind-Reading Game, then reread the story and spot the band changes.",
+   "Day 6: Do the Heavy Backpack Walk and invent your Promise Handshake.",
+   "Day 7: Reread the story, count the feathers in the jar, and celebrate every truth your child told this week."
+  ]
+ },
+ "help": {
+  "signs": [
+   "Lying is serious and happens again and again over many weeks, even with calm, kind responses.",
+   "Your child lies to get things from others and shows no sign of being sorry.",
+   "Lying comes with other big problems, such as setting fires, hurting animals, sleep problems or very high activity.",
+   "Your child has few friends, does not want to play with others, or seems sad or low.",
+   "Lies seem to hide something bigger, such as bullying, trouble at school or someone hurting your child.",
+   "Your child often tells long, detailed stories to get attention and seems unable to stop.",
+   "Your child seems very afraid of punishment from someone at home, school or elsewhere."
+  ],
+  "text": "Start with your child’s pediatrician, who can refer you to a child psychologist or child and adolescent psychiatrist. Ask about parent training programs, such as Parent-Child Interaction Therapy (PCIT), which coach parents to build warm, calm and consistent discipline."
+ },
+ "sources": [
+  {
+   "cite": "Evans & Lee, 2013",
+   "ref": "Evans, A. D., & Lee, K. (2013). Emergence of lying in very young children. Developmental Psychology, 49(10), 1958–1963.",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3788848/"
+  },
+  {
+   "cite": "Talwar & Lee, 2011",
+   "ref": "Talwar, V., & Lee, K. (2011). A punitive environment fosters children’s dishonesty: A natural experiment. Child Development, 82(6), 1751–1758. Numbers as summarized by Parenting Science.",
+   "url": "https://parentingscience.com/punitive-environments-encourage-children-to-tell-lies"
+  },
+  {
+   "cite": "Talwar, Arruda & Yachison, 2015",
+   "ref": "Talwar, V., Arruda, C., & Yachison, S. (2015). The effects of punishment and appeals for honesty on children’s truth-telling behavior. Journal of Experimental Child Psychology, 130, 209–217. Also reported by TIME, 10 Dec 2014.",
+   "url": "https://tollbit.time.com/3628783/lying-punishment-kids-lie-more-study/"
+  },
+  {
+   "cite": "Lee et al., 2014",
+   "ref": "Lee, K., Talwar, V., McCarthy, A., Ross, I., Evans, A., & Arruda, C. (2014). Can classic moral stories promote honesty in children? Psychological Science. Association for Psychological Science news release.",
+   "url": "https://www.psychologicalscience.org/news/releases/moral-tales-with-positive-outcomes-motivate-kids-to-be-honest.html"
+  },
+  {
+   "cite": "Ding et al., 2015",
+   "ref": "Ding, X. P., Wellman, H. M., Wang, Y., Fu, G., & Lee, K. (2015). Theory-of-mind training causes honest young children to lie. Psychological Science, 26(11). Association for Psychological Science news release.",
+   "url": "https://www.psychologicalscience.org/news/releases/understanding-others-thoughts-enables-young-kids-to-lie.html"
+  },
+  {
+   "cite": "Setoh et al., 2020",
+   "ref": "Setoh, P., Zhao, S., Santos, R., Heyman, G. D., & Lee, K. (2020). Parenting by lying in childhood is associated with negative developmental outcomes in adulthood. Journal of Experimental Child Psychology, 189, 104680.",
+   "url": "https://bpb-us-e1.wpmucdn.com/blogs.ntu.edu.sg/dist/a/1000/files/2019/11/2019-Setoh-et-al_JECP_Parenting-by-lying.pdf"
+  },
+  {
+   "cite": "McGill Reporter",
+   "ref": "Trum, P. Your kid fibs, and that’s okay. McGill Reporter, interview with Prof. Victoria Talwar, McGill University.",
+   "url": "https://reporter.mcgill.ca/your-kid-fibs-and-thats-okay/"
+  },
+  {
+   "cite": "AACAP",
+   "ref": "American Academy of Child and Adolescent Psychiatry. Lying and Children. Facts for Families No. 44.",
+   "url": "https://mobile.aacap.org/AACAP/Families_and_Youth/Facts_for_Families/FFF-Guide/Children-And-Lying-044.aspx"
+  },
+  {
+   "cite": "Cincinnati Children’s",
+   "ref": "Cincinnati Children’s Hospital Medical Center. Lying and Stealing. Health Library.",
+   "url": "https://www.cincinnatichildrens.org/health/l/lie-steal"
+  }
+ ],
+ "takeaways": [
+  "Lying is a normal sign of a growing brain. Children start trying it as they learn that you cannot see their thoughts.",
+  "Fear makes lying worse. In a strict school where children were hit, 94% of children who peeked lied, against 55% in a calmer school.",
+  "Two calm sentences help most: “I won’t be cross” and “I’ll be happy if you tell me the truth.” Lying fell from 87% to 35%."
+ ],
+ "myths": [
+  [
+   "“If I punish lying hard, he’ll stop.”",
+   "Harsh punishment teaches children to lie more, and to lie better. Children from a school that used hitting were also much more skilled liars."
+  ],
+  [
+   "“Scary stories, like the boy who cried wolf, teach honesty.”",
+   "Only stories where telling the truth is praised made children more honest. Stories that punish the liar did not help at all."
+  ],
+  [
+   "“My child lies, so something is wrong with them.”",
+   "Most young children try lying. Children with stronger thinking and self-control skills actually lied more at first. It is a skill to guide, not a sign of a bad heart."
+  ]
+ ],
+ "myth_cites": "Talwar & Lee, 2011; Lee et al., 2014; Evans & Lee, 2013",
+ "fridge": {
+  "title": "When the stone feels heavy",
+  "lines": [
+   "Freeze and hug your tummy.",
+   "Three slow breaths.",
+   "Say your Power Word.",
+   "“The truth is, I did it. I’m sorry.”"
+  ],
+  "say": [
+   "“You won’t be in trouble for telling me.”",
+   "“Thank you for the truth.”",
+   "“Let’s fix it together.”"
+  ]
+ }
+}

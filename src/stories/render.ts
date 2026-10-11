@@ -7,7 +7,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import vm from "vm";
 import type { StoryForm, StoryJson } from "./schema";
-import { storyFolder } from "./images";
+import { imageRoot, storyFolder } from "./images";
 import { ageInWords, capitaliseName } from "./fill";
 
 type GTales = {
@@ -37,14 +37,16 @@ export function templateForm(form: StoryForm): Record<string, unknown> {
     sidekick: form.sidekick ? capitaliseName(form.sidekick) : undefined,
     power_word: form.power_word?.trim(),
     need: form.need,
-    ask: form.ask,
     strength: form.strength?.trim().toLowerCase(),
   };
 }
 
-/** HTML for the whole book, images resolved under /stories/<folder>/<gender>/. */
-export async function renderBookHtml(story: StoryJson, form: StoryForm): Promise<string> {
+/**
+ * HTML for the whole book. `variant` picks the image set: "web" (1200 px, /stories-web/…) for the
+ * in-app reader, "print" (full size, /stories/…) for the PDF.
+ */
+export async function renderBookHtml(story: StoryJson, form: StoryForm, variant: "web" | "print" = "web"): Promise<string> {
   const t = await template();
-  const imageBase = `/stories/${storyFolder(story.slug)}/${form.gender}/`;
+  const imageBase = `${imageRoot(variant)}/${storyFolder(story.slug)}/${form.gender}/`;
   return t.renderBook(story, templateForm(form), { imageBase });
 }

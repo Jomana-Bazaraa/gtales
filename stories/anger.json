@@ -1,0 +1,193 @@
+{
+  "slug": "anger",
+  "struggle": "Anger and hitting",
+  "title": "{{name}} and the Great Blocktown Smash",
+  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength"],
+  "other_rule": null,
+  "back_blurb": [
+    "When {{name}}'s tower crashes, so does {{his}} temper.",
+    "Suddenly {{he}} is tiny, in a city made of blocks, with a little robot and a raccoon who loves knocking things down.",
+    "Blocktown will fall at sunset. Can {{name}} keep {{his}} band green?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "{{name}}, {{age}}, built the tallest tower in all of {{place}}. It was taller than the sofa!",
+        "Then {{other}} ran in with a toy plane. Bump! The tower began to wobble.",
+        "{{name}}'s fists felt tight. The new band on {{his}} wrist glowed yellow."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "Crash! Down came the tower.",
+        "\"{{other}}!\" {{name}} shouted. {{He}} threw a block, hard. It hit {{sidekick}}, {{his}} little robot, and an arm fell off.",
+        "{{other}} began to cry. And {{name}}'s band glowed red."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Look at {{other}}'s face. How does {{other}} feel?",
+        "options": [
+          { "label": "Sad and scared", "correct": true, "response": "Yes. And {{name}} doesn't feel good either." },
+          { "label": "Happy", "correct": false, "response": "Look at those tears. Is that happy?" },
+          { "label": "Sleepy", "correct": false, "response": "Look again at that face." }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up, and the toy box began to spin. Whoosh! {{name}} shrank and fell right in.",
+        "{{He}} landed in a city made of blocks. {{sidekick}} was alive! \"Beep. I'm OK!\""
+      ],
+      "sign": "A sign said: Wrecks the raccoon took the Golden Brick. Blocktown will fall at sunset!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "\"When it's green, your hands can build anything,\" said {{sidekick}}.",
+        "{{name}} took a slow breath. The band turned green, and the blocks began to float."
+      ],
+      "screen": "GREEN = BUILD · RED = SMASH",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "Which color makes the band BUILD?",
+        "options": [
+          { "label": "Green", "correct": true, "response": "Yes! Green means build." },
+          { "label": "Red", "correct": false, "response": "Red means SMASH. Look at {{sidekick}}'s arm!" }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "A wide river blocked the road.",
+        "{{name}} pointed, and the blocks flew. Click, click, click! A bridge grew across the water.",
+        "Click! The bridge was done, and they ran across."
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "A tiny block-girl was hugging her wobbly house. \"I'm Tilly. Without the Golden Brick, everything will fall at sunset.\"",
+        "\"Wrecks ran past here,\" she said. \"Follow his paw prints!\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Look at the paw prints. Which way did Wrecks go?",
+        "options": [
+          { "label": "To the bakery", "correct": false, "response": "Mmm, cookies. But no paw prints there!" },
+          { "label": "To the tall tower", "correct": true, "response": "Yes! The prints lead to the tower. Let's go!" }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "A pigeon landed on {{name}}'s head, and left a mess. Yuck!",
+        "{{His}} band glowed red. {{He}} stomped so hard that the bridge broke. \"Beep. We needed that,\" said {{sidekick}}.",
+        "{{name}} stood very still. Slowly, {{his}} band turned yellow, then green."
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "With calm green hands, {{name}} built the bridge again. Under the last block, {{sidekick}} found a stone with a riddle on it."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "riddle": ["I go in and out, all day and all night.", "I cool your soup, and I cool you too. What am I?"],
+        "options": [
+          { "label": "A slow breath", "correct": true, "response": "A slow breath! {{name}} kept the riddle in {{his}} pocket." },
+          { "label": "An ice cube", "correct": false, "response": "Close! But you can't DO an ice cube." },
+          { "label": "The wind", "correct": false, "response": "What do YOU blow on hot soup?" }
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There he was! Wrecks the raccoon, with the Golden Brick.",
+        "He ran down the street, knocking towers over with his tail.",
+        "But look. Wrecks had a little band too, and it was red."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Wrecks ran into a maze. \"You can't catch me!\"",
+        "{{name}} wanted to smash every wall. But {{he}} took one slow breath, in and out. Now {{he}} could think."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Trace the paths with your finger. Which flag leads to the tower?",
+        "options": [
+          { "label": "Red flag", "correct": false, "response": "Dead end! Try another path." },
+          { "label": "Yellow flag", "correct": false, "response": "Dead end! Try again." },
+          { "label": "Blue flag", "correct": true, "response": "The blue path! But Wrecks was already climbing the tower." }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "\"Too slow!\" Wrecks laughed from the top of the tower.",
+        "{{name}}'s band glowed red. {{He}} hit the wall. BANG! The wall broke, and {{sidekick}}'s other arm fell off.",
+        "The sun was going down. All over Blocktown, the towers began to lean."
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "{{name}} held {{sidekick}} gently. \"I'm sorry. I didn't mean to hurt you.\"",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Use your words:** \"I'm mad. {{need}}\""
+        ],
+        "done": "The band turned yellow, then green. The brightest green in Blocktown!"
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "{{name}} lifted {{his}} green hands. Up went a ladder. Out went a net. Wrecks tumbled right in!",
+        "{{name}} climbed up and put the Golden Brick back. Click.",
+        "All over Blocktown, the towers stood up straight."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "In the net, Wrecks was stomping. His band was red.",
+        "\"You too?\" said {{name}}. \"Breathe with me.\" Wrecks's band turned green, and for the first time, he built something."
+      ],
+      "challenge": {
+        "type": "boxes",
+        "question": "Help {{name}} teach Wrecks. Take three slow breaths, and tick a box for each one.",
+        "count": 3,
+        "done": "Wrecks's band is green. You helped a raccoon calm down!"
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back home, {{other}} ran in. Bump! Down came the tower again.",
+        "This time, {{name}} froze and took three slow breaths. \"{{power_word}}\"",
+        "\"{{other}}, I'm mad my tower fell. Will you build a new one with me?\"",
+        "They built it together, and fixed {{sidekick}} with tape. \"Best {{strength}} in {{place}},\" beeped {{sidekick}}."
+      ]
+    }
+  ]
+}

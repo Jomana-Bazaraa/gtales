@@ -10,7 +10,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/st
   const { id } = await params;
   const sp = await searchParams;
   const book = await getBook(id);
-  if (book) return <BookPrint html={await renderBookHtml(book.story, book.form)} />;
+  if (book) return <BookPrint html={await renderBookHtml(book.story, book.form, "print")} />;
   const variant = sp.variant === "lineart" ? "lineart" : "color";
   const story = id === "showcase" ? await showcaseStory(sp.lang === "ar" ? "ar" : "en") : await getStory(id);
   if (!story || !story.assembled) notFound();

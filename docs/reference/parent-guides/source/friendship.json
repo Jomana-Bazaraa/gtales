@@ -1,0 +1,397 @@
+{
+ "slug": "friendship",
+ "number": "06",
+ "topic_label": "Friendship",
+ "title": "Your Turn, Then My Turn",
+ "subtitle": "This guide helps your child share, take turns, join in and keep friends, one small step at a time.",
+ "band_legend": "Star glows = playing together · Star dark = alone",
+ "first_breath": "Grabbing, shouting \"Mine!\" and bossing others is normal at 4–8. It does not mean your child is selfish or unkind. Friendship is a set of skills, and skills can be taught and practised at home.",
+ "understand": {
+  "heading": "Understanding friendship skills",
+  "paras": [
+   "Friendship skills are the small things children do to play well together. They include sharing, waiting for a turn, joining a game, and saying sorry. Young children are still learning all of these. Fair sharing grows slowly between ages 3 and 8.",
+   "Sharing is hard work for a young brain. The child must stop a strong wish (\"I want it now!\") and think about another child's feelings. The part of the brain that works like a brake, at the front of the head, grows slowly through childhood. So your child may know the rule but still grab."
+  ],
+  "chart": {
+   "title": "Fair sharing grows a lot between ages 3 and 8",
+   "caption": "229 Swiss children aged 3–8 chose between \"two sweets for me, none for you\" or \"one sweet each\". Bars show the children who chose to share equally.",
+   "bars": [
+    {
+     "label": "Age 3–4",
+     "value": 8.7,
+     "display": "9%"
+    },
+    {
+     "label": "Age 5–6",
+     "value": 22,
+     "display": "22%"
+    },
+    {
+     "label": "Age 7–8",
+     "value": 45,
+     "display": "45%"
+    }
+   ],
+   "source": "Fehr, Bernhard & Rockenbach, 2008, Nature (sharing game with a classmate). The 22% for ages 5–6 is worked out from the paper's \"78% did not share equally\"."
+  }
+ },
+ "ages": [
+  {
+   "age": "4–5",
+   "common": "Grabs toys, says \"Mine!\", finds waiting very hard. Plays next to others more than with them. Friendships change from day to day.",
+   "clues": "Hits or bites often when someone touches a toy, or never plays near other children, even after weeks in a group."
+  },
+  {
+   "age": "6–7",
+   "common": "Knows the rules of fair play and talks about them a lot. Can be bossy and want to lead every game. Starts to have one or two \"best friends\".",
+   "clues": "Hovers at the edge of games and is ignored again and again, or gets angry every time a game does not go their way."
+  },
+  {
+   "age": "8",
+   "common": "Usually shares fairly with friends and can take turns in games. Cares a lot about being included. Can make up after a fight.",
+   "clues": "Has no friend at all at school, is left out most days, or other children are often unkind to them."
+  }
+ ],
+ "surprise": {
+  "kicker": "The surprising part",
+  "headline": "Your child already knows sharing is fair. Doing it is the part that takes years.",
+  "text": "In one study, children aged 3–8 all said they should share half of their stickers. But the younger ones kept most of them, and even predicted they would. Only 7–8-year-olds did what they said was fair. Brain research links fair sharing to the part of the brain that controls impulses, which keeps growing for years. So more lectures about fairness do not help much. Practice with waiting, turn-taking and choosing to share does.",
+  "cite": "Smith, Blake & Harris, 2013; Steinbeis et al., 2012"
+ },
+ "iceberg": {
+  "intro": "What you see on top is grabbing or bossing. Underneath are hidden reasons.",
+  "tip_words": [
+   "Grabbing",
+   "\"Mine!\"",
+   "Bossiness",
+   "Playing alone"
+  ],
+  "causes": [
+   {
+    "title": "Brain brake growing",
+    "text": "The front part of the brain that stops a strong wish matures slowly. Your child may know the rule but cannot stop the hand in time.",
+    "cite": "Steinbeis et al., 2012"
+   },
+   {
+    "title": "Knowing, not doing",
+    "text": "Young children say sharing half is fair, but keep more for themselves. The gap closes around age 7–8.",
+    "cite": "Smith, Blake & Harris, 2013"
+   },
+   {
+    "title": "Forced, not chosen",
+    "text": "When adults make a child share, the child does not learn \"I am a sharer\". Children who choose to give something they like share more later.",
+    "cite": "Chernyak & Kushnir, 2013"
+   },
+   {
+    "title": "No way in",
+    "text": "Some children do not know how to join a game. They wait at the edge or push in, and other children ignore them.",
+    "cite": "Putallaz & Wasserman, 1989"
+   },
+   {
+    "title": "Big feelings",
+    "text": "Losing a turn can feel like losing everything. Without a way to calm down, the feeling comes out as grabbing or shouting."
+   },
+   {
+    "title": "Little practice",
+    "text": "Pretend play with others trains children to follow rules and wait. Children who get less group play have fewer chances to practise.",
+    "cite": "Bredikyte & Brandisauskiene, 2023"
+   }
+  ]
+ },
+ "warning": {
+  "text": "Pulling the toy away and saying \"Share it now!\" feels like teaching. But children who are made to give share less later than children who are allowed to choose.",
+  "cite": "Chernyak & Kushnir, 2013"
+ },
+ "moment": {
+  "name": "Stop, See, Say, Swap",
+  "intro": "Use these four steps when a fight over a toy starts. Stay calm and close.",
+  "steps": [
+   {
+    "title": "Stop",
+    "text": "Gently put your hand on the toy so nobody pulls. Say, \"Let's freeze and do the Combo.\""
+   },
+   {
+    "title": "See",
+    "text": "Name both feelings: \"You really want the car. Sami wants it too.\""
+   },
+   {
+    "title": "Say",
+    "text": "Help your child use words, not hands: \"Can I have a turn when you finish?\""
+   },
+   {
+    "title": "Swap",
+    "text": "Agree on a fair plan, like \"your turn, then my turn\", with a timer if needed. Praise the first swap."
+   }
+  ],
+  "why": "Why it works: it gives the young brain's brake a few seconds, and lets your child choose to share, which builds lasting sharing (Chernyak & Kushnir, 2013).",
+  "say": [
+   [
+    "\"You can have it when Sami is done. I'll help you wait.\"",
+    "\"Give it back right now!\""
+   ],
+   [
+    "\"Do you want to give Sami a turn now, or after two minutes?\"",
+    "\"You must share. Good children share.\""
+   ],
+   [
+    "\"Watch what they are building. Can you bring a block for it?\"",
+    "\"Just go and ask to play.\""
+   ],
+   [
+    "\"You felt sad when he took it. What can we say to him?\"",
+    "\"Stop crying, it's only a toy.\""
+   ],
+   [
+    "\"You let her have a turn. Look how happy she is!\"",
+    "\"Finally! Was that so hard?\""
+   ]
+  ],
+  "after_title": "After the fight: the 4 Rs",
+  "after": [
+   {
+    "r": "Rest",
+    "text": "Give everyone a few calm minutes before talking about it."
+   },
+   {
+    "r": "Remember",
+    "text": "Talk simply about what happened, without blame."
+   },
+   {
+    "r": "Repair",
+    "text": "Help your child say \"Sorry. Let's play together.\""
+   },
+   {
+    "r": "Rehearse",
+    "text": "Act out the better way with toys, so it is ready for next time."
+   }
+  ]
+ },
+ "everyday": {
+  "intro": "Friendship skills grow best in small, daily moments. These habits take little time.",
+  "habits": [
+   {
+    "title": "Turn-taking games",
+    "text": "Play board games, catch, or building towers where each person takes a turn. Say \"my turn, your turn\" out loud. Waiting in a fun game trains the brain's brake."
+   },
+   {
+    "title": "Daily pretend play",
+    "text": "Play shop, doctor or cooking together for 10 minutes. Pretend roles have rules, and children practise following them. This builds self-control in play."
+   },
+   {
+    "title": "Give real choices",
+    "text": "Let your child decide whether to share a toy they like, and when. Then notice it warmly. Choosing to give helps children see themselves as sharers."
+   },
+   {
+    "title": "Talk about feelings",
+    "text": "When reading or watching a story, ask \"How does she feel now?\" Children who name feelings in others find it easier to share and wait."
+   },
+   {
+    "title": "Plan play dates",
+    "text": "Invite one child at a time for a short play date. Put away very special toys first. Kind friends help protect children from being picked on (Lamarche et al., 2006)."
+   },
+   {
+    "title": "Model it yourself",
+    "text": "Share your food, take turns talking, and say sorry when you make a mistake. Children copy what adults do more than what they say."
+   }
+  ],
+  "proof": {
+   "text": "A review of 79 studies with over 18,000 young children found that social-emotional programs in preschools improved social skills. They also reduced behaviour problems.",
+   "cite": "Blewitt et al., 2018"
+  }
+ },
+ "activities": [
+  {
+   "name": "Tower Turns",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "Blocks, cups or books to stack",
+   "steps": [
+    "Sit facing each other with a pile of blocks.",
+    "Say \"my turn\" and add one block, then \"your turn\".",
+    "Keep going until the tower falls, then laugh and start again.",
+    "Let your child be the one who says whose turn it is."
+   ],
+   "why": "Waiting for a turn in a fun game trains the brain's brake, the part that grows slowly in young children (Steinbeis et al., 2012)."
+  },
+  {
+   "name": "Star Band Swap",
+   "ages": "4–7",
+   "time": "10 min",
+   "materials": "One special toy car, a kitchen timer or phone timer",
+   "steps": [
+    "Pretend a friend is coming. Use a teddy or a family member.",
+    "Set the timer for two minutes: \"your turn, then my turn\".",
+    "When it rings, your child hands the car over and does the Combo if it feels hard.",
+    "Draw a glowing star on paper each time the swap works, like the band in the story."
+   ],
+   "why": "A timer makes waiting clear and fair, so your child can choose to swap instead of being forced."
+  },
+  {
+   "name": "Watch, Then Join",
+   "ages": "5–8",
+   "time": "5 min",
+   "materials": "Two family members playing any game, like Lego or drawing",
+   "steps": [
+    "Two people start playing. Your child watches for one minute.",
+    "Ask: \"What are they doing? What could you add?\"",
+    "Your child joins by helping the game, like \"I'll make the door!\"",
+    "Swap roles, so your child plays and you try to join."
+   ],
+   "why": "Children who join by fitting into what the group is doing are accepted more often than those who hover or push in (Putallaz & Wasserman, 1989)."
+  },
+  {
+   "name": "Puppet Sorry Show",
+   "ages": "4–7",
+   "time": "5 min",
+   "materials": "Two socks or soft toys as puppets",
+   "steps": [
+    "Make one puppet grab a toy from the other.",
+    "Ask your child: \"How does this puppet feel?\"",
+    "Let your child help the grabber puppet do the Combo.",
+    "The puppet says \"Sorry. Let's play together.\" and they play."
+   ],
+   "why": "Acting out a fight from the outside lets your child practise the right words when feelings are calm."
+  },
+  {
+   "name": "Shop Pretend Play",
+   "ages": "4–8",
+   "time": "15 min",
+   "materials": "Food tins, paper money, a bag",
+   "steps": [
+    "Set up a little shop on a table.",
+    "One person is the seller, one is the buyer. Agree on the rules.",
+    "Take turns choosing items and paying.",
+    "Swap roles halfway, even if your child wants to stay seller."
+   ],
+   "why": "Staying in a pretend role and its rules is linked with better self-regulation in young children (Bredikyte & Brandisauskiene, 2023)."
+  },
+  {
+   "name": "Giving Choice Jar",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "A jar, small treats or stickers",
+   "steps": [
+    "Give your child a few stickers of their own.",
+    "Tell them a cousin or friend has none. Do not tell them to give.",
+    "Ask: \"Would you like to give one, or keep them all? Both are OK.\"",
+    "If they give, say: \"You chose to share. That was kind.\""
+   ],
+   "why": "Children who choose to give something they value share more later than children who are told to give (Chernyak & Kushnir, 2013)."
+  },
+  {
+   "name": "Invite-a-Friend Card",
+   "ages": "5–8",
+   "time": "10 min",
+   "materials": "Paper, crayons",
+   "steps": [
+    "Help your child draw a card for a child who plays alone.",
+    "Practise the words: \"Do you want to play with me?\"",
+    "Role-play what to do if the child says no: \"OK, maybe later!\"",
+    "Give the card at school or in the park."
+   ],
+   "why": "Inviting others turns your child from waiting to be chosen into the one who starts the game, like the hero at the end of the story."
+  }
+ ],
+ "story": {
+  "before": "Before reading, ask: \"Have you ever wanted to keep a toy all to yourself?\" Show the band and explain: the star glows when we play together and goes dark when we are alone.",
+  "during": "Pause when the hero won’t share the red car and ask, “What is happening to the star?” At the Eid fun fair, notice that the rides only work when two people play together. When Zizo the goat grabs every ride and shouts “Mine!”, ask, “Is Zizo happy now?” On page 12, do the Combo together.",
+  "after": "Ask: “What did the hero learn to say?” Practise “your turn, then my turn” and “Sorry. Let’s play together.” Pick one person your child would like to invite to play this week.",
+  "plan": [
+   "Day 1: Read the story together and do the Combo with the hero.",
+   "Day 2: Play Tower Turns and say \"my turn, your turn\" out loud.",
+   "Day 3: Try Star Band Swap with a timer and draw a star for each swap.",
+   "Day 4: Do the Puppet Sorry Show and practise \"Sorry. Let's play together.\"",
+   "Day 5: Play Watch, Then Join with the family.",
+   "Day 6: Make an Invite-a-Friend Card and plan a short play date.",
+   "Day 7: Read the story again and ask your child to tell you what Zizo should do."
+  ]
+ },
+ "help": {
+  "signs": [
+   "Hits, bites or hurts other children very often, even after months of practice.",
+   "Has no friend at all and is left out almost every day.",
+   "Is often bullied or teased, or is scared to go to school.",
+   "Rarely looks at faces, shows little interest in other children, or does not respond to their name.",
+   "Language is much slower than other children of the same age, so others cannot understand them.",
+   "Has very big angry outbursts many times a day.",
+   "Teachers say your child struggles with friends in many places, not only one."
+  ],
+  "text": "Talk first with your child's doctor or school counsellor, who can refer you to a child psychologist. Evidence-based help includes social skills training groups and parent coaching programs that teach play and calm-down skills."
+ },
+ "sources": [
+  {
+   "cite": "Fehr, Bernhard & Rockenbach, 2008",
+   "ref": "Fehr, E., Bernhard, H., & Rockenbach, B. (2008). Egalitarianism in young children. Nature, 454, 1079–1083.",
+   "url": "https://www.nature.com/articles/nature07155"
+  },
+  {
+   "cite": "Smith, Blake & Harris, 2013",
+   "ref": "Smith, C. E., Blake, P. R., & Harris, P. L. (2013). I should but I won't: Why young children endorse norms of fair sharing but do not follow them. PLoS ONE, 8(3), e59510.",
+   "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0059510"
+  },
+  {
+   "cite": "Steinbeis et al., 2012",
+   "ref": "Steinbeis, N., Bernhardt, B. C., & Singer, T. (2012). Impulse control and underlying functions of the left DLPFC mediate age-related and age-independent individual differences in strategic social behavior. Neuron, 73(5). Summary by the Max Planck Society.",
+   "url": "https://www.mpg.de/5074082/impulse_control_children"
+  },
+  {
+   "cite": "Chernyak & Kushnir, 2013",
+   "ref": "Chernyak, N., & Kushnir, T. (2013). Giving preschoolers choice increases sharing behavior. Psychological Science, 24(10).",
+   "url": "https://www.psychologicalscience.org/journals/psychological-science/0956797613482335/"
+  },
+  {
+   "cite": "Putallaz & Wasserman, 1989",
+   "ref": "Putallaz, M., & Wasserman, A. (1989). Children's naturalistic entry behavior and sociometric status: A developmental perspective. Developmental Psychology, 25(2), 297–305.",
+   "url": "https://fds.duke.edu/db/aas/pn/faculty/putallaz/publications/253520"
+  },
+  {
+   "cite": "Blewitt et al., 2018",
+   "ref": "Blewitt, C., et al. (2018). Social and emotional learning associated with universal curriculum-based interventions in early childhood education and care centers: A systematic review and meta-analysis. JAMA Network Open, 1(8), e185727.",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6324369/"
+  },
+  {
+   "cite": "Bredikyte & Brandisauskiene, 2023",
+   "ref": "Bredikyte, M., & Brandisauskiene, A. (2023). Pretend play as the space for development of self-regulation: Cultural-historical perspective. Frontiers in Psychology, 14, 1186512.",
+   "url": "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2023.1186512/pdf"
+  },
+  {
+   "cite": "Lamarche et al., 2006",
+   "ref": "Lamarche, V., Brendgen, M., Boivin, M., Vitaro, F., Pérusse, D., & Dionne, G. (2006). Do friendships and sibling relationships provide protection against peer victimization in a similar way? Social Development, 15(3), 373–393.",
+   "url": "https://crdcn.ca/?p=20176"
+  }
+ ],
+ "takeaways": [
+  "Children know sharing is fair long before they can do it. Only 7–8-year-olds shared as fairly as they said they should.",
+  "Forced sharing backfires. Children who chose to give shared more later than children who were made to give.",
+  "Friendship is a set of skills you can teach. A review of 79 studies with over 18,000 young children found programs improved social skills."
+ ],
+ "myths": [
+  [
+   "“If I make him share, he’ll learn to share.”",
+   "Children who were made to give shared less later than children who were allowed to choose. A real choice builds the habit."
+  ],
+  [
+   "“She knows sharing is right, so she’s just being selfish.”",
+   "Knowing and doing are different skills. Children aged 3–8 all said sharing half was fair, but only the 7–8-year-olds actually did it."
+  ],
+  [
+   "“Some kids are just bad at making friends.”",
+   "Joining in, taking turns and saying sorry can all be practised. Programs that teach these skills improved young children’s social skills."
+  ]
+ ],
+ "myth_cites": "Chernyak & Kushnir, 2013; Smith, Blake & Harris, 2013; Blewitt et al., 2018",
+ "fridge": {
+  "title": "When the star goes dark",
+  "lines": [
+   "Freeze and hug your tummy.",
+   "Three slow breaths.",
+   "Say your Power Word.",
+   "“Your turn, then my turn.”"
+  ],
+  "say": [
+   "“You both want the car.”",
+   "“Can I have a turn when you finish?”",
+   "“Let’s use the timer.”"
+  ]
+ }
+}

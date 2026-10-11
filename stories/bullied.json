@@ -2,10 +2,16 @@
   "slug": "bullied",
   "struggle": "Being bullied",
   "title": "{{name}} and the Big Crab",
-  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "ask", "strength"],
+  "uses": [
+    "name",
+    "age",
+    "place",
+    "other",
+    "sidekick",
+    "power_word",
+    "strength"
+  ],
   "other_rule": "not_sibling",
-  "need_choices": [],
-  "ask_choices": ["Can you help me?", "Can you talk to my teacher?", "Can you come with me?", "Can you stay close?"],
   "back_blurb": [
     "When {{other}} takes {{name}}'s ball, {{name}} goes quiet and tells no one.",
     "But on a magic beach, a big crab is taking everyone's shells.",
@@ -30,8 +36,16 @@
         "type": "choice",
         "question": "Did {{name}} do something wrong?",
         "options": [
-          { "label": "No", "correct": true, "response": "That's right. When someone is mean, it is never your fault." },
-          { "label": "Yes", "correct": false, "response": "No! {{other}} was mean. {{name}} did nothing wrong." }
+          {
+            "label": "No",
+            "correct": true,
+            "response": "That's right. When someone is mean, it is never your fault."
+          },
+          {
+            "label": "Yes",
+            "correct": false,
+            "response": "No! {{other}} was mean. {{name}} did nothing wrong."
+          }
         ]
       }
     },
@@ -55,8 +69,16 @@
         "type": "choice",
         "question": "What makes the shield come up?",
         "options": [
-          { "label": "A strong voice", "correct": true, "response": "Yes! Stand tall, speak loud, shield up." },
-          { "label": "Hiding", "correct": false, "response": "Hiding makes the shield go down. Try again." }
+          {
+            "label": "A strong voice",
+            "correct": true,
+            "response": "Yes! Stand tall, speak loud, shield up."
+          },
+          {
+            "label": "Hiding",
+            "correct": false,
+            "response": "Hiding makes the shield go down. Try again."
+          }
         ]
       }
     },
@@ -78,8 +100,16 @@
         "type": "choice",
         "question": "Look at the sand. Which way did Snap go?",
         "options": [
-          { "label": "The big claw marks", "correct": true, "response": "Yes! Big crab, big marks. Let's go!" },
-          { "label": "The little footprints", "correct": false, "response": "Those are too small for Snap. Try again." }
+          {
+            "label": "The big claw marks",
+            "correct": true,
+            "response": "Yes! Big crab, big marks. Let's go!"
+          },
+          {
+            "label": "The little footprints",
+            "correct": false,
+            "response": "Those are too small for Snap. Try again."
+          }
         ]
       }
     },
@@ -99,11 +129,26 @@
       "challenge": {
         "type": "riddle",
         "question": "Help {{name}} read the riddle.",
-        "riddle": ["When someone is mean, I am the thing to do.", "I am not a tattle. I keep you safe too. What am I?"],
+        "riddle": [
+          "When someone is mean, I am the thing to do.",
+          "I am not a tattle. I keep you safe too. What am I?"
+        ],
         "options": [
-          { "label": "Telling a grown-up", "correct": true, "response": "Telling! {{name}} kept the riddle in {{his}} pocket." },
-          { "label": "Being mean back", "correct": false, "response": "That makes things worse. Try again." },
-          { "label": "Keeping it secret", "correct": false, "response": "Secrets keep you alone. Try again." }
+          {
+            "label": "Telling a grown-up",
+            "correct": true,
+            "response": "Telling! {{name}} kept the riddle in {{his}} pocket."
+          },
+          {
+            "label": "Being mean back",
+            "correct": false,
+            "response": "That makes things worse. Try again."
+          },
+          {
+            "label": "Keeping it secret",
+            "correct": false,
+            "response": "Secrets keep you alone. Try again."
+          }
         ]
       }
     },
@@ -125,9 +170,21 @@
         "type": "choice",
         "question": "Trace the tunnels with your finger. Which one leads to the whistle?",
         "options": [
-          { "label": "Pink shells", "correct": false, "response": "Dead end! Try another." },
-          { "label": "Blue shells", "correct": true, "response": "The blue tunnel! There's the whistle." },
-          { "label": "Yellow shells", "correct": false, "response": "Dead end! Try again." }
+          {
+            "label": "Pink shells",
+            "correct": false,
+            "response": "Dead end! Try another."
+          },
+          {
+            "label": "Blue shells",
+            "correct": true,
+            "response": "The blue tunnel! There's the whistle."
+          },
+          {
+            "label": "Yellow shells",
+            "correct": false,
+            "response": "Dead end! Try again."
+          }
         ]
       }
     },
@@ -177,10 +234,26 @@
         "multi": true,
         "question": "Who can you tell when someone is mean? Tick every one.",
         "options": [
-          { "label": "Mama or Baba", "correct": true, "response": "Yes!" },
-          { "label": "A teacher", "correct": true, "response": "Yes!" },
-          { "label": "Teta or Gedo", "correct": true, "response": "Yes!" },
-          { "label": "A seagull", "correct": false, "response": "Ha! No. Tell a big person." }
+          {
+            "label": "Mama or Baba",
+            "correct": true,
+            "response": "Yes!"
+          },
+          {
+            "label": "A teacher",
+            "correct": true,
+            "response": "Yes!"
+          },
+          {
+            "label": "Teta or Gedo",
+            "correct": true,
+            "response": "Yes!"
+          },
+          {
+            "label": "A seagull",
+            "correct": false,
+            "response": "Ha! No. Tell a big person."
+          }
         ],
         "done": "Yes! There are lots of big people who can help."
       }
@@ -190,7 +263,7 @@
       "text": [
         "Back at the club, {{other}} grabbed the ball again. \"Baby!\"",
         "{{name}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
-        "{{He}} stood tall. \"Stop. I don't like that.\" Then {{he}} told Mama. \"{{ask}}\"",
+        "{{He}} stood tall. \"Stop. I don't like that.\" Then {{he}} told Mama. \"Can you help me?\"",
         "Mama helped, and the ball came back. {{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
       ]
     }

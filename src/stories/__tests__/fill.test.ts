@@ -11,7 +11,7 @@ const story = storySchema.parse(JSON.parse(readFileSync(path.join(__dirname, "sa
 
 const base: StoryForm = {
   slug: "sample", name: "adam", gender: "boy", age: 6, half: false, place: "Maadi", other: "omar", other_relation: "brother",
-  strength: "Builder", sidekick: "bolt", power_word: "Blue Calm", need: "I need a hug.", ask: "Can you sit with me?",
+  strength: "Builder", sidekick: "bolt", power_word: "Blue Calm", need: "I need a hug.",
 };
 
 const forms: Array<Partial<StoryForm> & { label: string }> = [

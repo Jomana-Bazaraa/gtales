@@ -1,0 +1,458 @@
+{
+ "slug": "feelings",
+ "number": "05",
+ "topic_label": "Big feelings",
+ "title": "When the Storm Rolls In",
+ "subtitle": "A calm, science-based plan to help your child understand big feelings, name them, and come back to clear skies.",
+ "band_legend": "Red = mad · Blue = sad · Purple = scared · Grey = tired · All mixed = storm",
+ "first_breath": "Meltdowns are normal at this age, and they do not mean you are doing something wrong. Most of the time, your child is not being naughty. Their body and brain are full, and they do not yet have the words to say why — and words can be taught.",
+ "understand": {
+  "heading": "Understanding big feelings and meltdowns",
+  "paras": [
+   "A meltdown is when feelings get too big for a child to hold. They may cry, scream, drop to the floor, or say \"I don't know!\" This often happens at endings and changes, like leaving a party, turning off a screen, or bedtime. In one large study, more than 8 in 10 preschoolers had a tantrum in the past month. Fewer than 1 in 10 had one every day.",
+   "Here is what happens inside. The brain's alarm (called the amygdala) turns on fast. The thinking part of the brain, which calms the alarm, is still growing for many years. Young children also have very few feeling words. So the feeling comes out through the body instead of through words. A calm adult acts like a borrowed brake until the child's own brake grows."
+  ],
+  "chart": {
+   "title": "Most meltdowns have a reason — only 1 in 4 children had one \"out of the blue\"",
+   "caption": "Share of US preschoolers (ages 3–5) who had a tantrum in each situation at least once in the past month, as reported by parents of 1,490 children.",
+   "bars": [
+    {
+     "label": "When frustrated or upset",
+     "value": 60.8,
+     "display": "61%"
+    },
+    {
+     "label": "When tired, hungry or sick",
+     "value": 59.9,
+     "display": "60%"
+    },
+    {
+     "label": "To get something they wanted",
+     "value": 58.9,
+     "display": "59%"
+    },
+    {
+     "label": "During routines (bedtime, meals, dressing)",
+     "value": 58.4,
+     "display": "58%"
+    },
+    {
+     "label": "\"Out of the blue\" for no clear reason",
+     "value": 26.3,
+     "display": "26%"
+    },
+    {
+     "label": "Had a tantrum every day",
+     "value": 8.6,
+     "display": "9%"
+    }
+   ],
+   "source": "Wakschlag et al., 2012, Journal of Child Psychology and Psychiatry (Table 1)",
+   "divider_before": 4
+  },
+  "chart2": {
+   "title": "Almost 4 in 10 feeling words used by 4–5-year-olds are just \"good\" or \"bad\"",
+   "caption": "All the feeling words that 30 children aged 4–5 used when asked how story characters felt. On average, they used only 4–5 different feeling words.",
+   "segments": [
+    {
+     "label": "Sad",
+     "pct": 31.1
+    },
+    {
+     "label": "Just \"bad\" (no clear feeling)",
+     "pct": 20.1
+    },
+    {
+     "label": "Just \"good\" (no clear feeling)",
+     "pct": 18.8
+    },
+    {
+     "label": "Happy",
+     "pct": 8.3
+    },
+    {
+     "label": "Scared",
+     "pct": 3.7
+    },
+    {
+     "label": "All other feeling words",
+     "pct": 18.0
+    }
+   ],
+   "source": "Grosse et al., 2021, Affective Science"
+  }
+ },
+ "ages": [
+  {
+   "age": "4–5",
+   "common": "Big crying or screaming at endings and changes. Falling apart when tired or hungry. Most children this age use only about 4 feeling words, so \"I don't know\" is often true.",
+   "clues": "Rubbing eyes, whining, getting \"silly\" or wild, saying no to everything, or clinging before the storm breaks."
+  },
+  {
+   "age": "6–7",
+   "common": "Fewer floor meltdowns, but more tears, slammed doors, and \"Nobody likes me!\" They know a few more feeling words (about 5 on average), but still struggle with two feelings at once.",
+   "clues": "Getting quiet or grumpy after school, picking fights with siblings, small problems feeling huge, stomach aches."
+  },
+  {
+   "age": "8",
+   "common": "Meltdowns are shorter and less often. Big feelings may show as sulking, arguing, or \"I hate this!\" Most children this age use about 7 feeling words but may hide feelings to look grown-up.",
+   "clues": "Snapping over homework, sudden mood changes, staying in their room, saying \"I'm fine\" when they are not."
+  }
+ ],
+ "surprise": {
+  "kicker": "The surprising part",
+  "headline": "When your child says \"I don't know what's wrong,\" they are telling the truth — many meltdowns are a missing-words problem, not a bad-behavior problem.",
+  "text": "A study of German children found that 4–5-year-olds used only about 4 different feeling words, while adults used about 15. Almost 4 in 10 of the young children's feeling words were just \"good\" or \"bad.\" A child who cannot find the word \"disappointed\" or \"tired\" has only one way to show it: the body. Toddlers who talk late have nearly twice the rate of severe or frequent tantrums, and children with stronger early language show less anger at age 4.",
+  "cite": "Grosse et al., 2021"
+ },
+ "iceberg": {
+  "intro": "The meltdown is just the tip — the real causes are usually hidden under the surface.",
+  "tip_words": [
+   "Crying",
+   "Screaming",
+   "Falling apart",
+   "\"I don't know!\""
+  ],
+  "causes": [
+   {
+    "title": "Tired body",
+    "text": "Tiredness is a big hidden cause. In a small study, toddlers who missed one nap showed 31% more negative feelings and 34% less joy. Children aged 6–12 need 9–12 hours of sleep each night.",
+    "cite": "Berger et al., 2012"
+   },
+   {
+    "title": "Hungry body",
+    "text": "In a large study, 6 in 10 preschoolers had a tantrum when tired, hungry, or sick in the past month. Young children often cannot feel hunger until it is very strong.",
+    "cite": "Wakschlag et al., 2012"
+   },
+   {
+    "title": "Too few words",
+    "text": "Most 4–5-year-olds use only about 4 feeling words. Without the right word, the feeling comes out as screaming or crying instead.",
+    "cite": "Grosse et al., 2021"
+   },
+   {
+    "title": "Two feelings together",
+    "text": "Young children often think you can feel only one feeling at a time. So \"sad and tired\" feels like one confusing storm. Learning that feelings can mix helps.",
+    "cite": "Nook et al., 2018"
+   },
+   {
+    "title": "Endings and changes",
+    "text": "The end of something fun is hard. Almost 6 in 10 preschoolers had tantrums during routines like bedtime, meals, or getting dressed.",
+    "cite": "Wakschlag et al., 2012"
+   },
+   {
+    "title": "Too much, too fast",
+    "text": "Loud parties, crowds, bright screens, and sugar fill the body up. After a busy day, there is no space left for one more small problem."
+   }
+  ]
+ },
+ "warning": {
+  "text": "Saying \"Stop crying, you're fine\" or ignoring the feeling can teach your child that feelings are wrong. In a trial, when parents learned to accept and name feelings instead, children understood emotions better and teachers saw fewer behavior problems.",
+  "cite": "Havighurst et al., 2012"
+ },
+ "moment": {
+  "name": "Stay, Soothe, Sort, Say",
+  "intro": "During a meltdown, your child cannot think or talk well. First you calm the body, then you help find the word.",
+  "steps": [
+   {
+    "title": "Stay close",
+    "text": "Sit near your child and keep your voice low and slow. Your calm body helps their body calm down. This is called co-regulation."
+   },
+   {
+    "title": "Soothe the body",
+    "text": "Do the Combo together: freeze and hug your tummy, then take three slow breaths. Do not talk much yet."
+   },
+   {
+    "title": "Sort the color",
+    "text": "Gently guess with the band: \"Is it red, blue, purple, or grey? Maybe two colors?\" Let your child point if words are hard."
+   },
+   {
+    "title": "Say the need",
+    "text": "Help them finish: \"I feel ___. I need ___.\" For example: \"I feel sad. And tired. I need a hug and bed.\""
+   }
+  ],
+  "why": "Putting a feeling into words calms the brain's alarm center; brain scans show the amygdala gets quieter when people name their feelings (Lieberman et al., 2007).",
+  "say": [
+   [
+    "\"You're having a big storm. I'm right here.\"",
+    "\"Stop crying right now.\""
+   ],
+   [
+    "\"Let's do the Combo together. Hug your tummy.\"",
+    "\"Calm down!\""
+   ],
+   [
+    "\"I wonder if it's blue and grey — sad and tired?\"",
+    "\"What is wrong with you?\""
+   ],
+   [
+    "\"It's okay not to know yet. We'll find the color.\"",
+    "\"Tell me why you're crying, or no more parties.\""
+   ],
+   [
+    "\"It was hard to leave. You had so much fun.\"",
+    "\"You're fine, it was only a party.\""
+   ]
+  ],
+  "after_title": "After the storm: the 4 Rs",
+  "after": [
+   {
+    "r": "Rest",
+    "text": "Give water, a snack, or quiet time first, because a tired or hungry body cannot learn."
+   },
+   {
+    "r": "Reconnect",
+    "text": "Hug or sit together so your child knows the storm did not break your love."
+   },
+   {
+    "r": "Replay",
+    "text": "Later, talk about it simply: \"You were blue and grey. Next time we can say it.\""
+   },
+   {
+    "r": "Repair",
+    "text": "If someone got hurt or things got thrown, help your child fix it or say sorry — calmly."
+   }
+  ]
+ },
+ "everyday": {
+  "intro": "Meltdowns get smaller when the body is cared for and feeling words become part of normal family life. Small daily habits work better than big lectures.",
+  "habits": [
+   {
+    "title": "Protect sleep",
+    "text": "Children aged 3–5 need 10–13 hours of sleep, including naps. Children aged 6–12 need 9–12 hours. Keep the same bedtime, even on weekends, as much as you can."
+   },
+   {
+    "title": "Feed before you go",
+    "text": "Give a snack before parties, shopping, and long car rides. Bring water. A full body has more room for big feelings."
+   },
+   {
+    "title": "Name feelings all day",
+    "text": "Say feelings out loud for yourself and others: \"I feel tired today. Your brother looks disappointed.\" This grows your child's word list, one word at a time."
+   },
+   {
+    "title": "Warn before endings",
+    "text": "Give a 5-minute and 1-minute warning before leaving or stopping something fun. Let your child choose the last slide or the last song."
+   },
+   {
+    "title": "Check the band daily",
+    "text": "At dinner or bedtime, ask \"What color were you today?\" Share your own colors too. Two colors at once is always allowed."
+   },
+   {
+    "title": "Plan quiet after busy",
+    "text": "After a party or a full school day, plan calm time with no screens. A bath, a book, or drawing helps the body empty out."
+   }
+  ],
+  "proof": {
+   "text": "Tuning in to Kids is a 6-session program that teaches parents to notice, accept, and name their child's feelings (called emotion coaching). In a randomized trial with 4–5-year-olds, children's emotion knowledge grew and teachers reported fewer behavior problems.",
+   "cite": "Havighurst et al., 2012"
+  }
+ },
+ "activities": [
+  {
+   "name": "Feelings Color Hunt",
+   "ages": "4–8",
+   "time": "10 min",
+   "materials": "Red, blue, purple, and grey paper or crayons; picture books or family photos",
+   "steps": [
+    "Put the four colors on the floor like the band.",
+    "Look at pictures in a book or old photos together.",
+    "Ask: \"What color is this person feeling?\" Put the picture by the color.",
+    "If it fits two colors, put it between them and say \"Mixed!\"",
+    "Name the real word each time: mad, sad, scared, tired."
+   ],
+   "why": "Young children use very few feeling words, so practicing labels on others first makes it easier to label their own feelings later (Grosse et al., 2021)."
+  },
+  {
+   "name": "Body Clue Detective",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "Large paper, a pen, colored crayons",
+   "steps": [
+    "Trace your child's body on paper, or draw a simple outline.",
+    "Ask: \"Where do you feel mad? Where do you feel tired?\"",
+    "Color those body parts with the band colors (red hot face, grey heavy eyes).",
+    "Add hunger: \"Where does your body say I'm hungry?\"",
+    "Hang it up and point to it when a storm starts."
+   ],
+   "why": "Noticing body signals (called interoception) is a first step in calming down; a child needs to notice a feeling before they can do something about it (Luedders Jones & Glovinsky, 2022)."
+  },
+  {
+   "name": "Storm Jar Breathing",
+   "ages": "4–8",
+   "time": "10 min",
+   "materials": "A clear jar or bottle with a lid, water, a little glitter or sand, tape",
+   "steps": [
+    "Fill the jar with water and glitter, and tape the lid shut.",
+    "Shake it hard: \"This is a storm inside.\"",
+    "Do the Combo: freeze, hug your tummy, three slow breaths.",
+    "Watch the glitter settle while breathing slowly.",
+    "When it is clear, say \"I feel ___.\""
+   ],
+   "why": "Slow breathing calms the body first, so the thinking brain can come back and find the word."
+  },
+  {
+   "name": "Two Colors Game",
+   "ages": "5–8",
+   "time": "5 min",
+   "materials": "Four colored socks, ribbons, or paper strips",
+   "steps": [
+    "Tell a short story: \"Your friend's party ended and you were sleepy.\"",
+    "Ask your child to hold up every color that fits.",
+    "Celebrate two or three colors: \"Yes! Sad and tired at the same time.\"",
+    "Take turns telling the story — let your child make one for you."
+   ],
+   "why": "Young children often believe they can feel only one feeling at a time; practice with mixed feelings helps them sort the storm (Nook et al., 2018)."
+  },
+  {
+   "name": "Power Word Practice",
+   "ages": "4–8",
+   "time": "5 min",
+   "materials": "Your child's Power Word from the story, a mirror",
+   "steps": [
+    "Stand in front of a mirror together.",
+    "Practice the full Combo when calm: freeze, tummy hug, three breaths, Power Word.",
+    "Finish with \"I feel ___. I need ___.\"",
+    "Try it in a silly voice, a whisper, and a strong voice.",
+    "Practice once a day for a week."
+   ],
+   "why": "Skills practiced when calm are easier to use when upset; naming the feeling quiets the brain's alarm (Lieberman et al., 2007)."
+  },
+  {
+   "name": "Goodbye Countdown",
+   "ages": "4–7",
+   "time": "2 min each time",
+   "materials": "A timer or your phone, a small card with a picture of \"what comes next\"",
+   "steps": [
+    "Before leaving somewhere fun, say \"5 more minutes,\" then \"1 more minute.\"",
+    "Let your child choose the last fun thing.",
+    "Show the card: \"Next is car, snack, home.\"",
+    "In the car, check the band: \"What color is your goodbye?\""
+   ],
+   "why": "Almost 6 in 10 preschoolers have tantrums during routines and changes, so making endings predictable lowers the storm (Wakschlag et al., 2012)."
+  },
+  {
+   "name": "Feeling Word Jar",
+   "ages": "5–8",
+   "time": "5 min",
+   "materials": "A jar, small paper slips, a pen",
+   "steps": [
+    "Write one new feeling word on a slip each day, like \"disappointed,\" \"proud,\" or \"lonely.\"",
+    "Read it, act it out, and decide which band color it belongs to.",
+    "Use the word yourself during the day.",
+    "On weekends, pull out old words and play charades."
+   ],
+   "why": "Children with stronger language skills show less anger as they grow, and more words help them speak instead of melt down (Roben et al., 2013)."
+  }
+ ],
+ "story": {
+  "before": "Before reading, show your child the band and the four colors. Ask, “Have you ever felt all the colors at once, like a storm?” Tell them they will meet Zawba’a, a little dust storm who didn’t know what he felt.",
+  "during": "Pause when the party ends and the hero melts down. Ask, “What colors do you think are on the band right now?” Point to the band each time it changes. On page 12, do the Combo together: freeze, hug your tummy, three slow breaths, Power Word. Let your child say “I feel sad. And tired.” out loud with the hero.",
+  "after": "Talk about Zawba’a: “Why was Zawba’a such a big storm? What helped him get small again?” Share a time you felt two colors at once. Then make a family plan: “When you feel a storm, we will do the Combo and find the color together.”",
+  "plan": [
+   "Day 1: Read the story together. Pause at the party meltdown and guess the band colors.",
+   "Day 2: Play the Feelings Color Hunt with picture books or photos.",
+   "Day 3: Make a Storm Jar and practice the Combo while the glitter settles.",
+   "Day 4: Draw the Body Clue Detective map. Find where tired and hungry live.",
+   "Day 5: Play the Two Colors Game. Celebrate mixed feelings.",
+   "Day 6: Reread the story. Let your child lead the Combo and the \"I feel ___\" line.",
+   "Day 7: Start the Feeling Word Jar and do a family band check at dinner."
+  ]
+ },
+ "help": {
+  "signs": [
+   "Meltdowns happen every day, or many times a day, for several weeks.",
+   "Meltdowns often last a very long time, or your child cannot calm down even with your help.",
+   "Meltdowns happen \"out of the blue\" with no clear reason, again and again.",
+   "Your child often has meltdowns with teachers or other adults, not only at home.",
+   "Your child hurts themselves, others, or breaks things during meltdowns.",
+   "Your child seems sad, worried, or grumpy most days, or stops enjoying play.",
+   "Big changes in sleep, eating, talking, or toileting, or skills going backwards."
+  ],
+  "text": "Talk to your pediatrician first; they can check sleep, hearing, language, and health, and refer you to a child psychologist. Proven help includes parent programs like Tuning in to Kids (emotion coaching) and Parent-Child Interaction Therapy (PCIT)."
+ },
+ "sources": [
+  {
+   "cite": "Wakschlag et al., 2012",
+   "ref": "Wakschlag, L. S., Choi, S. W., Carter, A. S., Hullsiek, H., Burns, J., McCarthy, K., Leibenluft, E., & Briggs-Gowan, M. J. (2012). Defining the developmental parameters of temper loss in early childhood: Implications for developmental psychopathology. Journal of Child Psychology and Psychiatry.",
+   "url": "https://today.uchc.edu/pdfs/jcpp_2595.pdf"
+  },
+  {
+   "cite": "Grosse et al., 2021",
+   "ref": "Grosse, G., Streubel, B., Gunzenhauser, C., & Saalbach, H. (2021). Let's talk about emotions: The development of children's emotion vocabulary from 4 to 11 years of age. Affective Science.",
+   "url": "https://www.erzwiss.uni-leipzig.de/fileadmin/Fakult%C3%A4t_ErzWiss/01_Institut_f%C3%BCr_Bildungswissenschaften/Professur_Saalbach/Grosse2021_Article_LetSTalkAboutEmotionsTheDevelo.pdf"
+  },
+  {
+   "cite": "Manning et al., 2019",
+   "ref": "Manning, B. L., Norton, E. S., Wakschlag, L. S., et al. (2019). Relations between toddler expressive language and temper tantrums in a community sample. Journal of Applied Developmental Psychology. (Northwestern University news release.)",
+   "url": "https://news.northwestern.edu/stories/2019/11/toddler-speech-delays-and-temper-tantrums"
+  },
+  {
+   "cite": "Roben et al., 2013",
+   "ref": "Roben, C. K. P., Cole, P. M., & Armstrong, L. M. (2013). Longitudinal relations among language skills, anger expression, and regulatory strategies in early childhood. Child Development, 84(3). (Society for Research in Child Development release.)",
+   "url": "https://www.srcd.org/news/toddlers-language-skills-predict-less-anger-preschool"
+  },
+  {
+   "cite": "Nook et al., 2018",
+   "ref": "Nook, E. C., Sasse, S. F., Lambert, H. K., McLaughlin, K. A., & Somerville, L. H. (2018). The nonlinear development of emotion differentiation. Psychological Science. (Harvard Gazette report.)",
+   "url": "https://news.harvard.edu/gazette/story/2018/09/harvard-researchers-examine-evolution-of-emotion-differentiation/"
+  },
+  {
+   "cite": "Lieberman et al., 2007",
+   "ref": "Lieberman, M. D., et al. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. Psychological Science. (UCLA Health release.)",
+   "url": "https://www.uclahealth.org/news/release/putting-feelings-into-words-produces-therapeutic-effects-in-the-brain-ucla-neuroimaging-study-supports-ancient-buddhist-teachings"
+  },
+  {
+   "cite": "Berger et al., 2012",
+   "ref": "Berger, R. H., Miller, A. L., Seifer, R., Cares, S. R., & LeBourgeois, M. K. (2012). Acute sleep restriction effects on emotion responses in 30- to 36-month-old children. Journal of Sleep Research, 21, 235–246.",
+   "url": "https://deepblue.lib.umich.edu/bitstream/2027.42/92066/1/j.1365-2869.2011.00962.x.pdf"
+  },
+  {
+   "cite": "Paruthi et al., 2016",
+   "ref": "Paruthi, S., Brooks, L. J., D'Ambrosio, C., et al. (2016). Recommended amount of sleep for pediatric populations: A consensus statement of the American Academy of Sleep Medicine. Journal of Clinical Sleep Medicine, 12(6), 785–786.",
+   "url": "https://depts.washington.edu/dbpeds/pediatricsleepdurationconsensus.pdf"
+  },
+  {
+   "cite": "Havighurst et al., 2012",
+   "ref": "Havighurst, S. S., Wilson, K. R., Harley, A. E., Kehoe, C., Efron, D., & Prior, M. R. (2012). \"Tuning into Kids\": Reducing young children's behavior problems using an emotion coaching parenting program. Child Psychiatry & Human Development.",
+   "url": "https://ifp.nyu.edu/2012/journal-article-abstracts/tuning-into-kids-reducing-young-childrens-behavior-problems-using-an-emotion-coaching-parenting-program/"
+  },
+  {
+   "cite": "Luedders Jones & Glovinsky, 2022",
+   "ref": "Luedders Jones, J., & Glovinsky, I. (2022). Breaking new ground: Interoceptive awareness in early childhood — connecting bodily sensations to emotions. ZERO TO THREE Journal, 43(2), 47–52.",
+   "url": "https://www.zerotothree.org/resource/perspectives-breaking-new-ground-interoceptive-awareness-in-early-childhood-connecting-bodily-sensations-to-emotions/"
+  }
+ ],
+ "takeaways": [
+  "Many meltdowns are a missing-words problem. In one study, 4–5-year-olds used about 4 different feeling words; adults used about 15.",
+  "Check the body first. About 6 in 10 preschoolers had a tantrum when tired, hungry or sick.",
+  "Naming the feeling calms the brain’s alarm. When parents learned to accept and name feelings, teachers saw fewer behaviour problems."
+ ],
+ "myths": [
+  [
+   "“If I name the feeling, I’ll make it bigger.”",
+   "The opposite happens. Brain scans show the brain’s alarm center gets quieter when people put their feelings into words."
+  ],
+  [
+   "“Saying ‘Stop crying, you’re fine’ helps her move on.”",
+   "Pushing feelings away teaches children that feelings are wrong. Children whose parents learned to accept and name feelings understood emotions better and had fewer behaviour problems."
+  ],
+  [
+   "“She should know by now what’s wrong.”",
+   "Young children have very few feeling words. Almost 4 in 10 of a 4–5-year-old’s feeling words are just “good” or “bad”, so “I don’t know!” is often the honest answer."
+  ]
+ ],
+ "myth_cites": "Lieberman et al., 2007; Havighurst et al., 2012; Grosse et al., 2021",
+ "fridge": {
+  "title": "When the band goes swirly",
+  "lines": [
+   "Freeze and hug your tummy.",
+   "Three slow breaths.",
+   "Say your Power Word.",
+   "“I feel ___. I need ___.”"
+  ],
+  "say": [
+   "“I’m right here. You’re safe.”",
+   "“Is it red, blue, purple or grey?”",
+   "“Maybe two colors. That’s okay.”"
+  ]
+ }
+}

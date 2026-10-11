@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>GTales book demo</title><link rel="stylesheet" href="book.css"></head>
+<body class="gt-book"><div id="book"></div>
+<script src="render.js"></script>
+<script>
+// Demo data. In the app, the story comes from stories/<slug>.json and the form values from the parent's form.
+const STORY = {
+  "slug": "friendship",
+  "struggle": "Friendship",
+  "title": "{{name}} and the Eid Swings",
+  "uses": [
+    "name",
+    "age",
+    "place",
+    "other",
+    "sidekick",
+    "power_word",
+    "strength"
+  ],
+  "other_rule": null,
+  "back_blurb": [
+    "{{name}} has a brand new red car, and it's MINE!",
+    "But at the Eid fun fair, a goat has taken the Big Wheel key, and no ride works alone.",
+    "Can {{name}} learn \"your turn, then my turn\" before the lights go out?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "It was Eid in {{place}}. {{name}}, {{age}}, had a brand new red car. Vroom!",
+        "\"Can I have a turn?\" asked {{other}}.",
+        "{{name}} held the car tight. The star on {{his}} band went dark."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "\"NO! It's MINE!\" {{name}} shouted.",
+        "{{other}} sat alone for a bit, then went home.",
+        "{{name}} played with the car. But it was not fun anymore."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "How does {{other}} feel?",
+        "options": [
+          {
+            "label": "Sad and left out",
+            "correct": true,
+            "response": "Yes. And {{name}} feels lonely too."
+          },
+          {
+            "label": "Happy",
+            "correct": false,
+            "response": "Look at that face. Is that happy?"
+          },
+          {
+            "label": "Silly",
+            "correct": false,
+            "response": "Look again. Not silly at all."
+          }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up, and the red car began to spin. Whoosh! {{name}} zoomed into a giant Eid fun fair. Swings! Balloons! A Big Wheel!",
+        "\"Beep. Let's play!\" said {{sidekick}}."
+      ],
+      "sign": "A sign said: Zizo the goat took the Big Wheel key. When the stars come out, the fair will close!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "{{name}} sat on a seesaw alone. It did not move.",
+        "{{sidekick}} sat on the other end. Up, down! Up, down! The star began to glow."
+      ],
+      "screen": "TOGETHER = GLOW · ALONE = DARK",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "What makes the star glow?",
+        "options": [
+          {
+            "label": "Playing together",
+            "correct": true,
+            "response": "Yes! Together, it glows."
+          },
+          {
+            "label": "Playing alone",
+            "correct": false,
+            "response": "Alone, the seesaw doesn't even move. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "Next was a super tall slide with a wobbly ladder.",
+        "\"I'll hold it, you climb,\" said {{name}}. \"Then you hold it for me.\"",
+        "Your turn, then my turn. Whee! Down they slid."
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "A little cat sat on a swing that would not move.",
+        "\"I'm Mishmish. Zizo took the key. He grabs every ride and shouts 'Mine!' Look for the chewed flags!\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Which way did Zizo go?",
+        "options": [
+          {
+            "label": "The chewed flags",
+            "correct": true,
+            "response": "Yes! Munch, munch. Zizo went that way."
+          },
+          {
+            "label": "The neat flags",
+            "correct": false,
+            "response": "No chew marks there. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "A little duck was blowing bubbles. {{name}} grabbed the stick. \"My turn!\"",
+        "The duck cried, and the star went dark.",
+        "{{name}} gave it back. \"Sorry. You go, then me?\" They made the biggest bubble ever."
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "Inside the big bubble was a note. \"Read it, quick!\" said {{sidekick}}."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "options": [
+          {
+            "label": "Taking turns",
+            "correct": true,
+            "response": "Taking turns! {{name}} kept the riddle in {{his}} pocket."
+          },
+          {
+            "label": "Grabbing",
+            "correct": false,
+            "response": "Grabbing makes people sad. Try again."
+          },
+          {
+            "label": "Hiding the toy",
+            "correct": false,
+            "response": "Then nobody can play. Try again."
+          }
+        ],
+        "riddle": [
+          "You go, then I go, then you go again.",
+          "It makes the game fair, and it makes a friend. What am I?"
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There he was! Zizo the goat, on top of the Big Wheel, with the key around his neck.",
+        "\"Mine, mine, MINE!\" Nobody else could get on.",
+        "But look. Zizo had a band too, and his star was dark."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Zizo jumped into the bumper cars. \"You can't catch me!\"",
+        "{{name}} took one slow breath. \"We can do this together.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Trace the paths with your finger. Which one leads to Zizo?",
+        "options": [
+          {
+            "label": "Blue car",
+            "correct": false,
+            "response": "Bump! Dead end. Try again."
+          },
+          {
+            "label": "Yellow car",
+            "correct": true,
+            "response": "The yellow path! There's Zizo!"
+          },
+          {
+            "label": "Green car",
+            "correct": false,
+            "response": "Bump! Dead end. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "At the Big Wheel was a big lever. \"Let's pull it together!\" said {{sidekick}}.",
+        "\"No! MINE!\" {{name}} pushed {{sidekick}} away and pulled alone. Nothing moved.",
+        "{{sidekick}} sat far away. One by one, the stars came out."
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "{{name}} let go. \"I can't do it alone. And I don't want to be alone.\"",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Use your words:** \"Sorry. Let's play together.\""
+        ],
+        "done": "{{sidekick}} came back. The star glowed brighter than all the stars in the sky!"
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "Mishmish came. The duck came. Everyone pulled together. Click!",
+        "The Big Wheel began to turn, and down came Zizo, still holding the key."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "\"I wanted it all for me,\" said Zizo. \"But it's no fun alone.\"",
+        "\"Ride with us,\" said {{name}}. \"Your turn, then my turn.\" Zizo gave back the key, and all the fair lights came on."
+      ],
+      "challenge": {
+        "type": "boxes",
+        "question": "Help everyone take turns on the Big Wheel. Tick a box for each turn.",
+        "count": 3,
+        "done": "Everyone got a turn! You helped Zizo make friends."
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back home, there was a knock. {{other}} was back. \"Can I have a turn?\"",
+        "{{name}}'s star went dark. {{He}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
+        "\"{{other}}, do you want to play with me? You go first!\"",
+        "They played all afternoon. {{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
+      ]
+    }
+  ]
+};
+const FORM = {"name":"(Name)","gender":"girl","age":"(Age)","place":"(Place)","other":"(Other)","sidekick":"(Sidekick)","power_word":"(Power Word)","need":"(Need)","strength":"(Strength)"};
+document.getElementById('book').innerHTML = GTales.renderBook(STORY, FORM, { imageBase: '../images/friendship/girl/' });
+document.fonts.ready.then(() => GTales.fitPages(document));
+</script></body></html>

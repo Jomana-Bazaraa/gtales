@@ -56,12 +56,10 @@ export async function POST(req: Request) {
   const hasSet = await fs.access(path.join(setDir, "cover.jpg")).then(() => true, () => false);
   if (!hasSet) return NextResponse.json({ error: "invalid", issues: [{ path: "gender", message: `The ${f.gender} pictures for this tale are not ready yet.` }] }, { status: 400 });
 
-  // Defaults from the form brief: sidekick → Bolt. `ask` is no longer asked; until the story files drop
-  // {{ask}} it takes the story's first ask_choice so the book never has a hole.
+  // Default from the form brief: sidekick → Bolt.
   const form = {
     ...f,
     sidekick: story.uses.includes("sidekick") ? f.sidekick || "Bolt" : f.sidekick,
-    ask: story.uses.includes("ask") ? f.ask || story.ask_choices[0] : f.ask,
   };
   const t0 = Date.now();
   let filled;

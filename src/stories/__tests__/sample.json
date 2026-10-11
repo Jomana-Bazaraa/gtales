@@ -1,9 +1,8 @@
 {
   "slug": "sample",
   "title": "{{name}} and the Sample Shadow",
-  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "ask", "strength"],
+  "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength"],
   "need_choices": ["I need a hug.", "I need a light."],
-  "ask_choices": ["Can you sit with me?", "Can you hold my hand?"],
   "other_rule": null,
   "pages": [
     { "n": 1, "image": "p01.jpg", "text": ["It was bedtime in {{place}}. {{name}}, {{age}}, was almost asleep.", "{{he}} was the best {{strength}} in {{place}}."], "sign": null, "challenge": null },
@@ -13,7 +12,7 @@
     { "n": 5, "image": "p05.jpg", "text": ["{{name}} said the Power Word: {{power_word}}!"], "sign": null, "challenge": { "type": "say", "question": "Say it with {{name}}!", "line": "{{power_word}}!" } },
     { "n": 6, "image": "p06.jpg", "text": ["{{he}} took three slow breaths."], "sign": null, "challenge": { "type": "boxes", "question": "Tick a box for every breath.", "count": 3 } },
     { "n": 7, "image": "p07.jpg", "text": ["\"{{need}}\" said {{name}}."], "sign": null, "challenge": null },
-    { "n": 8, "image": "p08.jpg", "text": ["\"{{ask}}\" {{he}} asked."], "sign": null, "challenge": null },
+    { "n": 8, "image": "p08.jpg", "text": ["\"Can you sit with me?\" {{he}} asked."], "sign": null, "challenge": null },
     { "n": 9, "image": "p09.jpg", "text": ["{{sidekick}}'s wings glowed. {{his}} fear got smaller."], "sign": null, "challenge": { "type": "riddle", "question": "What makes a shadow smaller?", "riddle": ["I am bright.", "I live in a torch."], "options": [ { "label": "Light", "correct": true, "response": "Yes!" }, { "label": "Noise", "correct": false, "response": "Try again." } ] } },
     { "n": 10, "image": "p10.jpg", "text": ["The shadow was small now."], "sign": null, "challenge": null },
     { "n": 11, "image": "p11.jpg", "text": ["{{name}} smiled at {{other}}."], "sign": null, "challenge": null },

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>GTales book demo</title><link rel="stylesheet" href="book.css"></head>
+<body class="gt-book"><div id="book"></div>
+<script src="render.js"></script>
+<script>
+// Demo data. In the app, the story comes from stories/<slug>.json and the form values from the parent's form.
+const STORY = {
+  "slug": "lying",
+  "struggle": "Lying",
+  "title": "{{name}} and the Rainbow Kite",
+  "uses": [
+    "name",
+    "age",
+    "place",
+    "other",
+    "sidekick",
+    "power_word",
+    "strength"
+  ],
+  "other_rule": null,
+  "back_blurb": [
+    "When Teta's tea glass breaks, {{name}} says it wasn't {{him}}.",
+    "Up in a sky full of kites, a fox has taken the Rainbow Kite, and fibs are making everyone sink.",
+    "Can {{name}} find the truth, and feel light as a feather again?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "It was Friday at Teta's house in {{place}}. \"No balls inside,\" said Teta.",
+        "But {{name}}, {{age}}, threw the ball anyway. Bounce, bounce, CRASH! Teta's tea glass broke.",
+        "\"Who did this?\" Teta called. A grey stone appeared on {{name}}'s band."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "\"{{other}} did it!\" said {{name}}.",
+        "\"It wasn't me!\" cried {{other}}. But Teta said, \"{{other}}, sit in the corner.\"",
+        "{{name}}'s tummy felt heavy, heavy, heavy."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Who really broke the glass?",
+        "options": [
+          {
+            "label": "{{name}}",
+            "correct": true,
+            "response": "Yes. And {{other}} got in trouble for it."
+          },
+          {
+            "label": "{{other}}",
+            "correct": false,
+            "response": "Look again. Who threw the ball?"
+          },
+          {
+            "label": "The cat",
+            "correct": false,
+            "response": "There's no cat! Who threw the ball?"
+          }
+        ]
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up. A kite on the balcony gave a big tug. Whoosh! Up went {{name}}, high into the sky.",
+        "\"Beep. Hello, up here!\" said {{sidekick}}."
+      ],
+      "sign": "A sign said: Fefo the fox took the Rainbow Kite. Without it, the wind will stop and every kite will fall!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "Right then, {{name}} began to sink through the cloud!",
+        "\"It was me. I broke the glass,\" {{he}} whispered. Pop! The stone fell off, and {{he}} floated up."
+      ],
+      "screen": "TRUTH = FLOAT · FIB = SINK",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "What makes {{name}} float?",
+        "options": [
+          {
+            "label": "Telling the truth",
+            "correct": true,
+            "response": "Yes! The truth makes you light."
+          },
+          {
+            "label": "Telling a fib",
+            "correct": false,
+            "response": "A fib makes you heavy. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "A big gap opened between two clouds.",
+        "\"Jump, then float!\" said {{sidekick}}.",
+        "{{name}} jumped, light as a feather, all the way across. \"This is fun!\""
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "A little white egret was crying, her kite string all tangled.",
+        "\"I'm Bayda. Fefo took the Rainbow Kite. He dropped colors when he ran. Follow them!\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Which way did Fefo go?",
+        "options": [
+          {
+            "label": "The trail of rainbow ribbons",
+            "correct": true,
+            "response": "Yes! Bits of the Rainbow Kite. Let's go!"
+          },
+          {
+            "label": "The trail of white feathers",
+            "correct": false,
+            "response": "Those are Bayda's feathers. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "{{name}} bumped a nest, and an egg rolled out. Plop!",
+        "\"Not me!\" {{he}} said. Thud! A stone landed on {{his}} back, and {{he}} began to sink.",
+        "\"It was me. Sorry.\" Pop! {{He}} floated up and put the egg back."
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "In the nest was a little card. \"Read it, quick!\" said {{sidekick}}."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "options": [
+          {
+            "label": "The truth",
+            "correct": true,
+            "response": "The truth! {{name}} kept the riddle in {{his}} pocket."
+          },
+          {
+            "label": "A fib",
+            "correct": false,
+            "response": "A fib makes you heavy, remember? Try again."
+          },
+          {
+            "label": "A secret",
+            "correct": false,
+            "response": "Secrets don't fix things. Try again."
+          }
+        ],
+        "riddle": [
+          "I can be scary to say, but I make you light.",
+          "I fix what went wrong. What am I?"
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There he was! Fefo the fox, with the Rainbow Kite rolled up in his paws.",
+        "\"Not me! I don't have it!\" he said.",
+        "But look. Fefo had a band too, and a big pile of stones on his back."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Fefo ran into a maze of clouds. \"You can't catch me!\"",
+        "{{name}} took one slow breath. \"I can do the right thing, even when it's hard.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Trace the paths with your finger. Which one leads to Fefo?",
+        "options": [
+          {
+            "label": "Pink flag",
+            "correct": false,
+            "response": "Dead end! Try another."
+          },
+          {
+            "label": "Purple flag",
+            "correct": true,
+            "response": "The purple path! There's Fefo!"
+          },
+          {
+            "label": "Green flag",
+            "correct": false,
+            "response": "Dead end! Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "{{name}} and Fefo pulled the kite. RIP! A piece flew off and knocked down the Cloud King's crown.",
+        "\"Who did this?\" boomed the King. \"{{sidekick}} did it!\" said {{name}}.",
+        "{{sidekick}} was put in a cloud cage, and {{name}} sank right through the sky."
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "{{name}} landed on a dark, low cloud. \"{{sidekick}} is in the cage because of my fib.\"",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Say the truth:** \"The truth is, I did it. I'm sorry.\""
+        ],
+        "done": "Pop, pop, POP! The stones fell off. {{name}} was light as a feather!"
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "{{name}} floated up to the King. \"The truth is, I knocked your crown. I'm sorry.\"",
+        "The King smiled. \"Thank you for telling me.\" He let {{sidekick}} out.",
+        "Together they flew the Rainbow Kite, and the wind came back."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "Fefo was stuck under his stones. \"I took the kite,\" he whispered. \"And I said it wasn't me.\"",
+        "Pop, pop, pop! The stones fell off, and Fefo floated for the very first time."
+      ],
+      "challenge": {
+        "type": "boxes",
+        "question": "Help Fefo practise. Say one true thing about you, and tick a box each time.",
+        "count": 3,
+        "done": "Three true things! Fefo is as light as a feather."
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back at Teta's, the broken glass was still on the floor.",
+        "{{name}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
+        "\"Teta, the truth is, I broke it. Not {{other}}. I'm sorry. Can I help fix it?\"",
+        "Teta hugged {{him}} tight. {{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
+      ]
+    }
+  ]
+};
+const FORM = {"name":"(Name)","gender":"boy","age":"(Age)","place":"(Place)","other":"(Other)","sidekick":"(Sidekick)","power_word":"(Power Word)","need":"(Need)","strength":"(Strength)"};
+document.getElementById('book').innerHTML = GTales.renderBook(STORY, FORM, { imageBase: '../images/lying/boy/' });
+document.fonts.ready.then(() => GTales.fitPages(document));
+</script></body></html>

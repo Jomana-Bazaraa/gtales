@@ -15,7 +15,7 @@ for (const f of files) {
   if (!parsed.success) { console.log(`✗ ${f}: ${parsed.error.issues[0]?.path.join(".")} ${parsed.error.issues[0]?.message}`); bad++; continue; }
   const s = parsed.data;
   const all = storyStrings(s).join("\n");
-  const paren = all.match(/\((Name|Age|Place|Other|Sidekick|Power Word|Need|Ask|Strength)\)/g);
+  const paren = all.match(/\((Name|Age|Place|Other|Sidekick|Power Word|Need|Strength)\)/g);
   if (paren) { console.log(`✗ ${f}: placeholders not converted: ${[...new Set(paren)].join(", ")}`); bad++; }
   const present = new Set((all.match(/\{\{(\w+)\}\}/g) ?? []).map((m) => m.slice(2, -2)).filter((t) => (TOKENS as readonly string[]).includes(t)));
   const uses = new Set(s.uses);

@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>GTales book demo</title><link rel="stylesheet" href="book.css"></head>
+<body class="gt-book"><div id="book"></div>
+<script src="render.js"></script>
+<script>
+// Demo data. In the app, the story comes from stories/<slug>.json and the form values from the parent's form.
+const STORY = {
+  "slug": "feelings",
+  "struggle": "Big feelings",
+  "title": "{{name}} and the Dust Storm",
+  "uses": [
+    "name",
+    "age",
+    "place",
+    "other",
+    "sidekick",
+    "power_word",
+    "need",
+    "strength"
+  ],
+  "other_rule": null,
+  "back_blurb": [
+    "When the party ends, {{name}} has a feeling so big, {{he}} doesn't know what it is.",
+    "In a desert oasis, a little dust storm has hidden the Sun.",
+    "Can {{name}} find the right color, and name the feeling?"
+  ],
+  "pages": [
+    {
+      "n": 1,
+      "text": [
+        "It was {{other}}'s birthday party in {{place}}. Balloons! Cake! Games!",
+        "\"Time to go home,\" said Mama.",
+        "{{name}}, {{age}}, felt a big, big feeling. {{His}} band went swirly, all the colors at once."
+      ]
+    },
+    {
+      "n": 2,
+      "text": [
+        "{{name}} fell on the floor. {{He}} kicked and screamed.",
+        "\"What's wrong?\" asked Mama. \"I DON'T KNOW!\" shouted {{name}}."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Look at {{name}}'s face. What could {{he}} be feeling?",
+        "options": [
+          {
+            "label": "Sad",
+            "correct": true,
+            "response": "Maybe! The party is over."
+          },
+          {
+            "label": "Tired",
+            "correct": true,
+            "response": "Maybe! Parties are long."
+          },
+          {
+            "label": "Mad",
+            "correct": true,
+            "response": "Maybe! {{He}} wanted to stay."
+          }
+        ],
+        "done": "Big feelings can be all mixed up. Let's find out."
+      }
+    },
+    {
+      "n": 3,
+      "text": [
+        "Then {{sidekick}}'s eyes lit up, and the balloons began to pull. Whoosh! Up went {{name}}, down into a green oasis with tall palm trees.",
+        "\"Beep. Hold on tight!\" said {{sidekick}}."
+      ],
+      "sign": "A sign said: Zawba'a the dust storm took the Sun. If the storm grows, the oasis will blow away!"
+    },
+    {
+      "n": 4,
+      "text": [
+        "{{His}} band had a tiny screen.",
+        "\"Find your color and say its name,\" said {{sidekick}}.",
+        "\"Blue and grey. I feel sad. And tired.\" The swirl stopped, and the sky got clearer."
+      ],
+      "screen": "RED = MAD · BLUE = SAD · PURPLE = SCARED · GREY = TIRED",
+      "screen_after": 1,
+      "challenge": {
+        "type": "choice",
+        "question": "Which color is sad?",
+        "options": [
+          {
+            "label": "Blue",
+            "correct": true,
+            "response": "Yes! Blue is sad."
+          },
+          {
+            "label": "Red",
+            "correct": false,
+            "response": "Red is mad. Try again."
+          },
+          {
+            "label": "Grey",
+            "correct": false,
+            "response": "Grey is tired. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 5,
+      "text": [
+        "A tall sand dune was in the way. The wind pushed and pushed.",
+        "\"I feel a bit scared,\" said {{name}}. {{His}} band glowed purple, and the wind got softer.",
+        "Step by step, they climbed to the top."
+      ]
+    },
+    {
+      "n": 6,
+      "text": [
+        "At the top sat a hoopoe bird with a crown of feathers.",
+        "\"I'm Hudhud. Zawba'a hid the Sun in his storm. Where he goes, the palm trees bend.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Which way did Zawba'a go?",
+        "options": [
+          {
+            "label": "Where the palms are bent",
+            "correct": true,
+            "response": "Yes! The storm pushed them over. Let's go!"
+          },
+          {
+            "label": "Where the palms stand straight",
+            "correct": false,
+            "response": "No wind there. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 7,
+      "text": [
+        "The wind took {{name}}'s party hat. {{He}} kicked the sand, and it flew all over Hudhud!",
+        "{{name}} stopped and looked at {{his}} band. Red.",
+        "\"I feel mad. Mad my hat flew away.\" The wind got softer, and Hudhud found the hat."
+      ]
+    },
+    {
+      "n": 8,
+      "text": [
+        "Inside the hat was a shiny drop of water with words on it. \"Read it, quick!\" said {{sidekick}}."
+      ],
+      "challenge": {
+        "type": "riddle",
+        "question": "Help {{name}} read the riddle.",
+        "options": [
+          {
+            "label": "Naming the feeling",
+            "correct": true,
+            "response": "Naming it! {{name}} kept the riddle in {{his}} pocket."
+          },
+          {
+            "label": "Hiding the feeling",
+            "correct": false,
+            "response": "Hidden feelings stay big. Try again."
+          },
+          {
+            "label": "Shouting louder",
+            "correct": false,
+            "response": "Shouting makes the storm bigger. Try again."
+          }
+        ],
+        "riddle": [
+          "When a feeling is too big, find its color, say its name.",
+          "Then it gets small again. What am I?"
+        ]
+      }
+    },
+    {
+      "n": 9,
+      "text": [
+        "There he was! Zawba'a, a huge dust storm, spinning round and round. The Sun was stuck inside.",
+        "\"Go away!\" he roared.",
+        "But look. Zawba'a's band was swirly. All the colors, all at once."
+      ]
+    },
+    {
+      "n": 10,
+      "text": [
+        "Zawba'a threw three little clouds. \"Jump on the right one!\"",
+        "{{name}} took one slow breath. \"Only the SAD cloud is safe.\""
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "Which cloud is sad?",
+        "options": [
+          {
+            "label": "The cloud with a tear",
+            "correct": true,
+            "response": "Yes! Jump! {{name}} landed safe."
+          },
+          {
+            "label": "The cloud with a big smile",
+            "correct": false,
+            "response": "That one is happy. Try again."
+          },
+          {
+            "label": "The cloud with cross eyebrows",
+            "correct": false,
+            "response": "That one is mad. Try again."
+          }
+        ]
+      }
+    },
+    {
+      "n": 11,
+      "text": [
+        "Zawba'a roared. The wind blew {{sidekick}} high into a palm tree!",
+        "{{name}} fell on the sand. {{He}} kicked and screamed, just like at the party.",
+        "The storm grew bigger and bigger."
+      ]
+    },
+    {
+      "n": 12,
+      "text": [
+        "\"{{sidekick}} needs me,\" said {{name}}. \"But my feelings are too big!\"",
+        "{{He}} remembered {{his}} Power Word. And {{he}} needed your help."
+      ],
+      "challenge": {
+        "type": "steps",
+        "tag": "Your turn · Do it with {{name}}",
+        "question": "Stand up and do each step:",
+        "steps": [
+          "**Freeze.** Hug your tummy.",
+          "**Breathe.** In, then slowly out. Three times.",
+          "**Say your Power Word:** \"{{power_word}}\"",
+          "**Name it:** \"I feel ___. {{need}}\""
+        ],
+        "done": "The swirl stopped. {{His}} band showed one clear color, and the wind went quiet."
+      }
+    },
+    {
+      "n": 13,
+      "text": [
+        "In the quiet, {{name}} climbed the palm tree and got {{sidekick}} down. Hug!",
+        "The storm got smaller and smaller. Pop! Out came the Sun, shining over the oasis."
+      ]
+    },
+    {
+      "n": 14,
+      "text": [
+        "Now Zawba'a was just a little whirl of sand, crying. \"I don't know what I feel!\"",
+        "\"Let's look,\" said {{name}}. \"Blue. You feel sad.\" Zawba'a's swirl stopped, and he smiled."
+      ],
+      "challenge": {
+        "type": "choice",
+        "question": "How do you feel right now? Point to a color and say it out loud.",
+        "options": [
+          {
+            "label": "Red: mad",
+            "correct": true,
+            "response": "You named it!"
+          },
+          {
+            "label": "Blue: sad",
+            "correct": true,
+            "response": "You named it!"
+          },
+          {
+            "label": "Purple: scared",
+            "correct": true,
+            "response": "You named it!"
+          },
+          {
+            "label": "Grey: tired",
+            "correct": true,
+            "response": "You named it!"
+          }
+        ],
+        "done": "You named your feeling! That's the trick."
+      }
+    },
+    {
+      "n": 15,
+      "text": [
+        "Back at the party, Mama said, \"Time to go home.\" {{name}}'s band went swirly.",
+        "{{He}} hugged {{his}} tummy and took three breaths. \"{{power_word}}\"",
+        "\"Mama, I feel sad the party is over. And tired. {{need}}\"",
+        "Mama hugged {{him}}. {{sidekick}} winked. \"Best {{strength}} in {{place}}.\""
+      ]
+    }
+  ]
+};
+const FORM = {"name":"(Name)","gender":"boy","age":"(Age)","place":"(Place)","other":"(Other)","sidekick":"(Sidekick)","power_word":"(Power Word)","need":"(Need)","strength":"(Strength)"};
+document.getElementById('book').innerHTML = GTales.renderBook(STORY, FORM, { imageBase: '../images/feelings/boy/' });
+document.fonts.ready.then(() => GTales.fitPages(document));
+</script></body></html>
