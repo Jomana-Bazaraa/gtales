@@ -22,8 +22,8 @@ PDFs are rendered by `.github/workflows/pdf.yml`, never on the web server. The w
 2. Workers & Pages → Create → **Import a repository** → connect GitHub → pick `Jomana-Bazaraa/gtales`.
    - Project / Worker name: **`gtales`** (must match `name` in `wrangler.jsonc`)
    - Production branch: `main`
-   - Build command: `npx opennextjs-cloudflare build`
-   - Deploy command: `npx opennextjs-cloudflare deploy`
+   - Build command: `npm run cf:build`
+   - Deploy command: `npm run cf:deploy` (never a preview command: a preview server never exits and the build times out after 30 min; `cf:preview` now deploys when it detects Cloudflare's build machine, as a safety net)
    - Root directory: `/`
 3. Before the first build, **Settings → Build → Variables and secrets** (build-time; `NEXT_PUBLIC_*` are baked into the pages):
    `NODE_VERSION=22`, `NEXT_PUBLIC_SITE_URL=https://gtales.kids`, `NEXT_PUBLIC_WHATSAPP=20xxxxxxxxxx`
