@@ -2,7 +2,6 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { Logo } from "@/components/SiteChrome";
-import { isMockAi } from "@/lib/ai";
 import { isMockDb } from "@/lib/db";
 import { isMockEmail } from "@/lib/email";
 
@@ -20,18 +19,18 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           <Logo className="!text-lg" />
           <span className="text-xs font-bold text-ink-soft uppercase tracking-wider">Admin</span>
           <nav className="flex gap-4 text-sm font-semibold ms-auto">
-            <Link href="/admin" className="hover:text-coral">Stories</Link>
+            <Link href="/admin" className="hover:text-coral">Free stories</Link>
             <Link href="/admin/series" className="hover:text-coral">Series orders</Link>
-            <Link href="/admin/stats" className="hover:text-coral">Stats</Link>
+            <Link href="/admin/dashboard" className="hover:text-coral">Dashboard</Link>
             <Link href="/admin/settings" className="hover:text-coral">Settings</Link>
             <form action="/api/admin/logout" method="post">
               <button className="text-ink-soft hover:text-coral">Log out</button>
             </form>
           </nav>
         </div>
-        {(isMockAi || isMockDb || isMockEmail) && (
+        {(isMockDb || isMockEmail) && (
           <div className="bg-coral-soft text-coral-dark text-xs text-center py-1">
-            Mock mode: {[isMockAi && "Gemini", isMockDb && "Supabase", isMockEmail && "Resend"].filter(Boolean).join(" · ")} not configured — see .env.example
+            Mock mode: {[isMockDb && "Supabase", isMockEmail && "Resend"].filter(Boolean).join(" · ")} not configured — see .env.example
           </div>
         )}
       </header>

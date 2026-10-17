@@ -1,7 +1,7 @@
 /**
  * Story generation pipeline.
  *   runTextAndImages(id)  — template → 1 text call → assemble → 2 image calls → status ready
- *   runPdfsAndEmail(id)   — 2 PDFs via headless Chrome → email parent
+ *   runPdfsAndEmail(id)   — printable-page links → email parent
  * Split in two so each stays inside a serverless time budget.
  */
 import { generateStoryText } from "./ai";
@@ -11,7 +11,6 @@ import { KEEPERS, struggleById, type KeeperId } from "./keepers";
 import { ageBand, defaultWorkshop } from "./activities/registry";
 import { assemblePages, fallbackInterest, loadTemplate, slotContext, splitParas, substitute, templateExists, type SubstitutionContext } from "./template-engine";
 import type { AssembledStory, StoryPage, StoryRecord } from "./types";
-import { renderStoryPdf } from "./pdf";
 import { sendStoryEmail } from "./email";
 
 export async function runTextAndImages(id: string): Promise<void> {
@@ -120,8 +119,9 @@ export async function runPdfsAndEmail(id: string, baseUrl: string): Promise<void
   try {
     let patch: Partial<StoryRecord> = {};
     if (!rec.pdf_color_url) {
-      const color = await renderStoryPdf(id, "color", baseUrl);
-      const lineart = await renderStoryPdf(id, "lineart", baseUrl);
+      // Legacy records: no headless Chrome on the web server (Cloudflare); link the printable pages.
+      const color = `${baseUrl}/story/${id}/print?variant=color`;
+      const lineart = `${baseUrl}/story/${id}/print?variant=lineart`;
       patch = { pdf_color_url: color, pdf_lineart_url: lineart };
       await updateStory(id, patch);
     }

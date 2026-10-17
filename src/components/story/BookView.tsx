@@ -1,4 +1,5 @@
 "use client";
+import { track } from "@/lib/track";
 /**
  * Screen version of a GTales book. The HTML comes from the team's template renderer and
  * book.css is used untouched; this component only (1) scales the A4 pages to the phone,
@@ -128,5 +129,5 @@ function ding() {
   } catch {}
 }
 function beacon(event: string, storyId: string, page?: number) {
-  try { navigator.sendBeacon?.("/api/events", new Blob([JSON.stringify({ event, story_id: storyId, page })], { type: "application/json" })); } catch {}
+  track(event, { story_id: storyId, page });
 }

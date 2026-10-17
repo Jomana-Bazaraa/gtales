@@ -1,21 +1,22 @@
 import { NextResponse } from "next/server";
-import { getBook, updateBook } from "@/lib/db";
-import { renderBookPdf } from "@/lib/pdf";
+import { getBook } from "@/lib/db";
 import { logEvent } from "@/lib/events";
+import { pdfState } from "@/lib/pdf-jobs";
 import { baseUrl } from "@/lib/site";
 
-export const maxDuration = 60;
-
-/** Lazily renders the A4 story PDF on first request, then redirects to the stored file (SPEC §8). */
-export async function GET(_req: Request, { params }: RouteContext<"/api/books/[id]/pdf">) {
+/**
+ * Story PDF (SPEC §8). Ready → redirect to the stored file. Not yet → the waiting page, which queues the
+ * GitHub Action job and polls `?status=1` (JSON) until the file exists.
+ */
+export async function GET(req: Request, { params }: RouteContext<"/api/books/[id]/pdf">) {
   const { id } = await params;
   const book = await getBook(id);
   if (!book) return NextResponse.json({ error: "not_found" }, { status: 404 });
-  let url = book.pdf_url;
-  if (!url) {
-    url = await renderBookPdf(id, await baseUrl());
-    await updateBook(id, { pdf_url: url });
+  const state = await pdfState(id);
+  if (new URL(req.url).searchParams.get("status")) {
+    return NextResponse.json(state ? (state.status === "done" ? state : { status: state.status }) : { status: "none" }, { headers: { "cache-control": "no-store" } });
   }
-  await logEvent({ event: "pdf_downloaded", story_id: id, tale: book.slug, meta: { kind: "story" } });
-  return NextResponse.redirect(new URL(url, await baseUrl()));
+  if (state?.status !== "done") return NextResponse.redirect(new URL(`/story/${id}/pdf`, await baseUrl()));
+  await logEvent({ event: "pdf_downloaded", story_id: id, tale: book.slug, gender: book.gender, child_age: book.form.age, meta: { kind: "story" } });
+  return NextResponse.redirect(new URL(state.url, await baseUrl()));
 }

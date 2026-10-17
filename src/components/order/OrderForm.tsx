@@ -4,6 +4,7 @@
  * optional fields say so, photos upload as picked, auto-saved, pre-filled from a free story.
  */
 import { useEffect, useMemo, useState } from "react";
+import { sessionId, source, track } from "@/lib/track";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { COPY, egp, priceBreakdown, type Pricing } from "@/lib/gtales";
@@ -60,6 +61,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
     try { const raw = localStorage.getItem(KEY); if (raw) base = { ...EMPTY, ...(JSON.parse(raw) as { d: Draft }).d }; } catch {}
     if (prefill.name && !base.name) base = { ...base, name: prefill.name, age: prefill.age ?? base.age, gender: prefill.gender ?? base.gender, struggles: prefill.struggle && !base.struggles.length ? [prefill.struggle] : base.struggles };
     setD(base); setReady(true);
+    track("order_started", { story_id: prefill.storyId });
   }, [prefill, pricing.promoCode]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d })); } catch {} }, [d, ready]);
 
@@ -99,7 +101,8 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
   const upload = async (file: File): Promise<string | null> => {
     const fd = new FormData(); fd.append("file", file);
-    const r = await fetch("/api/uploads", { method: "POST", body: fd });
+    const r = await fetch("/api/uploads", { method: "POST", body: fd }).catch(() => null);
+    if (!r) { setErr("No connection. Check the internet and add the photo again."); return null; }
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { setErr(j.message || "That photo didn't upload. Please try another."); return null; }
     return j.key as string;
@@ -116,9 +119,15 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
       dedication: d.dedication.trim() || undefined, activities: d.activities,
       parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined },
-      promo_code: d.promo.trim() || undefined, free_story_id: prefill.storyId, ref: safeRef(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
+      promo_code: d.promo.trim() || undefined, free_story_id: prefill.storyId, ref: safeRef(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
     };
-    const r = await fetch("/api/orders", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+    let r: Response;
+    try {
+      r = await fetch("/api/orders", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+    } catch {
+      setBusy(false);
+      return setErr("No connection. Your answers are saved: check the internet and tap Confirm my order again.");
+    }
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { setBusy(false); return setErr(j.message || j.issues?.[0]?.message || "Something went wrong. Please try again."); }
     try { localStorage.removeItem(KEY); } catch {}
@@ -306,7 +315,5 @@ function Row({ label, children, onEdit }: { label: string; children: React.React
   );
 }
 function cap(s: string) { return s.trim().replace(/\s+/g, " ").split(" ").map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(" "); }
-function safeRef(): string | undefined {
-  try { const r = new URLSearchParams(location.search).get("ref") || localStorage.getItem("gtales.ref") || undefined; return r ? r.replace(/[^a-z0-9_-]/gi, "").slice(0, 60) : undefined; } catch { return undefined; }
-}
+const safeRef = source;
 void COPY;

@@ -3,3 +3,7 @@ node_modules
 .env*.local
 .data
 .data
+.open-next
+.wrangler
+.dev.vars*
+!.dev.vars.example

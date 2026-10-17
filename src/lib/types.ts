@@ -151,6 +151,8 @@ export interface BookRecord {
   dedication?: string;
   ref?: string;
   ip?: string;
+  parent_id?: string;
+  session_id?: string;
   pdf_url: string | null;
   created_at: string;
   updated_at: string;
@@ -180,9 +182,36 @@ export interface OrderRecord {
   total: number;
   free_story_id?: string;
   ref?: string;
+  parent_id?: string;
   notes?: string;
   courier_confirmation?: string;
   photos_deleted_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** A parent = one user (LAUNCH-PLAN §1b). id = hash of the normalised email or WhatsApp number. */
+export interface ParentRecord {
+  id: string;
+  email?: string;
+  whatsapp?: string;
+  name?: string;
+  source?: string;
+  first_book_id?: string;
+  first_order_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** A queued PDF render, picked up by the GitHub Action (scripts/pdf-worker.mjs). */
+export interface PdfJob {
+  id: string;
+  book_id: string;
+  status: "queued" | "running" | "done" | "failed";
+  requested_by: "parent" | "admin";
+  pdf_url: string | null;
+  error: string | null;
+  attempts: number;
   created_at: string;
   updated_at: string;
 }

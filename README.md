@@ -2,7 +2,7 @@
 
 Personalized interactive children's storybooks built around **the Keepers** — nine characters who each guard one feeling and need the child's help with it.
 
-- Next.js 16 (App Router) · Tailwind v4 · Vercel
+- Next.js 16 (App Router) · Tailwind v4 · Cloudflare Workers (OpenNext)
 - Gemini: **1 text call + 2 image calls per story** (templates are static; substitutions are plain JS)
 - Supabase (Postgres + Storage) · Resend (email) · headless Chrome for PDFs (Arabic-safe)
 - Everything runs locally in **mock mode** with no keys.
@@ -68,20 +68,8 @@ Template keys expected (see `STRUGGLES` in `src/lib/keepers.ts`): `blaze-anger`,
 2. Enable billing on the Google Cloud project (image generation has no free tier). Expected cost per story: ≈ $0.004 text + 2 × $0.034 images ≈ **$0.07**.
 3. Models are set in `.env.example`; override if Google renames them.
 
-### 3. Resend
-1. https://resend.com → Domains → add `estoria.kids` → add the DNS records it shows (DKIM, SPF, MX for bounces) at your registrar → Verify.
-2. API Keys → create → `RESEND_API_KEY`. Set `EMAIL_FROM="Estoria <stories@estoria.kids>"` and `ADMIN_NOTIFY_EMAIL` to get a mail per printed-book order.
-
-### 4. Vercel
-1. Push the repo to GitHub, import in Vercel. Framework auto-detected.
-2. Environment variables: everything in `.env.example` except `PUPPETEER_EXECUTABLE_PATH` / `PDF_DISABLED`. Set `NEXT_PUBLIC_SITE_URL=https://<your>.vercel.app` (change to the domain later), strong `ADMIN_PASSWORD` and `INTERNAL_RENDER_TOKEN`.
-3. Function duration: the `/api/stories` and `/finalize` routes declare `maxDuration = 60`. On the Hobby plan enable **Fluid Compute** (Project → Settings → Functions) so 60 s is honoured.
-4. Deploy. Test one story end to end.
-
-### 5. Domain (estoria.kids)
-1. Vercel → Project → Settings → Domains → add `estoria.kids` and `www.estoria.kids`.
-2. At the registrar add the records Vercel shows (A `76.76.21.21` for apex, CNAME `cname.vercel-dns.com` for www).
-3. Update `NEXT_PUBLIC_SITE_URL=https://estoria.kids`. Nothing else in the code references the host.
+### 3. Hosting, domain and email
+Cloudflare Workers (free) + Supabase + Resend on `gtales.kids`: follow `docs/DEPLOY.md` (the launch plan is `docs/LAUNCH-PLAN.md`).
 
 ### 6. Keeper reference art
 Drop one PNG per Keeper into `public/keepers/<id>.png` (`blaze.png`, `wisp.png`, …). When present it is sent to the image model alongside the prompt so the character stays consistent.

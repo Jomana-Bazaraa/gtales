@@ -198,4 +198,5 @@ export const COPY = {
   trustLine: ["Ages 2–10", "You approve every page", "Pay on delivery"],
   reviewsVisible: process.env.NEXT_PUBLIC_REVIEWS_VISIBLE === "true",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "",
+  whatsappText: "Hi GTales! I have a question about a story for my child.",
 };
