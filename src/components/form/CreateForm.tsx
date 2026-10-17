@@ -5,6 +5,7 @@
  * live cover preview, review sentence, progress saved in the browser.
  */
 import { useEffect, useMemo, useState } from "react";
+import { sessionId, source, track } from "@/lib/track";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TALES } from "@/lib/gtales";
@@ -73,6 +74,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       else if (initialTale) setI(1);
     } catch {}
     setReady(true);
+    track("story_started", { meta: initialTale ? { tale: initialTale } : undefined });
   }, [initialTale]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d, i })); } catch {} }, [d, i, ready]);
 
@@ -131,7 +133,13 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   const submit = async () => {
     for (const s of steps) { const e = valid(s); if (e) { setI(steps.indexOf(s)); return setErr(e); } }
     setBusy(true); setErr(null);
-    const r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...values(), ref: safeRef(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "" }) });
+    let r: Response;
+    try {
+      r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...values(), ref: safeRef(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "" }) });
+    } catch {
+      setBusy(false);
+      return setErr("No connection. Your answers are saved: check the internet and tap again.");
+    }
     const j = await r.json().catch(() => ({}));
     if (!r.ok) {
       setBusy(false);
@@ -313,6 +321,4 @@ function stepFor(field: string | undefined): Step {
     case "strength": return "strength"; case "dedication": return "dedication"; default: return "email";
   }
 }
-function safeRef(): string | undefined {
-  try { const r = new URLSearchParams(location.search).get("ref") || localStorage.getItem("gtales.ref") || undefined; if (r) localStorage.setItem("gtales.ref", r); return r ? r.replace(/[^a-z0-9_-]/gi, "").slice(0, 60) : undefined; } catch { return undefined; }
-}
+const safeRef = source;

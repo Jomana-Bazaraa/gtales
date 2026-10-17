@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.7 · 11 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.8 · 17 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -26,7 +26,7 @@ Two offers:
 | Production | Automatic: text filled by `fillStory`, optional one-call AI polish, seconds | Manual by the team, approved page by page on WhatsApp |
 
 Positioning: Series-first. The free story is the fallback, not the headline.
-Market: Egypt, English only at launch. Domain gtales.app.
+Market: Egypt, English only at launch. Domain gtales.kids.
 
 ### 1.1 Six tales (launch set)
 
@@ -99,12 +99,12 @@ AC: no colour outside the token list; no dark-brown shadow under purple; all but
 | `/create?tale=key&ref=` | Free story form (8 steps) | – |
 | `/story/[id]` | Ready screen | link holder |
 | `/story/[id]/read` | Reader | link holder |
-| `/story/[id]/pdf/(story|colouring|guide)` | PDF download | link holder |
+| `/story/[id]/pdf` | Story PDF: opens the file, or "being made" and waits for it (§8) | link holder |
 | `/order?story=id` | Series order form (15 steps) | – (account created at submit) |
 | `/order/[id]/confirmed` | Confirmation | link holder |
 | `/signin` | Sign in (WhatsApp code / email link) | – |
 | `/my-stories` | Profiles, downloads, order tracking | signed in |
-| `/admin/*` | Orders, Free stories, Stats, Feedback, Settings, Promo codes | admin (single account) |
+| `/admin/*` | Free stories, Series orders, Dashboard, Settings (Feedback, Promo codes later) | admin (single account) |
 | `/privacy` | Privacy | – |
 
 Every public page: `<title>`, meta description, OG image, canonical, `lang="en"`. Nav (desktop): How it works · Meet the book · Superpowers · Pricing · FAQ · "Try a free story" ghost · "Create your child's books" CTA. Phone: logo + CTA; sections reached by scrolling.
@@ -208,9 +208,9 @@ Boy or girl picks the image set; a gender whose set is missing shows "Coming soo
 
 After fillStory, one call to Claude or Gemini (`POLISH_PROVIDER=claude|gemini|off`, `POLISH_MODEL`), temperature 0.2–0.3, with the exact prompt in `src/stories/polish-prompt.md`. The reply is validated in code and the plain filled version is used if any check fails: same page count, challenges, options and correct answers; Combo steps word-for-word; name, sidekick, power word, place and other child still present where they were; no new names, places or characters; no page > 15% longer; no sentence > 14 words; valid JSON against the schema. Every rejected polish is logged with the diff. Result cached per story so a book is never polished twice. Only the filled story text is sent, never the parent's email, phone or photo. With `POLISH_PROVIDER=off` every book still works.
 
-Submit → fillStory → polish (if on) → Ready screen in ≤ 10 s (p95). Rate limit per §2.3. Event `free_story_generated` with time and `polished: true|false`.
+Submit → fillStory → polish (if on) → Ready screen in ≤ 10 s (p95). Rate limit per §2.3. Event `story_created` with time and `polished: true|false`.
 
-**Ready screen `/story/[id]`.** Cover (the tale's cover for the chosen set), "Adam's story is ready", buttons: Open the story (sky), Story PDF, Colouring PDF, Parent guide; "Make a story for another child" (ref=share). Series band as §6. No expert line.
+**Ready screen `/story/[id]`.** Cover (the tale's cover for the chosen set), "Adam's story is ready", buttons: Open the story (sky), Story PDF, Colouring PDF, Parent guide; "Send to WhatsApp" (wa.me link with the story link, ref=share); "Make a story for another child" (ref=share). Series band as §6. No expert line.
 
 ---
 
@@ -219,7 +219,7 @@ Submit → fillStory → polish (if on) → Ready screen in ≤ 10 s (p95). Rate
 **Screen version `/story/[id]/read`.** The template HTML rendered by `render.js`, with `book.css` untouched, scaled to the phone width (CSS zoom), pages stacked vertically, `fitPages()` run after fonts and images load. Challenges are tappable: an option shows its `response` (green for correct, with a star and a short chime); `steps` and `boxes` tick one by one and show the `done` text when all are ticked. Top bar: close, title, PDF.
 AC: no `{{token}}` or `undefined` in the output; no "too much text" warning; the girl book has she/her exactly where the boy book has he/his and nowhere else ("Where he goes" on page 6 is the Big Shadow and stays "he").
 
-**Story PDF.** Same HTML rendered by headless Chrome: A4, `printBackground: true`, zero margins, `preferCSSPageSize: true`; wait for `document.fonts.ready`, call `fitPages`, print. 17 pages: cover, 15 story pages, back cover. Made on first request (`/api/books/[id]/pdf`), then stored. Pages 1, 8 and 12 must match `docs/reference/worry-boy-template.pdf`. Colouring PDF: only when a tale ships a line-art set (none yet; button hidden).
+**Story PDF.** Same HTML rendered by headless Chrome: A4, `printBackground: true`, zero margins, `preferCSSPageSize: true`; wait for `document.fonts.ready`, call `fitPages`, print. 17 pages: cover, 15 story pages, back cover. Made on first request, then stored: the web server (Cloudflare Workers) can't run Chrome, so the request queues a `pdf_jobs` row and starts the GitHub Action `pdf.yml`, which renders `/story/[id]/print` (token-protected), uploads to the `pdfs` bucket and sets `books.pdf_url`. The parent sees "<Name>'s PDF is being made" (about two minutes) with a link to read meanwhile; the PDF opens by itself when ready, and instantly after that. Admin → Free stories shows each PDF's state with Generate / Regenerate. Pages 1, 8 and 12 must match `docs/reference/worry-boy-template.pdf`. Colouring PDF: only when a tale ships a line-art set (none yet; button hidden).
 AC: no overflow, no empty tokens, no broken words; one boy book and one girl book per tale reviewed before launch.
 
 ## 9. Series order form (`/order`, 12 screens)
@@ -262,10 +262,10 @@ Order statuses (short list, one admin): `ordered` → `being_made` → `awaiting
 
 ## 11. Admin (`/admin`, single account)
 
-Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
+Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo codes after launch).
 - **Orders:** table (order, child, three tales, parent, photo thumbnail, status, total); detail view shows every field from §9 including loved-ones' photos; status buttons advance the pipeline and send the WhatsApp template; notes; courier confirmation upload.
-- **Free stories:** list with tale, date, device, generation time, PDF downloads.
-- **Stats:** see §13.
+- **Free stories:** list with child, parent email, tale, source, PDF state and Generate/Regenerate PDF.
+- **Dashboard:** see §13.
 - **Feedback:** every response with date, tale, child emoji, parent answers, one-week follow-up, quote permission.
 - **Settings [config]:** list price, delivery fee, default promo, rate limit, promo-bar text, reviews-visible toggle, production/delivery day estimates, WhatsApp number.
 - **Promo codes:** code, % or fixed, start/end, max uses, active.
@@ -274,7 +274,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 
 ## 12. Data, privacy and retention
 
-**12.1 Tables (Supabase/Postgres):** `stories` (free), `orders`, `order_people`, `profiles` (parents), `heroes` (saved children), `events`, `feedback`, `promo_codes`, `settings`, `admin_users`.
+**12.1 Tables (Supabase/Postgres):** `books` (free stories), `orders`, `parents` (users: one row per email / WhatsApp number, id = hash), `pdf_jobs`, `profiles`, `heroes` (saved children), `events`, `feedback`, `promo_codes`, `settings`. Migrations `supabase/migrations/0001`–`0003`.
 **12.2 Photos:** stored in private bucket, signed URLs only; hero and loved-ones photos deleted automatically when an order reaches `delivered_paid` or `cancelled` (cron, daily), and the deletion logged. Reorders therefore re-ask for photos. Privacy page states this in plain words.
 **12.3 Events never contain** child names, photos or phone numbers.
 **12.4 Free-story PDFs** kept 12 months then deleted; the Ready link says so.
@@ -284,21 +284,23 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 
 ## 13. Tracking and stats
 
-**Events table:** id, created_at (server), event, visitor_id (cookie), session_id, story_id | order_id, tale (key), step, ref, device, page, meta (json).
+**Events table:** id, created_at (server), event (the type), session_id (random id in the browser, no personal data), story_id | order_id, tale (story slug), gender, child_age, parent_id (hash, see §12.1), source = ref (first `?ref=` / `?utm_source=` / `?code=` seen), step, device, page, meta (json). Never the child's name.
+
+**Dashboard types:** story_started (free form opened), story_created, story_finished (reached the back cover), story_shared (WhatsApp / share), order_started (order form opened), order_placed, order_delivered (status → delivered_paid).
 
 | Area | Events |
 |---|---|
 | Visits | page_view(page), cta_click(button, section) |
-| Free story | free_form_started, free_form_step(1–8), free_story_generated(ms), free_story_failed(reason), rate_limited |
-| Reading | story_opened, page_viewed(1–16), challenge_completed, story_finished, audio_played, pdf_downloaded(story|colouring|guide), share_clicked |
-| Series | series_cta_clicked(location), order_form_started, order_form_step(1–15), order_submitted, promo_applied(code) |
+| Free story | story_started, free_form_step(1–8), story_created(ms), free_story_failed(reason), rate_limited |
+| Reading | story_opened, page_viewed(1–16), challenge_completed, story_finished, audio_played, pdf_downloaded(story|colouring|guide), story_shared(via) |
+| Series | series_cta_clicked(location), order_started, order_form_step(1–15), order_placed(total, promo), promo_applied(code) |
 | Account | signin_code_sent, signin_success, reorder_started |
 | Fulfilment | status_changed(from, to), approval_sent, edit_requested, approved, shipped, delivered_paid, cancelled |
 | Feedback | feedback_submitted, followup_answered |
 
 **Ref tags:** `?ref=wa-group-<name>`, `?ref=counselor-<school>`, `?ref=instagram`, `?ref=share`; first ref per visitor stored and attached to every story and order.
 
-**Stats tab:** counters today / 7 days / all time (visitors, free stories, stories finished, PDFs downloaded, Series orders, delivered and paid, reprints); funnel visitors → free form started → story generated → story finished → Series button clicked → order submitted → delivered and paid with drop-off %; breakdown by ref and by tale; feedback list; CSV export of events, orders, feedback. Vercel Analytics on as an independent visitor count.
+**Dashboard (`/admin/dashboard`):** a Today / 7 days / 30 days table of visitors (unique sessions), stories created, finished, shared, orders, revenue placed and revenue delivered-and-paid; for a chosen range: created → ordered conversion, parents (users) total and new, the funnel visitors → form opened → created → finished → shared → order placed, breakdowns by story, gender and age (created, finished, orders, conversion, revenue), top sources and promo codes. CSV export of events and orders. Books and orders are the truth for counts; events add sessions, finishes and shares. Page views and countries: Cloudflare Web Analytics (free, no cookies).
 
 ---
 
@@ -334,7 +336,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 - [ ] My stories: profile card, Order again pre-fills steps, tracker matches admin status within 5 s of change, WhatsApp message sent per status.
 - [ ] Photos deleted on delivered_paid / cancelled; deletion row in events.
 - [ ] Every event in §13 fires with correct fields; no child name/phone/photo in any event row.
-- [ ] Stats funnel numbers equal counts from the CSV export.
+- [ ] Dashboard numbers equal counts from the CSV export.
 - [ ] Alt text audit: every image's alt matches adjacent copy; IMAGE NEEDED blocks only where art is missing.
 - [ ] Lighthouse mobile: perf ≥ 90, a11y ≥ 95, SEO ≥ 95 on `/`, `/tales`, `/tales/anger`.
 
@@ -351,6 +353,7 @@ Tabs: Orders · Free stories · Stats · Feedback · Settings · Promo codes.
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.8 (17 Oct 2026): launch on Cloudflare Workers (LAUNCH-PLAN §1): story PDFs rendered by a GitHub Action job with a "being made" page; Admin Dashboard and Dashboard event types (§13), `parents` table, session id and source on every event; ready screen gets "Send to WhatsApp" and Open Graph cover previews; domain gtales.kids.
 - 1.7 (11 Oct 2026): remaining five image sets delivered (feelings boy, lying boy+girl, friendship boy+girl) — all 12 sets live; Honesty and Kindness & friendship get covers and samples; no "coming soon" tales remain.
 - 1.6 (11 Oct 2026): full handoff adopted — all six story files (anger, worry, bullied, lying, feelings, friendship) without `{{ask}}`/`ask_choices`/`need_choices`; `ask` removed from the engine, form and API. Image sets delivered: anger boy+girl, worry boy+girl, bullied boy+girl, feelings girl (7 of 12; feelings boy, lying and friendship are "coming soon" per gender). Two image trees: `public/stories/` full size for the PDF, `public/stories-web/` 1200 px copies for the reader, covers and samples (`storyImage(..., variant)`, `renderBookHtml(..., "web"|"print")`). Reference PDFs, parent guides and template demos under `docs/reference/`. Age stays 2–10 (the handoff FORM_PROMPT still says 4–8; Ayman's 10 Oct decision wins).
 - 1.5 (10 Oct 2026): ages 2–10 everywhere (was 4–8; free engine accepts 2–10 too). Hero screen: photo optional with an optional text description instead, full-body photo removed, three-books note on screen 1. Price footer shown only on the delivery and review screens. Meet the book and hero fan use rendered template pages; the 20×20 Series mock-up (`public/book/`) is retired and Calm has no cover until its pack arrives.

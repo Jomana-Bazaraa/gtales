@@ -23,7 +23,7 @@ export function StoryToolbar({ story, url }: { story: StoryRecord; url: string }
   }, [story.id, pdfs.color, pdfs.lineart]);
 
   const share = async () => {
-    const text = isAr ? `قصة ${story.input.childName} على إستوريا` : `${story.input.childName}'s Estoria story`;
+    const text = isAr ? `قصة ${story.input.childName} على GTales` : `${story.input.childName}'s GTales story`;
     if (navigator.share) {
       await navigator.share({ title: text, url }).catch(() => {});
     } else {

@@ -10,6 +10,9 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/st
   const { id } = await params;
   const sp = await searchParams;
   const book = await getBook(id);
+  // Only the PDF renderer (GitHub Action) opens this page in production; it passes INTERNAL_RENDER_TOKEN.
+  const token = process.env.INTERNAL_RENDER_TOKEN;
+  if (book && token && sp.token !== token) notFound();
   if (book) return <BookPrint html={await renderBookHtml(book.story, book.form, "print")} />;
   const variant = sp.variant === "lineart" ? "lineart" : "color";
   const story = id === "showcase" ? await showcaseStory(sp.lang === "ar" ? "ar" : "en") : await getStory(id);

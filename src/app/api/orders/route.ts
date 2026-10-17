@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { insertOrder } from "@/lib/db";
 import { logEvent } from "@/lib/events";
+import { sendOrderNotice } from "@/lib/email";
+import { rememberParent } from "@/lib/parents";
+import { baseUrl } from "@/lib/site";
 import { currentBreakdown } from "@/lib/pricing";
 import { assertSafe, SafetyError } from "@/stories/safety";
 import type { OrderRecord } from "@/lib/types";
@@ -23,6 +26,7 @@ const schema = z.object({
   promo_code: z.string().trim().max(30).optional(),
   free_story_id: z.string().max(40).optional(),
   ref: z.string().trim().max(60).optional(),
+  session_id: z.string().max(60).optional(),
   website: z.string().max(0).optional(),
 });
 
@@ -44,14 +48,17 @@ export async function POST(req: Request) {
   const discount = promoOk ? p.discount : 0;
   const now = new Date().toISOString();
   const id = `GT-${1000 + Math.floor(Math.random() * 9000)}-${nanoid(4).toUpperCase()}`;
+  const parent_id = await rememberParent(o.parent.whatsapp, { name: o.parent.name, source: o.ref, first_order_id: id });
   const rec: OrderRecord = {
     id, status: "ordered", edit_requested: false,
     child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
     promo_code: promoOk ? p.promoCode : undefined, list_price: p.listPrice, discount, delivery: p.delivery, total: p.listPrice - discount + p.delivery,
-    free_story_id: o.free_story_id, ref: o.ref, photos_deleted_at: null, created_at: now, updated_at: now,
+    free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,
   };
   await insertOrder(rec);
-  await logEvent({ event: "order_submitted", order_id: id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null } });
+  await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null, total: rec.total } });
+  const site = await baseUrl();
+  after(() => sendOrderNotice(rec, site).catch((e) => console.error("[email] order", e)));
   return NextResponse.json({ id, total: rec.total });
 }

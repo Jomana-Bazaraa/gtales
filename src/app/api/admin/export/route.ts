@@ -18,6 +18,6 @@ export async function GET(req: Request) {
   const what = new URL(req.url).searchParams.get("what");
   const rows = what === "orders"
     ? (await listOrders(10000)).map((o) => ({ id: o.id, created_at: o.created_at, status: o.status, child_age: o.child.age, gender: o.child.gender, books: o.books.map((b) => b.struggle).join("|"), governorate: o.parent.governorate, city: o.parent.city, total: o.total, promo: o.promo_code ?? "", ref: o.ref ?? "", courier: o.courier_confirmation ?? "" }))
-    : (await listEvents()).map((e) => ({ created_at: e.created_at, event: e.event, story_id: e.story_id ?? "", order_id: e.order_id ?? "", tale: e.tale ?? "", step: e.step ?? "", ref: e.ref ?? "", page: e.page ?? "", meta: e.meta ?? "" }));
+    : (await listEvents()).map((e) => ({ created_at: e.created_at, event: e.event, story_id: e.story_id ?? "", order_id: e.order_id ?? "", tale: e.tale ?? "", gender: e.gender ?? "", child_age: e.child_age ?? "", session_id: e.session_id ?? "", parent_id: e.parent_id ?? "", source: e.source ?? e.ref ?? "", step: e.step ?? "", page: e.page ?? "", meta: e.meta ?? "" }));
   return new NextResponse(csv(rows as Record<string, unknown>[]), { headers: { "content-type": "text/csv", "content-disposition": `attachment; filename=gtales-${what === "orders" ? "orders" : "events"}.csv` } });
 }

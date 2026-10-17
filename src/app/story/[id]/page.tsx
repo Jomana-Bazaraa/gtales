@@ -7,6 +7,19 @@ import { getBook, getStory } from "@/lib/db";
 import { BookReady } from "@/components/story/BookReady";
 import { taleByKey } from "@/lib/gtales";
 import { baseUrl } from "@/lib/site";
+import { storyImage } from "@/stories/images";
+import type { Metadata } from "next";
+
+/** Link preview for WhatsApp / Facebook (LAUNCH-PLAN §3.9): the book's cover. Never the parent's details. */
+export async function generateMetadata({ params }: PageProps<"/story/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const book = await getBook(id);
+  if (!book) return {};
+  const title = `${book.title} · GTales`;
+  const description = "A free picture book where the child is the hero. Make one for your child in two minutes.";
+  const image = { url: storyImage(book.slug, book.gender, "cover.jpg"), alt: `The cover of ${book.title}` };
+  return { title, description, openGraph: { title, description, type: "book", siteName: "GTales", images: [image] }, twitter: { card: "summary_large_image", title, description, images: [image.url] } };
+}
 
 /** Ready screen — docs/SPEC.md §7. */
 export default async function StoryPage({ params }: PageProps<"/story/[id]">) {

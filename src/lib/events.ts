@@ -1,6 +1,8 @@
 /**
- * Events table (SPEC §13). Every meaningful action, timestamped server-side.
- * Rows never hold child names, photos or phone numbers.
+ * Events table (SPEC §13, LAUNCH-PLAN §1b). Every meaningful action, timestamped server-side.
+ * Rows never hold child names, photos or phone numbers. `event` is the type; `tale` is the story slug;
+ * `ref` and `source` both hold the channel (ref kept for the older Stats code and CSVs).
+ * Dashboard types: story_started, story_created, story_finished, story_shared, order_started, order_placed, order_delivered.
  */
 import { isMockDb, supabase } from "./db";
 import { promises as fs } from "fs";
@@ -17,11 +19,15 @@ export interface EventRow {
   device?: string;
   visitor_id?: string;
   session_id?: string;
+  gender?: string;
+  child_age?: number;
+  parent_id?: string;
+  source?: string;
   meta?: Record<string, unknown>;
 }
 
 export async function logEvent(e: EventRow): Promise<void> {
-  const row = { ...e, created_at: new Date().toISOString() };
+  const row = { ...e, source: e.source ?? e.ref, ref: e.ref ?? e.source, created_at: new Date().toISOString() };
   try {
     if (isMockDb) {
       const dir = path.join(process.cwd(), ".data");

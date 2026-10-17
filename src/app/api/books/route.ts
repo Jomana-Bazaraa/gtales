@@ -1,17 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { countRecentBooks, insertBook } from "@/lib/db";
 import { logEvent } from "@/lib/events";
+import { sendBookEmail } from "@/lib/email";
+import { rememberParent } from "@/lib/parents";
+import { baseUrl } from "@/lib/site";
 import { getSettings } from "@/lib/settings";
 import { loadStory } from "@/stories";
 import { fillStory, FillError } from "@/stories/fill";
 import { polishStory } from "@/stories/polish";
 import { assertSafe, SafetyError } from "@/stories/safety";
 import { formSchema } from "@/stories/schema";
-import { storyFolder } from "@/stories/images";
-import { promises as fs } from "fs";
-import path from "path";
+import { hasImageSet } from "@/stories/images";
 import type { BookRecord } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -20,6 +21,7 @@ const bodySchema = formSchema.extend({
   parent_name: z.string().trim().min(1).max(60),
   contact: z.string().trim().min(3).max(120),
   ref: z.string().trim().max(60).optional(),
+  session_id: z.string().max(60).optional(),
   website: z.string().max(0).optional(), // honeypot
 });
 
@@ -42,7 +44,7 @@ export async function POST(req: Request) {
     throw e;
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const limit = (await getSettings()).rate_limit_per_hour;
   if ((await countRecentBooks(ip, f.contact.toLowerCase())) >= limit) {
     await logEvent({ event: "rate_limited", tale: f.slug, device: ip });
@@ -52,9 +54,7 @@ export async function POST(req: Request) {
   const story = await loadStory(f.slug);
   if (!story) return NextResponse.json({ error: "coming_soon", message: "This tale is almost ready. Please pick another superpower for now." }, { status: 404 });
   // Never use the boy pictures for a girl (handoff brief, step 2).
-  const setDir = path.join(process.cwd(), "public", "stories", storyFolder(f.slug), f.gender);
-  const hasSet = await fs.access(path.join(setDir, "cover.jpg")).then(() => true, () => false);
-  if (!hasSet) return NextResponse.json({ error: "invalid", issues: [{ path: "gender", message: `The ${f.gender} pictures for this tale are not ready yet.` }] }, { status: 400 });
+  if (!hasImageSet(f.slug, f.gender)) return NextResponse.json({ error: "invalid", issues: [{ path: "gender", message: `The ${f.gender} pictures for this tale are not ready yet.` }] }, { status: 400 });
 
   // Default from the form brief: sidekick → Bolt.
   const form = {
@@ -73,13 +73,16 @@ export async function POST(req: Request) {
 
   const id = nanoid(12);
   const now = new Date().toISOString();
+  const parent_id = await rememberParent(f.contact, { name: f.parent_name, source: f.ref, first_book_id: id });
   const rec: BookRecord = {
     id, slug: f.slug, title: finalStory.title, gender: f.gender, child_name: finalStory.title.split(" and ")[0],
     form, story: finalStory, polished,
     parent_name: f.parent_name, contact: f.contact.toLowerCase(), dedication: f.dedication, ref: f.ref, ip,
-    pdf_url: null, created_at: now, updated_at: now,
+    parent_id, session_id: f.session_id, pdf_url: null, created_at: now, updated_at: now,
   };
   await insertBook(rec);
-  await logEvent({ event: "free_story_generated", story_id: id, tale: f.slug, ref: f.ref, meta: { ms: Date.now() - t0, polished } });
+  await logEvent({ event: "story_created", story_id: id, tale: f.slug, gender: f.gender, child_age: f.age, parent_id, session_id: f.session_id, ref: f.ref, meta: { ms: Date.now() - t0, polished } });
+  const site = await baseUrl();
+  after(() => sendBookEmail(rec, site).catch((e) => console.error("[email] book", e)));
   return NextResponse.json({ id });
 }

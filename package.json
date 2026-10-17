@@ -11,7 +11,11 @@
     "check:templates": "node scripts/check-templates.mjs && tsx scripts/render-check.mts",
     "pdfs": "tsx scripts/pdf.mts",
     "test": "tsx --test src/stories/__tests__/*.test.ts",
-    "check:stories": "tsx scripts/check-stories.mts"
+    "check:stories": "tsx scripts/check-stories.mts",
+    "pdf:jobs": "node scripts/pdf-worker.mjs",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "node scripts/cf-preview.mjs",
+    "cf:deploy": "opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
@@ -20,25 +24,26 @@
     "@fontsource-variable/nunito": "^5.3.0",
     "@fontsource/andika": "^5.3.0",
     "@google/genai": "^2.27.0",
-    "@sparticuz/chromium": "^153.0.0",
     "@supabase/supabase-js": "^2.117.2",
     "nanoid": "^6.0.1",
-    "next": "16.3.8",
-    "puppeteer-core": "^25.12.0",
+    "next": "16.4.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "resend": "^6.32.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.12",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.2",
+    "puppeteer-core": "^25.12.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.151.1"
   }
 }

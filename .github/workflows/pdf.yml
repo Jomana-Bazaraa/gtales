@@ -1,0 +1,47 @@
+# Story PDFs (SPEC §8, docs/LAUNCH-PLAN.md §1). The web app (Cloudflare Worker) queues a row in `pdf_jobs`
+# and starts this workflow with workflow_dispatch; it renders every queued job with Chrome and uploads to Supabase.
+# Repo secrets: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, INTERNAL_RENDER_TOKEN · repo variable: SITE_URL
+name: pdf
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: "pdf_jobs.id to render first (empty = every queued job)"
+        required: false
+        default: ""
+
+# One run at a time; a run picks up every queued job, so nothing waiting is ever dropped.
+concurrency:
+  group: pdf
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/pdf-worker.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install the two packages the worker needs
+        run: |
+          mkdir -p /tmp/pdf && cp scripts/pdf-worker.mjs /tmp/pdf/
+          cd /tmp/pdf && npm init -y >/dev/null && npm install --no-audit --no-fund puppeteer-core@25.12.0 @supabase/supabase-js@2.117.2
+      - name: Render
+        working-directory: /tmp/pdf
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          INTERNAL_RENDER_TOKEN: ${{ secrets.INTERNAL_RENDER_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome
+        run: node pdf-worker.mjs

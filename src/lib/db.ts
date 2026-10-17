@@ -5,7 +5,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { promises as fs } from "fs";
 import path from "path";
-import type { BookRecord, OrderRecord, PhysicalOrder, StoryRecord } from "./types";
+import type { BookRecord, OrderRecord, ParentRecord, PdfJob, PhysicalOrder, StoryRecord } from "./types";
 
 export const isMockDb = !process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -21,7 +21,7 @@ export function supabase(): SupabaseClient {
 
 // ---------- mock store: one JSON file per record (safe across Next's worker processes) ----------
 const DATA_DIR = path.join(process.cwd(), ".data");
-type Kind = "stories" | "orders" | "tokens" | "books" | "series";
+type Kind = "stories" | "orders" | "tokens" | "books" | "series" | "parents" | "pdf_jobs";
 const dirOf = (kind: Kind) => path.join(DATA_DIR, kind);
 
 async function writeJson(kind: Kind, id: string, data: unknown) {
@@ -261,4 +261,56 @@ export async function deletePrivatePhotos(keys: string[]): Promise<void> {
   if (!keys.length) return;
   if (isMockDb) { for (const k of keys) await fs.rm(path.join(DATA_DIR, "photos", k), { force: true }); return; }
   await supabase().storage.from("photos").remove(keys);
+}
+
+// ---------- parents (users, LAUNCH-PLAN §1b) ----------
+/** Creates the parent on first sight; later calls only fill in what was missing (first book/order stays the first). */
+export async function upsertParent(p: Omit<ParentRecord, "created_at" | "updated_at">): Promise<void> {
+  const now = new Date().toISOString();
+  if (isMockDb) {
+    const cur = await readJson<ParentRecord>("parents", p.id);
+    const merged = { ...p, ...Object.fromEntries(Object.entries(cur ?? {}).filter(([, v]) => v != null)) } as ParentRecord;
+    return writeJson("parents", p.id, { ...merged, created_at: cur?.created_at ?? now, updated_at: now });
+  }
+  const { data: cur } = await supabase().from("parents").select("*").eq("id", p.id).maybeSingle();
+  if (!cur) {
+    const { error } = await supabase().from("parents").insert({ ...p, created_at: now, updated_at: now });
+    if (!error || error.code !== "23505") { if (error) throw error; return; } // 23505: inserted by a parallel request
+  }
+  const fill = Object.fromEntries(Object.entries(p).filter(([k, v]) => v != null && (cur as Record<string, unknown> | null)?.[k] == null));
+  if (Object.keys(fill).length) await supabase().from("parents").update({ ...fill, updated_at: now }).eq("id", p.id);
+}
+export async function countParents(sinceIso?: string): Promise<number> {
+  if (isMockDb) return (await readAll<ParentRecord>("parents")).filter((x) => !sinceIso || x.created_at >= sinceIso).length;
+  let q = supabase().from("parents").select("id", { count: "exact", head: true });
+  if (sinceIso) q = q.gte("created_at", sinceIso);
+  const { count } = await q;
+  return count ?? 0;
+}
+
+// ---------- PDF jobs (rendered by the GitHub Action, LAUNCH-PLAN §1) ----------
+export async function insertPdfJob(j: PdfJob): Promise<void> {
+  if (isMockDb) return writeJson("pdf_jobs", j.id, j);
+  const { error } = await supabase().from("pdf_jobs").insert(j);
+  if (error) throw error;
+}
+export async function updatePdfJob(id: string, patch: Partial<PdfJob>): Promise<void> {
+  const p = { ...patch, updated_at: new Date().toISOString() };
+  if (isMockDb) {
+    const cur = await readJson<PdfJob>("pdf_jobs", id);
+    if (cur) await writeJson("pdf_jobs", id, { ...cur, ...p });
+    return;
+  }
+  const { error } = await supabase().from("pdf_jobs").update(p).eq("id", id);
+  if (error) throw error;
+}
+export async function latestPdfJob(bookId: string): Promise<PdfJob | null> {
+  if (isMockDb) return (await readAll<PdfJob>("pdf_jobs")).find((j) => j.book_id === bookId) ?? null;
+  const { data } = await supabase().from("pdf_jobs").select("*").eq("book_id", bookId).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  return (data as PdfJob) ?? null;
+}
+export async function listPdfJobs(limit = 500): Promise<PdfJob[]> {
+  if (isMockDb) return (await readAll<PdfJob>("pdf_jobs")).slice(0, limit);
+  const { data } = await supabase().from("pdf_jobs").select("*").order("created_at", { ascending: false }).limit(limit);
+  return (data as PdfJob[]) ?? [];
 }

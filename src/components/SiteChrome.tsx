@@ -51,7 +51,7 @@ export function Header({ landing = false }: { landing?: boolean }) {
 }
 
 export function Footer() {
-  const wa = COPY.whatsapp ? `https://wa.me/${COPY.whatsapp}` : "/my-stories";
+  const wa = COPY.whatsapp ? `https://wa.me/${COPY.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(COPY.whatsappText)}` : "/my-stories";
   return (
     <footer className="mt-12 border-t border-line bg-surface-tint">
       <div className="mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-ink-soft font-medium">
@@ -59,10 +59,10 @@ export function Footer() {
         <div className="flex gap-5">
           <Link href="/privacy" className="hover:text-sky">Privacy</Link>
           <a href={wa} className="hover:text-sky">WhatsApp</a>
-          <a href="https://instagram.com/gtales.app" className="hover:text-sky">Instagram</a>
+          <a href="https://instagram.com/gtales.kids" className="hover:text-sky">Instagram</a>
           <Link href="/my-stories" className="hover:text-sky">My stories</Link>
         </div>
-        <span>© {new Date().getFullYear()} GTales · gtales.app</span>
+        <span>© {new Date().getFullYear()} GTales · gtales.kids</span>
       </div>
     </footer>
   );
