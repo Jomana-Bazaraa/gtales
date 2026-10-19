@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.8 · 17 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.9 · 19 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -161,6 +161,7 @@ Source: the team's six story texts (anger, worry/anxiety, bullied, lying, feelin
 | (Power Word) | `{{power_word}}` |
 | (Need) | `{{need}}` |
 | (Strength) | `{{strength}}` |
+| (Snack), (Silly word) | `{{snack}}`, `{{silly}}`: only in the fun lines of `stories/variants/<slug>.json` (§7.1a) |
 | he / him / his / He / His (hero only) | `{{he}} {{him}} {{his}} {{He}} {{His}}` |
 
 `{{other}}` never gets a pronoun (we don't ask whether the other child is a boy or a girl).
@@ -185,7 +186,14 @@ Images: `public/stories/<slug>/<boy|girl>/cover.jpg, back.jpg, p01.jpg … p15.j
 
 AC: a check script confirms every `(…)` in the source became a token; every tale has both image sets; `uses` matches the tokens actually present.
 
-### 7.2 The form (8 steps, one question per screen, auto-saved)
+### 7.1a Age variants and fun lines (`stories/variants/<slug>.json`)
+
+Written by hand by the team, never by AI; the story JSON is never edited. `GTales.applyVariants(story, variants, form)` (`public/gtales-book/variants.js`, pure, returns a new story) runs before `fillStory`:
+- `fun`: two short funny lines per tale, inserted after a given line of a given page only when the form has every value in `requires` (`snack`, `silly`).
+- `little`: replacement challenges (two big emoji choices, no riddles) used when the child is 5 or younger; 6+ keep the originals.
+The result is stored with the book, so the reader, print page and PDF all show the same text. AC: every tale × boy/girl × ages 4 and 8, with and without snack/silly, renders with no `{{`, no `undefined` (`npm test`) and no "too much text" from `fitPages` (`npm run check:fit`).
+
+### 7.2 The form (one question per screen, auto-saved)
 
 | Step | Asks | Rules |
 |---|---|---|
@@ -194,8 +202,8 @@ AC: a check script confirms every `(…)` in the source became a token; every ta
 | 3 | A place they know: neighbourhood or city | free text 2–20 chars, e.g. "Maadi", "Smouha" |
 | 4 | The other child: name + relation | brother, sister, cousin, friend; bullying tale only: a child at school or the park (`other_rule`) |
 | 5 | What they're great at | noun that fits "Best ___ in Maadi": builder, artist, football player, swimmer, dancer, helper, reader, singer, or other (free text noun) |
-| 6 | The child chooses: sidekick name · Power Word | sidekick 1–12 chars; power word 1–20 chars |
-| 7 | Need | the form's own six sentences (a hug, talking, quiet time…); shown only when the tale uses `need` (step skipped otherwise). `ask` no longer exists. |
+| 6 | The child chooses: sidekick name · Power Word · favourite snack · silly word | cards from `stories/builder-options.json` (the team edits that file); sidekick also free text 1–12 chars (empty = Bolt); power word card or own text 2–24 chars; snack and silly word are optional cards (Skip) and only feed the fun lines |
+| 7 | Need | the `need` cards in `stories/builder-options.json` (a hug, to talk, quiet time, to play); shown only when the tale uses `need` (step skipped otherwise). `ask` no longer exists. |
 | 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
 Boy or girl picks the image set; a gender whose set is missing shows "Coming soon" in the form and is refused by the API, never substituted with the other gender's pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
@@ -353,6 +361,7 @@ Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.9 (19 Oct 2026): age variants + fun lines (§7.1a, `stories/variants`), Story Builder cards from `stories/builder-options.json`, new optional form steps snack and silly word, power word up to 24 characters.
 - 1.8 (17 Oct 2026): launch on Cloudflare Workers (LAUNCH-PLAN §1): story PDFs rendered by a GitHub Action job with a "being made" page; Admin Dashboard and Dashboard event types (§13), `parents` table, session id and source on every event; ready screen gets "Send to WhatsApp" and Open Graph cover previews; domain gtales.kids.
 - 1.7 (11 Oct 2026): remaining five image sets delivered (feelings boy, lying boy+girl, friendship boy+girl) — all 12 sets live; Honesty and Kindness & friendship get covers and samples; no "coming soon" tales remain.
 - 1.6 (11 Oct 2026): full handoff adopted — all six story files (anger, worry, bullied, lying, feelings, friendship) without `{{ask}}`/`ask_choices`/`need_choices`; `ask` removed from the engine, form and API. Image sets delivered: anger boy+girl, worry boy+girl, bullied boy+girl, feelings girl (7 of 12; feelings boy, lying and friendship are "coming soon" per gender). Two image trees: `public/stories/` full size for the PDF, `public/stories-web/` 1200 px copies for the reader, covers and samples (`storyImage(..., variant)`, `renderBookHtml(..., "web"|"print")`). Reference PDFs, parent guides and template demos under `docs/reference/`. Age stays 2–10 (the handoff FORM_PROMPT still says 4–8; Ayman's 10 Oct decision wins).

@@ -18,7 +18,7 @@ const schema = z.object({
   photos: z.object({ face: z.string().max(80).optional() }).default({}),
   strengths: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
   books: z.array(book).min(1).max(3),
-  world: z.object({ favourites: z.array(z.string().trim().min(1).max(40)).max(20).default([]), notes: z.string().trim().max(300).optional() }),
+  world: z.object({ favourites: z.array(z.string().trim().min(1).max(40)).max(20).default([]), notes: z.string().trim().max(300).optional(), snack: z.string().trim().max(20).optional(), silly: z.string().trim().max(14).optional() }),
   words: z.object({ parent: z.string().trim().max(120).optional(), child: z.string().trim().max(120).optional(), nicknames: z.string().trim().max(120).optional() }),
   dedication: z.string().trim().max(200).optional(),
   activities: z.array(z.string().trim().max(40)).max(12).default([]),

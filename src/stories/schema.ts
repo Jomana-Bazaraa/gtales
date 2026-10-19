@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 
-export const TOKENS = ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength"] as const;
+export const TOKENS = ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength", "snack", "silly"] as const;
 export type Token = (typeof TOKENS)[number];
 export const PRONOUNS = ["he", "him", "his", "He", "Him", "His"] as const;
 
@@ -67,8 +67,11 @@ export const formSchema = z.object({
   other_relation: z.enum(RELATIONS).optional(),
   strength: z.string().trim().min(2).max(24).optional(),
   sidekick: z.string().trim().min(1).max(12).optional(),
-  power_word: z.string().trim().min(1).max(20).optional(),
+  power_word: z.string().trim().min(1).max(24).optional(),
   need: z.string().optional(),
+  // Story Builder cards (stories/builder-options.json); only the variants' fun lines use them
+  snack: z.string().trim().min(1).max(20).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(),
+  silly: z.string().trim().min(1).max(14).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(),
   dedication: z.string().trim().max(120).optional(),
 });
 export type StoryForm = z.infer<typeof formSchema>;

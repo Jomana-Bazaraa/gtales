@@ -6,6 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { sessionId, source, track } from "@/lib/track";
+import builderOptions from "../../../stories/builder-options.json";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TALES } from "@/lib/gtales";
@@ -22,21 +23,21 @@ export interface TaleMeta {
 }
 
 const KEY = "gtales.free-draft.v3";
-type Step = "struggle" | "name" | "gender" | "age" | "place" | "other" | "sidekick" | "power_word" | "need" | "strength" | "dedication" | "email" | "review";
+type Step = "struggle" | "name" | "gender" | "age" | "place" | "other" | "sidekick" | "power_word" | "snack" | "silly" | "need" | "strength" | "dedication" | "email" | "review";
 
 interface Draft {
   slug: string; name: string; gender: "boy" | "girl" | ""; age: number | 0; place: string;
   other: string; relation: "brother" | "sister" | "cousin" | ""; sidekick: string; power_word: string;
-  need: string; strength: string; strengthOther: string; dedication: string; email: string;
+  need: string; strength: string; strengthOther: string; dedication: string; email: string; snack: string; silly: string;
 }
-const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", strength: "", strengthOther: "", dedication: "", email: "" };
+const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", strength: "", strengthOther: "", dedication: "", email: "", snack: "", silly: "" };
 
 const STRUGGLE_LABEL: Record<string, string> = { anger: "Anger and hitting", anxiety: "Fears and worries", bullied: "Being bullied", lying: "Lying", feelings: "Big feelings", friendship: "Friendship" };
-const POWER_WORDS = ["I'm Superman!", "I'm a lion!", "I'm a genius!", "I can do it!", "Yalla, hero!", "I'm strong!"];
-const NEEDS: [string, string][] = [
-  ["A hug", "I need a hug."], ["Talking about it", "I need to talk."], ["Some time alone", "I need some quiet time."],
-  ["Doing something else for a bit", "I need to do something else for a bit."], ["Having you close by", "I need you to stay with me."], ["Their favourite toy or blanket", "I need my teddy."],
-];
+// Story Builder cards: the team edits stories/builder-options.json, not this file.
+type BuilderCard = { label: string; value: string };
+const BUILDER = builderOptions as unknown as Record<"sidekick" | "power_word" | "snack" | "silly" | "need", BuilderCard[]>;
+const OWN_SIDEKICK = "__parent_types__";
+const plain = (label: string) => label.replace(/^[^A-Za-z0-9]+/, "").trim(); // "🤗 A hug" → "A hug"
 const STRENGTHS: [string, string][] = [
   ["Drawing", "artist"], ["Football", "football player"], ["Building and Lego", "builder"], ["Swimming", "swimmer"], ["Dancing", "dancer"],
   ["Reading", "reader"], ["Singing", "singer"], ["Helping others", "helper"], ["Running", "runner"],
@@ -86,6 +87,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
     if (uses("other")) s.push("other");
     if (uses("sidekick")) s.push("sidekick");
     if (uses("power_word")) s.push("power_word");
+    if (uses("sidekick")) s.push("snack", "silly"); // optional; the fun lines need the robot
     if (uses("need")) s.push("need");
     if (uses("strength")) s.push("strength");
     s.push("dedication", "email", "review");
@@ -126,6 +128,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
     sidekick: uses("sidekick") ? cap(d.sidekick.trim() || "Bolt") : undefined,
     power_word: uses("power_word") ? bang(d.power_word) : undefined,
     need: uses("need") ? d.need : undefined,
+    snack: d.snack || undefined,
+    silly: d.silly || undefined,
     strength: uses("strength") ? (d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength) : undefined,
     dedication: d.dedication.trim() || undefined, parent_name: d.email.split("@")[0], contact: d.email.trim(),
   });
@@ -154,7 +158,6 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   };
 
   const strengthLabel = d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength;
-  const needLabel = NEEDS.find((n) => n[1] === d.need)?.[0].toLowerCase();
 
   return (
     <div className="mx-auto max-w-xl w-full flex flex-col min-h-[calc(100dvh-64px)]">
@@ -228,20 +231,31 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         </>))}
 
         {step === "sidekick" && (<>
-          <Q help="In the story, a little robot friend will have this name.">What's the name of your child's favourite toy, pet or best friend?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Teddy, Lucky, Bolt, Ziad" value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} />
+          <Q help="In the story, a little robot friend will have this name.">What should the robot friend be called?</Q>
+          <div className="flex flex-wrap gap-2">{BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK).map((c) => <button key={c.value} type="button" aria-pressed={d.sidekick === c.value} onClick={() => u("sidekick", c.value)} className={`chip ${d.sidekick === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
+          <input className="field text-xl" placeholder={plain(BUILDER.sidekick.find((c) => c.value === OWN_SIDEKICK)?.label ?? "Or write your own")} value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} />
           <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we'll call the robot Bolt.</p>
         </>)}
 
         {step === "power_word" && (<>
           <Q help="Your child will say this out loud in the story, at the brave moment.">What does your child say to feel strong or brave?</Q>
-          <div className="flex flex-wrap gap-2">{POWER_WORDS.map((p) => <button key={p} type="button" aria-pressed={d.power_word === p} onClick={() => u("power_word", p)} className={`chip ${d.power_word === p ? "chip-on" : ""}`}>{p}</button>)}</div>
+          <div className="flex flex-wrap gap-2">{BUILDER.power_word.map((c) => <button key={c.value} type="button" aria-pressed={d.power_word === c.value} onClick={() => u("power_word", c.value)} className={`chip ${d.power_word === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
           <input className="field text-xl" placeholder="Or write your own" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={24} />
         </>)}
 
         {step === "need" && (<>
           <Q>When your child is sad or in a bad mood, what helps most?</Q>
-          <div className="flex flex-col gap-2.5">{NEEDS.map(([label, saved]) => <Card key={saved} on={d.need === saved} onClick={() => u("need", saved)}>{label}</Card>)}</div>
+          <div className="flex flex-col gap-2.5">{BUILDER.need.map((c) => <Card key={c.value} on={d.need === c.value} onClick={() => u("need", c.value)}>{c.label}</Card>)}</div>
+        </>)}
+
+        {step === "snack" && (<>
+          <Q help="Optional. It turns up in a funny line in the story.">What's your child's favourite snack?</Q>
+          <div className="grid grid-cols-2 gap-2.5">{BUILDER.snack.map((c) => <Card key={c.value} on={d.snack === c.value} onClick={() => u("snack", c.value)}>{c.label}</Card>)}</div>
+        </>)}
+
+        {step === "silly" && (<>
+          <Q help="Optional. The robot shouts it in the story.">Pick a silly word!</Q>
+          <div className="grid grid-cols-2 gap-2.5">{BUILDER.silly.map((c) => <Card key={c.value} on={d.silly === c.value} onClick={() => u("silly", c.value)}>{c.label}</Card>)}</div>
         </>)}
 
         {step === "strength" && (<>
@@ -271,7 +285,9 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
             {uses("other") && <> {bullied ? "The unkind child is called" : `${His} ${d.relation || "friend"} is`} <B onClick={() => goTo("other")}>{cap(d.other)}</B>.</>}
             {uses("sidekick") && <> {His} robot friend is called <B onClick={() => goTo("sidekick")}>{cap(d.sidekick.trim() || "Bolt")}</B>.</>}
             {uses("power_word") && <> When {he} wants to feel strong {he} says <B onClick={() => goTo("power_word")}>"{bang(d.power_word)}"</B>.</>}
-            {uses("need") && needLabel && <> When {he}'s upset, <B onClick={() => goTo("need")}>{needLabel}</B> helps most.</>}
+            {uses("need") && d.need && <> When {he}'s upset, {he} says <B onClick={() => goTo("need")}>&ldquo;{d.need}&rdquo;</B></>}
+            {d.snack && <> Favourite snack: <B onClick={() => goTo("snack")}>{d.snack}</B>.</>}
+            {d.silly && <> Silly word: <B onClick={() => goTo("silly")}>{d.silly}</B>!</>}
             {uses("strength") && strengthLabel && <> {He}'s great at being a <B onClick={() => goTo("strength")}>{strengthLabel}</B>.</>}
           </p>
           <p className="m-0 text-[15px] text-ink-soft">We'll send it to <B onClick={() => goTo("email")}>{d.email.trim()}</B>{d.dedication.trim() ? <> with your message: <B onClick={() => goTo("dedication")}>"{d.dedication.trim()}"</B></> : null}.</p>
@@ -283,8 +299,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       <div className="sticky bottom-0 bg-white border-t border-line px-4 py-3 flex flex-col gap-2">
         {step === "review" ? (
           <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Making the story…" : `Make ${name}'s story`}</button>
-        ) : step === "dedication" ? (
-          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { u("dedication", ""); setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
+        ) : step === "dedication" || step === "snack" || step === "silly" ? (
+          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { u(step, ""); setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
         ) : (
           <button type="button" onClick={next} className="btn-primary w-full">Next</button>
         )}
@@ -318,7 +334,7 @@ function stepFor(field: string | undefined): Step {
   switch (field) {
     case "slug": return "struggle"; case "name": return "name"; case "gender": return "gender"; case "age": return "age"; case "place": return "place";
     case "other": case "other_relation": return "other"; case "sidekick": return "sidekick"; case "power_word": return "power_word"; case "need": return "need";
-    case "strength": return "strength"; case "dedication": return "dedication"; default: return "email";
+    case "strength": return "strength"; case "dedication": return "dedication"; case "snack": return "snack"; case "silly": return "silly"; default: return "email";
   }
 }
 const safeRef = source;

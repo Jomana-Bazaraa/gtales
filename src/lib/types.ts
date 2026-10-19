@@ -170,7 +170,7 @@ export interface OrderRecord {
   photos: { face?: string };
   strengths: string[];
   books: OrderBook[]; // 1–3
-  world: { favourites: string[]; notes?: string };
+  world: { favourites: string[]; notes?: string; snack?: string; silly?: string }; // snack/silly: Story Builder cards
   words: { parent?: string; child?: string; nicknames?: string };
   dedication?: string;
   activities: string[];

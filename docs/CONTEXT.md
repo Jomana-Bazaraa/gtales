@@ -38,7 +38,7 @@ Keep sections short. Delete lines that are no longer true instead of piling on.
 - **Repo:** `github.com/Jomana-Bazaraa/gtales`, branch `main`. Ayman's laptop copy: `Documents\Estoria` (OneDrive). Claude's cloud copy pushes straight to `main`.
 - **Spec (source of truth for copy, screens, pricing, rules):** `docs/SPEC.md`. Change the spec first, then the code; bump the version and changelog at the bottom.
 - **Product config (tales, prices, promises, CTAs):** `src/lib/gtales.ts`. Live overrides: Admin → Settings.
-- **Stories:** `stories/<slug>.json` — the only source of story text. Slugs: `anger`, `worry`, `bullied`, `lying`, `feelings`, `friendship`. Catalogue slug `anxiety` maps to story `worry`.
+- **Stories:** `stories/<slug>.json` — the only source of story text. Age variants + fun lines: `stories/variants/<slug>.json`. Builder cards: `stories/builder-options.json`. Slugs: `anger`, `worry`, `bullied`, `lying`, `feelings`, `friendship`. Catalogue slug `anxiety` maps to story `worry`.
 - **Book design:** `public/gtales-book/{book.css,render.js,fonts}` — the team's template, used unchanged. Never restyle it.
 - **Images:** `public/stories/<slug>/<boy|girl>/` full size (PDF) · `public/stories-web/...` 1200 px copies (reader, covers, samples). Both trees must have `cover.jpg, back.jpg, p01–p15.jpg`. A missing set makes that story/gender "coming soon" automatically.
 - **Reference material (not served):** `docs/reference/` — handoff README + prompts, reference PDFs per story/gender, parent guides, template demos.
@@ -51,8 +51,9 @@ Keep sections short. Delete lines that are no longer true instead of piling on.
 ```
 npm install
 npm run dev            # http://localhost:3000 ; phone on same Wi-Fi: http://<laptop-ip>:3000
-npm test               # 89 tests: every story × gender × 4 names, pronoun diff, image sets, static story/image lists
+npm test               # 157 tests: every story × gender × 4 names, pronoun diff, image sets, static lists, variants (ages 4/8, fun lines on/off)
 npm run check:stories  # story files parse, tokens match "uses", image sets complete
+npm run check:fit      # every story × gender × age 4/8 × with/without snack+silly in Chrome: no "too much text"
 npm run build          # must pass before pushing
 npm run cf:preview     # the real Cloudflare Worker build on http://localhost:8787 (needs .dev.vars + Supabase)
 npm run pdf:jobs       # render queued PDFs locally (needs Chrome: PUPPETEER_EXECUTABLE_PATH)
@@ -65,7 +66,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 - The Series is **three** printed books: list 749 EGP, `LAUNCH40` → 449, delivery 89, total 538, **pay on delivery, no refunds** (parents approve every page on WhatsApp first).
 - Free story is **text-only** personalisation on fixed art. Images are never generated at runtime. Series art is made manually by the team.
 - The template is the only design; the story JSON is the only text source; the reference PDFs are only for comparison.
-- `ask` field is gone for good. `need` is free text from the form's own six sentences.
+- `ask` field is gone for good. `need` comes from the `need` cards in `stories/builder-options.json` (19 Oct; replaced the form's six sentences).
 - Hero photo in the order form is optional; a text description can replace it; no full-body photo.
 - Price appears only on the delivery and review screens of the order form.
 - Single admin login. WhatsApp is manual (`wa.me` links) until a Business API is justified.
@@ -73,6 +74,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 - Hosting: Cloudflare Workers free + PDFs via GitHub Action; Netlify fallback; no Vercel/AWS/Google (17 Oct).
 - Free tier: no AI calls at launch (POLISH_PROVIDER=off), revisit after 2 weeks of data (17 Oct).
 - Habit loops target parents, no dark patterns on children (17 Oct; build after launch, `docs/LAUNCH-PLAN.md` §4).
+- Age variants + fun lines live in stories/variants, applied by applyVariants; written by hand, no AI (19 Oct). Story Builder cards (sidekick, power word, snack, silly word, need) live in `stories/builder-options.json`; edit that file, not the form.
 - The server never reads files at runtime (Workers have no disk): stories are imported in `src/stories/index.ts`, image sets listed in `IMAGE_SETS` (`src/stories/images.ts`); tests fail if either drifts from the repo.
 
 ## Open items
@@ -100,6 +102,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-19 · Claude for Jomana · Age variants + fun lines (`stories/variants/*.json`, `public/gtales-book/variants.js`, copied unchanged) applied before fillStory; `snack`/`silly` tokens in render.js `tokens()`; form cards from `stories/builder-options.json` + optional snack and silly-word steps; snack/silly optional in form and order schemas; power word limit 20 → 24 ("I'm a dinosaur! RAWR!" is 21). 157 tests pass; `npm run check:fit`: 48 books (6 stories × 2 genders × ages 4/8 × with/without snack+silly), 0 "too much text". SPEC 1.9. **Jomana:** nothing to set up; merge and Cloudflare deploys. Books made before this keep their old text.
 - 2026-10-17 · Claude for Jomana · Cloudflare build timed out twice: the Deploy command was `npm run cf:preview`, which starts a local server that never exits. `cf:preview` now deploys when run on Cloudflare's build machine; `cf:deploy` no longer rebuilds. **Jomana:** set Deploy command to `npm run cf:deploy` (Settings → Build), then start a new deployment.
 - 2026-10-17 · Claude for Jomana · Launch: Cloudflare Workers (OpenNext, Next 16.4.2; Worker 1.95 MiB gzip, was 2.98 MiB with Puppeteer), PDFs via GitHub Action job queue + "being made" page, Admin Dashboard + events/parents tracking, migration 0003 (fixes the `orders` table: every Series order insert would have failed), admin email per order + story-link email, OG cover previews + "Send to WhatsApp", forms survive a dropped connection, gtales.kids everywhere, `LAUNCH-PLAN.md` + `MARKETING.md` added; SPEC 1.8. Tested on the Worker runtime against Postgres with migrations 0001–0003: 12 stories × gender, tricky names, rate limit, order with LAUNCH40 = 538, admin, 401/403 without login, 17-page A4 PDF. **Jomana:** open items #1–#9, in order.
 - 2026-10-11 · Claude for Ayman · Last five image sets (feelings boy, lying ×2, friendship ×2); Honesty + Friendship covers; SPEC 1.7. All 12 sets live. **Jomana:** nothing to do; repo is ready to deploy.

@@ -15,7 +15,8 @@
     "pdf:jobs": "node scripts/pdf-worker.mjs",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "node scripts/cf-preview.mjs",
-    "cf:deploy": "opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "check:fit": "tsx scripts/fit-check.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",

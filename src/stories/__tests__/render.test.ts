@@ -17,7 +17,7 @@ const base: StoryForm = { slug: "worry", name: "Karim", gender: "boy", age: 6, h
 // Every story, both genders, the four names from the handoff brief. Rendering needs no images;
 // a missing image set only makes that story/gender "coming soon" in the app (checked separately).
 const storiesDir = path.join(process.cwd(), "stories");
-const slugs = existsSync(storiesDir) ? readdirSync(storiesDir).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, "")) : [];
+const slugs = existsSync(storiesDir) ? readdirSync(storiesDir).filter((f) => f.endsWith(".json") && f !== "builder-options.json").map((f) => f.replace(/\.json$/, "")) : [];
 const formFor = (st: ReturnType<typeof storySchema.parse>, name: string, gender: "boy" | "girl"): StoryForm =>
   ({ ...base, slug: st.slug, name, gender, other_relation: st.other_rule === "not_sibling" ? "school" : "friend", need: "I need a hug." });
 const PRON: Record<string, string[]> = { he: ["she"], him: ["her"], his: ["her", "hers"], He: ["She"], Him: ["Her"], His: ["Her"] };

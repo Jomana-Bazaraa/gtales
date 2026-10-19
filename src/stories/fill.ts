@@ -80,6 +80,8 @@ export function fillStory(story: StoryJson, form: StoryForm): FilledStory {
     power_word: (form.power_word ?? "").trim(),
     need: (form.need ?? "").trim(),
     strength: (form.strength ?? "").trim().toLowerCase(),
+    snack: (form.snack ?? "").trim(),
+    silly: (form.silly ?? "").trim(),
   };
   for (const t of story.uses) {
     if (!values[t]) throw new FillError(`The story needs ${t.replace("_", " ")}`, t);

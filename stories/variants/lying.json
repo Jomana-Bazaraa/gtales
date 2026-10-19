@@ -1,0 +1,127 @@
+{
+  "slug": "lying",
+  "version": 1,
+  "fun": [
+    {
+      "page": 5,
+      "after": 2,
+      "requires": [
+        "silly"
+      ],
+      "text": "\"{{silly}}!\" {{name}} yelled in mid-air. It just felt right."
+    },
+    {
+      "page": 6,
+      "after": 1,
+      "requires": [
+        "snack"
+      ],
+      "text": "\"He smells like {{snack}},\" Bayda added. \"Follow your nose too!\""
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "Who really broke the glass?",
+      "options": [
+        {
+          "label": "{{name}}",
+          "correct": true,
+          "response": "Yes. And {{other}} got in trouble for it."
+        },
+        {
+          "label": "{{other}}",
+          "correct": false,
+          "response": "Look again. Who threw the ball?"
+        }
+      ]
+    },
+    "4": {
+      "type": "choice",
+      "question": "What makes {{name}} float?",
+      "options": [
+        {
+          "label": "🪶 Telling the truth",
+          "correct": true,
+          "response": "Yes! The truth makes you light."
+        },
+        {
+          "label": "🪨 Telling a fib",
+          "correct": false,
+          "response": "A fib makes you heavy. Try again."
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Which way did Fefo go?",
+      "options": [
+        {
+          "label": "🎀 The rainbow ribbons",
+          "correct": true,
+          "response": "Yes! Bits of the Rainbow Kite. Let's go!"
+        },
+        {
+          "label": "🪶 The white feathers",
+          "correct": false,
+          "response": "Those are Bayda's feathers. Try again."
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "What makes you light as a feather? Tap it!",
+      "options": [
+        {
+          "label": "🪶 The truth",
+          "correct": true,
+          "response": "The truth! {{name}} kept that in {{his}} pocket."
+        },
+        {
+          "label": "🪨 A fib",
+          "correct": false,
+          "response": "A fib is a heavy stone. Try again!"
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Trace the paths with your finger. Which one leads to Fefo?",
+      "options": [
+        {
+          "label": "🩷 Pink flag",
+          "correct": false,
+          "response": "Dead end! Try another."
+        },
+        {
+          "label": "💜 Purple flag",
+          "correct": true,
+          "response": "The purple path! There's Fefo!"
+        },
+        {
+          "label": "💚 Green flag",
+          "correct": false,
+          "response": "Dead end! Try again."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Say the truth:** \"It was me. I'm sorry.\""
+      ],
+      "done": "Pop, pop, POP! The stones fell off. {{name}} was light as a feather!"
+    },
+    "14": {
+      "type": "boxes",
+      "question": "Say one true thing, like \"I have two eyes!\" Tick a box each time.",
+      "count": 3,
+      "done": "Three true things! Fefo is as light as a feather."
+    }
+  }
+}

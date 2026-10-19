@@ -8,6 +8,7 @@ import { rememberParent } from "@/lib/parents";
 import { baseUrl } from "@/lib/site";
 import { getSettings } from "@/lib/settings";
 import { loadStory } from "@/stories";
+import { applyStoryVariants } from "@/stories/variants";
 import { fillStory, FillError } from "@/stories/fill";
 import { polishStory } from "@/stories/polish";
 import { assertSafe, SafetyError } from "@/stories/safety";
@@ -38,7 +39,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    assertSafe({ name: f.name, place: f.place, other: f.other, strength: f.strength, sidekick: f.sidekick, power_word: f.power_word, dedication: f.dedication });
+    assertSafe({ name: f.name, place: f.place, other: f.other, strength: f.strength, sidekick: f.sidekick, power_word: f.power_word, dedication: f.dedication, snack: f.snack, silly: f.silly });
   } catch (e) {
     if (e instanceof SafetyError) return NextResponse.json({ error: "unsafe", field: e.field, message: e.message }, { status: 422 });
     throw e;
@@ -64,7 +65,7 @@ export async function POST(req: Request) {
   const t0 = Date.now();
   let filled;
   try {
-    filled = fillStory(story, form);
+    filled = fillStory(applyStoryVariants(story, form), form); // age variants + fun lines (stories/variants)
   } catch (e) {
     if (e instanceof FillError) return NextResponse.json({ error: "invalid", issues: [{ path: e.token ?? "", message: e.message }] }, { status: 400 });
     throw e;

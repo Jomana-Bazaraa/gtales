@@ -7,7 +7,7 @@ import { storyStrings } from "../src/stories/fill";
 const root = process.cwd();
 const dir = path.join(root, "stories");
 let bad = 0;
-const files = (await fs.readdir(dir).catch(() => [])).filter((f) => f.endsWith(".json"));
+const files = (await fs.readdir(dir).catch(() => [])).filter((f) => f.endsWith(".json") && f !== "builder-options.json"); // the Story Builder cards, not a story
 if (!files.length) { console.log("No story files in stories/ yet."); process.exit(0); }
 for (const f of files) {
   const slug = f.replace(/\.json$/, "");

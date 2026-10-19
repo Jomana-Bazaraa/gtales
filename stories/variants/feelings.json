@@ -1,0 +1,154 @@
+{
+  "slug": "feelings",
+  "version": 1,
+  "fun": [
+    {
+      "page": 6,
+      "after": 0,
+      "requires": [
+        "silly"
+      ],
+      "text": "\"{{silly}}!\" said the bird. \"Sorry. I mean, hello.\""
+    },
+    {
+      "page": 13,
+      "after": 1,
+      "requires": [
+        "snack"
+      ],
+      "text": "\"Beep,\" said {{sidekick}}. \"Can we go home and eat {{snack}} now?\""
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "Look at {{name}}'s face. What could {{he}} feel?",
+      "options": [
+        {
+          "label": "😢 Sad",
+          "correct": true,
+          "response": "Maybe! The party is over."
+        },
+        {
+          "label": "😴 Tired",
+          "correct": true,
+          "response": "Maybe! Parties are long."
+        },
+        {
+          "label": "😠 Mad",
+          "correct": true,
+          "response": "Maybe! {{He}} wanted to stay."
+        }
+      ],
+      "done": "Big feelings can be all mixed up. Let's find out."
+    },
+    "4": {
+      "type": "choice",
+      "question": "Which color is sad?",
+      "options": [
+        {
+          "label": "🔵 Blue",
+          "correct": true,
+          "response": "Yes! Blue is sad."
+        },
+        {
+          "label": "🔴 Red",
+          "correct": false,
+          "response": "Red is mad. Try again."
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Which way did Zawba'a go?",
+      "options": [
+        {
+          "label": "🌴 Where the palms bend",
+          "correct": true,
+          "response": "Yes! The storm pushed them over. Let's go!"
+        },
+        {
+          "label": "🌳 Where the palms stand straight",
+          "correct": false,
+          "response": "No wind there. Try again."
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "Your feeling is too big! What helps? Tap it!",
+      "options": [
+        {
+          "label": "🎨 Say its color and name",
+          "correct": true,
+          "response": "Yes! Name it, and it gets small. {{name}} kept that in {{his}} pocket."
+        },
+        {
+          "label": "📢 Shout louder",
+          "correct": false,
+          "response": "Shouting makes the storm bigger! Try again."
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Which cloud is sad?",
+      "options": [
+        {
+          "label": "😢 The cloud with a tear",
+          "correct": true,
+          "response": "Yes! Jump! {{name}} landed safe."
+        },
+        {
+          "label": "😄 The smiley cloud",
+          "correct": false,
+          "response": "That one is happy. Try again."
+        },
+        {
+          "label": "😠 The cross cloud",
+          "correct": false,
+          "response": "That one is mad. Try again."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Say:** \"I feel ___. {{need}}\""
+      ],
+      "done": "The swirl stopped. {{His}} band showed one clear color, and the wind went quiet."
+    },
+    "14": {
+      "type": "choice",
+      "question": "How do you feel right now? Tap a color and say it out loud.",
+      "options": [
+        {
+          "label": "🔴 Mad",
+          "correct": true,
+          "response": "You named it!"
+        },
+        {
+          "label": "🔵 Sad",
+          "correct": true,
+          "response": "You named it!"
+        },
+        {
+          "label": "🟣 Scared",
+          "correct": true,
+          "response": "You named it!"
+        },
+        {
+          "label": "⚪ Tired",
+          "correct": true,
+          "response": "You named it!"
+        }
+      ],
+      "done": "You named your feeling! That's the trick."
+    }
+  }
+}
