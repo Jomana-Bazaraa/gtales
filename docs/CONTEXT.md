@@ -30,7 +30,8 @@ Keep sections short. Delete lines that are no longer true instead of piling on.
 | Hosting | **Built, not deployed** | Cloudflare Workers free via OpenNext (moving off Vercel; Netlify is the fallback). Worker 1.95 MiB gzip (limit 3 MiB). Steps: `docs/DEPLOY.md` |
 | Domain | **Bought** | `gtales.kids` at Porkbun; DNS moving to Cloudflare (nameservers) |
 | Email | **Not configured** | Resend for sending (`stories@gtales.kids`: story link, admin order alerts, magic links); Cloudflare Email Routing for `hello@gtales.kids` → team Gmail |
-| Expert review of parent guides | Parked | Ayman's call; not shown on site |
+| Parent guides | Live | The team's 6 PDFs (`public/guides/<story>.pdf`, copied from `docs/reference/parent-guides/`) on the ready screen. Each says "Expert review in progress"; the "Expert-reviewed" label stays off until a named expert signs (SPEC §16) |
+| Read to me | Done | Reader speaker button: the phone's own voice (free, offline, no AI), words highlighted, pauses at each "Your turn" |
 | Reviews section | Hidden | Shows only when three real reviews exist (`NEXT_PUBLIC_REVIEWS_VISIBLE`) |
 
 ## Where things live
@@ -93,7 +94,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 | 10 | Set `NEXT_PUBLIC_WHATSAPP` (Cloudflare **build** and runtime variables; Admin → Settings' number is not used by the footer yet) | Ayman | — |
 | 11 | Post the launch (`docs/MARKETING.md`) | Ayman | #8 |
 | 12 | Decide: LAUNCH-PLAN §1b wants an optional email/WhatsApp on the free form; SPEC keeps email required, never a phone. Code follows the SPEC | Ayman | — |
-| 13 | Fix the docs: LAUNCH-PLAN §2 says "DNS stays at Porkbun" (contradicts §1 and the decision); MARKETING says "science-based parent guide… built on research" (clashes with honest-copy rule, and the ready screen's parent guide is still "CONTENT NEEDED") | Ayman | — |
+| 13 | Fix the docs: LAUNCH-PLAN §2 says "DNS stays at Porkbun" (contradicts §1 and the decision); MARKETING says "science-based parent guide… built on research". The live guides say "science-based" in the Worry and Big Feelings intros and "psychology"/"therapy" in references and "see a child psychologist" advice: OK with the no-"psychology" rule (SPEC §2.1)? If not, send new PDFs | Ayman | — |
 | 14 | Before turning AI polish on: `polish.ts` reads its prompt from disk, which fails on Workers (falls back to the plain story). Import it like the stories | either | after 2 weeks |
 | 15 | GitHub Actions minutes: each PDF ≈ 1 min; private repos get 2,000 free min/month. Watch Settings → Billing | Jomana | — |
 | 16 | Series orders: no customer email (form asks WhatsApp only, by design); the team gets an admin email per order. Series print files are made by the team, not the PDF job | — | info |
@@ -102,6 +103,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-19 · Claude for Jomana · Parent guides live (6 PDFs in `public/guides/`, ready-screen button + card replace "CONTENT NEEDED"); Read to me in the reader (Web Speech API, word highlight, stops at each "Your turn"); **fixed the reader on phones**: pages were cut off on the right (the unscaled A4 page widened the screen before scaling). Tested in Chrome at 390/360/1280 px. **Jomana:** Resend setup (open item #5) clears the admin "Mock mode: Resend" bar. **Ayman:** open item #13 (guide wording).
 - 2026-10-19 · Claude for Jomana · Age variants + fun lines (`stories/variants/*.json`, `public/gtales-book/variants.js`, copied unchanged) applied before fillStory; `snack`/`silly` tokens in render.js `tokens()`; form cards from `stories/builder-options.json` + optional snack and silly-word steps; snack/silly optional in form and order schemas; power word limit 20 → 24 ("I'm a dinosaur! RAWR!" is 21). 157 tests pass; `npm run check:fit`: 48 books (6 stories × 2 genders × ages 4/8 × with/without snack+silly), 0 "too much text". SPEC 1.9. **Jomana:** nothing to set up; merge and Cloudflare deploys. Books made before this keep their old text.
 - 2026-10-17 · Claude for Jomana · Cloudflare build timed out twice: the Deploy command was `npm run cf:preview`, which starts a local server that never exits. `cf:preview` now deploys when run on Cloudflare's build machine; `cf:deploy` no longer rebuilds. **Jomana:** set Deploy command to `npm run cf:deploy` (Settings → Build), then start a new deployment.
 - 2026-10-17 · Claude for Jomana · Launch: Cloudflare Workers (OpenNext, Next 16.4.2; Worker 1.95 MiB gzip, was 2.98 MiB with Puppeteer), PDFs via GitHub Action job queue + "being made" page, Admin Dashboard + events/parents tracking, migration 0003 (fixes the `orders` table: every Series order insert would have failed), admin email per order + story-link email, OG cover previews + "Send to WhatsApp", forms survive a dropped connection, gtales.kids everywhere, `LAUNCH-PLAN.md` + `MARKETING.md` added; SPEC 1.8. Tested on the Worker runtime against Postgres with migrations 0001–0003: 12 stories × gender, tricky names, rate limit, order with LAUNCH40 = 538, admin, 401/403 without login, 17-page A4 PDF. **Jomana:** open items #1–#9, in order.
