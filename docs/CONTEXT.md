@@ -24,6 +24,7 @@ Keep sections short. Delete lines that are no longer true instead of piling on.
 | Series order form (12 screens) | Done | Photo optional + text description; pay on delivery; no refunds |
 | My stories (passwordless) | Done | Order number + WhatsApp, or email magic link; tracker; "Order again" |
 | Admin | Done | Single password. Free stories (with PDF state + Generate PDF), Series orders (status pipeline, WhatsApp templates), Dashboard (today/7/30 days, by story/gender/age, sources, promo codes, conversion) + CSV, Settings |
+| Promo codes | Done (needs migration 0004) | Many codes in Supabase `promo_codes`: % off the books, free delivery or not, max uses, max per WhatsApp number, expiry. LAUNCH40 (40%, unlimited) and GTALESFAMILY (books free, delivery 89 paid, 30 uses, 1 per number, until 5 Nov 2026). Uses on Admin → Dashboard. New code = new row in Supabase Table Editor |
 | Tracking | Done | `events` (story_started … order_delivered, session id, source, gender, age; never names), `parents` = users. Visitors/pages: Cloudflare Web Analytics |
 | AI polish of free story | Built, **off** | `POLISH_PROVIDER=off`; turn on only after we test it on real names |
 | Supabase | **Not connected** | Run migrations 0001 → 0002 → 0003. Locally the app uses a `.data/` mock store (the Worker can't; it needs Supabase) |
@@ -70,6 +71,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 - `ask` field is gone for good. `need` comes from the `need` cards in `stories/builder-options.json` (19 Oct; replaced the form's six sentences).
 - Hero photo in the order form is optional; a text description can replace it; no full-body photo.
 - Price appears only on the delivery and review screens of the order form.
+- Promo codes live in Supabase `promo_codes`; a use is claimed when the order is placed and given back if it's cancelled. Settings' default code + % stays the advertised offer (22 Oct).
 - Single admin login. WhatsApp is manual (`wa.me` links) until a Business API is justified.
 - Honest copy: no "psychology", no "hand-drawn", no "expert-reviewed", never cap or advertise the free stories.
 - Hosting: Cloudflare Workers free + PDFs via GitHub Action; Netlify fallback; no Vercel/AWS/Google (17 Oct).
@@ -83,7 +85,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 | # | Item | Owner | Blocked on |
 |---|---|---|---|
 | 1 | Merge `claude/pensive-bardeen-842ku4` into `main` (Cloudflare deploys `main`; the PDF workflow only runs from `main`) | Jomana | — |
-| 2 | Create Supabase project, run `0001_init.sql` → `0002_gtales.sql` → `0003_launch.sql` | Jomana | — |
+| 2 | Supabase: run `0004_promo_codes.sql` in the SQL Editor (0001–0003 are done). Until then every order with a promo code fails | Jomana | — |
 | 3 | GitHub: Actions secrets + `SITE_URL` variable + fine-grained `GITHUB_PDF_TOKEN` (`docs/DEPLOY.md` §2) | Jomana | #1, #2 |
 | 4 | Cloudflare Worker live on `*.workers.dev`: import repo, build/runtime variables (`docs/DEPLOY.md` §3) | Jomana | #1, #2 |
 | 5 | Resend domain `gtales.kids` verified, `RESEND_API_KEY` / `EMAIL_FROM` / `ADMIN_NOTIFY_EMAIL` set, DMARC record | Jomana | #6 |
@@ -103,6 +105,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-22 · Claude for Jomana · Multiple promo codes: migration `0004_promo_codes.sql` (new columns, `promo_redemptions`, atomic `redeem_promo` / `release_promo`), GTALESFAMILY (100% off the books, delivery paid, 30 uses, 1 per phone, expires 5 Nov 2026 23:59 Cairo), LAUNCH40 unchanged; order form checks codes live (`/api/promo`) with clear reasons; cancel gives the use back; Settings default code syncs its %; Dashboard "Promo codes" table (offer, uses / limit, per phone, expiry, status, orders, discount, revenue). Tested on Postgres 16: 40 parallel claims → exactly 30; end to end through the app. 160 tests. SPEC 1.10. **Jomana:** run 0004 in Supabase SQL Editor before merging.
 - 2026-10-19 · Claude for Jomana · Parent guides live (6 PDFs in `public/guides/`, ready-screen button + card replace "CONTENT NEEDED"); Read to me in the reader (Web Speech API, word highlight, stops at each "Your turn"); **fixed the reader on phones**: pages were cut off on the right (the unscaled A4 page widened the screen before scaling). Tested in Chrome at 390/360/1280 px. **Jomana:** Resend setup (open item #5) clears the admin "Mock mode: Resend" bar. **Ayman:** open item #13 (guide wording).
 - 2026-10-19 · Claude for Jomana · Age variants + fun lines (`stories/variants/*.json`, `public/gtales-book/variants.js`, copied unchanged) applied before fillStory; `snack`/`silly` tokens in render.js `tokens()`; form cards from `stories/builder-options.json` + optional snack and silly-word steps; snack/silly optional in form and order schemas; power word limit 20 → 24 ("I'm a dinosaur! RAWR!" is 21). 157 tests pass; `npm run check:fit`: 48 books (6 stories × 2 genders × ages 4/8 × with/without snack+silly), 0 "too much text". SPEC 1.9. **Jomana:** nothing to set up; merge and Cloudflare deploys. Books made before this keep their old text.
 - 2026-10-17 · Claude for Jomana · Cloudflare build timed out twice: the Deploy command was `npm run cf:preview`, which starts a local server that never exits. `cf:preview` now deploys when run on Cloudflare's build machine; `cf:deploy` no longer rebuilds. **Jomana:** set Deploy command to `npm run cf:deploy` (Settings → Build), then start a new deployment.

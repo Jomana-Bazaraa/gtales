@@ -7,6 +7,7 @@ import { sendOrderNotice } from "@/lib/email";
 import { rememberParent } from "@/lib/parents";
 import { baseUrl } from "@/lib/site";
 import { currentBreakdown } from "@/lib/pricing";
+import { PROMO_MESSAGES, promoPrice, redeemPromo, releasePromo } from "@/lib/promos";
 import { assertSafe, SafetyError } from "@/stories/safety";
 import type { OrderRecord } from "@/lib/types";
 
@@ -44,19 +45,29 @@ export async function POST(req: Request) {
     throw e;
   }
   const p = await currentBreakdown();
-  const promoOk = (o.promo_code ?? "").toUpperCase() === p.promoCode.toUpperCase();
-  const discount = promoOk ? p.discount : 0;
   const now = new Date().toISOString();
   const id = `GT-${1000 + Math.floor(Math.random() * 9000)}-${nanoid(4).toUpperCase()}`;
+  // Promo (migration 0004): claimed for this order now, given back if the order can't be saved or is cancelled.
+  let promo: Awaited<ReturnType<typeof redeemPromo>> | null = null;
+  if (o.promo_code?.trim()) {
+    promo = await redeemPromo(o.promo_code, o.parent.whatsapp, id);
+    if (!promo.ok) return NextResponse.json({ error: "promo", field: "promo", message: `${PROMO_MESSAGES[promo.reason]} Remove it or check it.` }, { status: 422 });
+  }
+  const price = promoPrice(p.listPrice, p.delivery, promo?.ok ? promo.promo : null);
   const parent_id = await rememberParent(o.parent.whatsapp, { name: o.parent.name, source: o.ref, first_order_id: id });
   const rec: OrderRecord = {
     id, status: "ordered", edit_requested: false,
     child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
-    promo_code: promoOk ? p.promoCode : undefined, list_price: p.listPrice, discount, delivery: p.delivery, total: p.listPrice - discount + p.delivery,
+    promo_code: promo?.ok ? promo.promo.code : undefined, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
     free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,
   };
-  await insertOrder(rec);
+  try {
+    await insertOrder(rec);
+  } catch (e) {
+    if (promo?.ok) await releasePromo(id);
+    throw e;
+  }
   await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null, total: rec.total } });
   const site = await baseUrl();
   after(() => sendOrderNotice(rec, site).catch((e) => console.error("[email] order", e)));
