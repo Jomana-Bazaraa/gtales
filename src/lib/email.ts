@@ -90,12 +90,12 @@ export async function sendOrderNotice(o: OrderRecord, baseUrl: string) {
   const rows: [string, string][] = [
     ["Order", o.id], ["Child", `${o.child.name}, ${o.child.age}, ${o.child.gender}`], ["Books", o.books.map((b) => b.struggle).join(" · ")],
     ["Parent", `${o.parent.name} · ${o.parent.whatsapp}`], ["Address", `${o.parent.street}, ${o.parent.city}, ${o.parent.governorate}`],
-    ["Total", `${o.total} EGP (cash on delivery)${o.promo_code ? ` · ${o.promo_code}` : ""}`], ["Source", o.ref || "direct"],
+    ["Total", `${o.total ? `${o.total} EGP (cash on delivery)` : "Free"}${o.promo_code ? ` · ${o.promo_code}` : ""}`], ["Source", o.ref || "direct"],
   ];
   const body = `<h2 style="margin:0 0 8px">New Series order ${esc(o.id)}</h2>
      <table style="font-size:14px;border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#6b5f58">${k}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("")}</table>
      ${btn(`${baseUrl}/admin/series/${o.id}`, "Open in admin")}`;
-  await send(to, `New order ${o.id} · ${o.child.name} · ${o.total} EGP`, shell("en", body));
+  await send(to, `New order ${o.id} · ${o.child.name} · ${o.total ? `${o.total} EGP` : `Free (${o.promo_code})`}`, shell("en", body));
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);

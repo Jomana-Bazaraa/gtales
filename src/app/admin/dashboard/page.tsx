@@ -92,7 +92,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
     const os = O.filter(live).filter((o) => (o.promo_code || "(no code)") === code);
     return [
       code,
-      p ? `${p.percent_off === 100 ? "Books free" : `${p.percent_off}% off`}${p.covers_delivery ? " + delivery" : ""}` : "—",
+      p ? (p.percent_off === 100 && p.covers_delivery ? "Free (books + delivery)" : `${p.percent_off === 100 ? "Books free" : `${p.percent_off}% off`}${p.covers_delivery ? " + free delivery" : ""}`) : "—",
       p ? `${p.uses}${p.max_uses != null ? ` / ${p.max_uses}` : ""}` : "—",
       p?.max_per_phone != null ? `${p.max_per_phone} per phone` : "—",
       p?.expires_at ? cairo(p.expires_at) : "—",

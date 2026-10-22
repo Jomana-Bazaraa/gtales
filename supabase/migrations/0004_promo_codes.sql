@@ -62,9 +62,9 @@ insert into public.promo_codes (code, percent, percent_off, covers_delivery, max
 values ('LAUNCH40', 40, 40, false, null, null, null, true)
 on conflict (code) do update set percent_off = coalesce(public.promo_codes.percent_off, excluded.percent_off);
 
--- GTALESFAMILY: the three books free, delivery still paid (89 EGP), 30 uses, 1 per phone,
--- valid 14 days from 22 Oct 2026 (until 5 Nov 2026, end of day Cairo).
+-- GTALESFAMILY: free (books and delivery, 0 EGP), 30 uses, up to 5 per phone,
+-- valid 14 days from 22 Oct 2026 (until 5 Nov 2026, end of day Cairo). LAUNCH40 stays active alongside; one code per order.
 insert into public.promo_codes (code, percent, percent_off, covers_delivery, max_uses, max_per_phone, expires_at, active)
-values ('GTALESFAMILY', 100, 100, false, 30, 1, '2026-11-05 23:59:59+02', true)
+values ('GTALESFAMILY', 100, 100, true, 30, 5, '2026-11-05 23:59:59+02', true)
 on conflict (code) do update set percent = excluded.percent, percent_off = excluded.percent_off, covers_delivery = excluded.covers_delivery,
   max_uses = excluded.max_uses, max_per_phone = excluded.max_per_phone, expires_at = excluded.expires_at, active = excluded.active;

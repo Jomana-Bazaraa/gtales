@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { listOrders } from "@/lib/db";
-import { egp } from "@/lib/gtales";
+import { egpOrFree } from "@/lib/gtales";
 import { STATUS_LABEL } from "@/lib/orders";
 
 /** Admin → Series orders (SPEC §11). */
@@ -25,7 +25,7 @@ export default async function AdminSeries() {
                 <td className="p-3">{o.books.map((b) => b.struggle).join(" · ")}</td>
                 <td className="p-3">{o.parent.name}<br /><a className="text-sky" href={`https://wa.me/${o.parent.whatsapp.replace(/^0/, "20")}`}>{o.parent.whatsapp}</a></td>
                 <td className="p-3"><span className="pill bg-sky-soft text-sky">{STATUS_LABEL[o.status]}</span>{o.edit_requested && <span className="pill bg-flame-soft text-flame-deep ml-1">edits</span>}</td>
-                <td className="p-3">{egp(o.total)}</td>
+                <td className="p-3">{egpOrFree(o.total)}</td>
                 <td className="p-3"><Link href={`/admin/series/${o.id}`} className="text-sky font-bold">Open</Link></td>
               </tr>
             ))}

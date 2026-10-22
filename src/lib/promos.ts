@@ -26,7 +26,7 @@ export const PROMO_MESSAGES: Record<PromoReason, string> = {
   not_started: "This code isn't active yet.",
   expired: "This code has expired.",
   used_up: "This code has been used up.",
-  phone_limit: "This code was already used with this WhatsApp number.",
+  phone_limit: "This code has been used the most times allowed with this WhatsApp number.",
 };
 
 /** Book discount and delivery for a list price under a code (percent of the book only; delivery free only if covered). */
@@ -49,7 +49,7 @@ export function promoProblem(p: PromoCode | null, now = new Date()): PromoReason
 const DIR = path.join(process.cwd(), ".data");
 const MOCK_SEED: PromoCode[] = [
   { code: "LAUNCH40", percent_off: 40, covers_delivery: false, max_uses: null, uses: 0, max_per_phone: null, expires_at: null, active: true },
-  { code: "GTALESFAMILY", percent_off: 100, covers_delivery: false, max_uses: 30, uses: 0, max_per_phone: 1, expires_at: "2026-11-05T23:59:59+02:00", active: true },
+  { code: "GTALESFAMILY", percent_off: 100, covers_delivery: true, max_uses: 30, uses: 0, max_per_phone: 5, expires_at: "2026-11-05T23:59:59+02:00", active: true },
 ];
 type Redemption = { code: string; phone: string; order_id: string; created_at: string };
 async function mockRead() {

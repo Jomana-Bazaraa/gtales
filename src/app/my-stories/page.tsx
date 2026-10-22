@@ -3,7 +3,7 @@ import { Footer, Header } from "@/components/SiteChrome";
 import { MyStoriesForm } from "@/components/MyStoriesForm";
 import { Icon } from "@/components/ui/Icon";
 import { listBooks, ordersByWhatsapp } from "@/lib/db";
-import { egp } from "@/lib/gtales";
+import { egp, egpOrFree } from "@/lib/gtales";
 import { STATUS_LABEL, STATUS_NEXT, STATUS_ORDER } from "@/lib/orders";
 import { getSession } from "@/lib/session";
 import { storyImage } from "@/stories/images";
@@ -58,11 +58,11 @@ export default async function MyStoriesPage({ searchParams }: PageProps<"/my-sto
 function Tracker({ o }: { o: OrderRecord }) {
   const idx = STATUS_ORDER.indexOf(o.status);
   const steps: { key: string; label: string; small: string }[] = [
-    { key: "ordered", label: "Ordered", small: `${new Date(o.created_at).toLocaleDateString("en-GB")} · ${egp(o.total)}, pay on delivery` },
+    { key: "ordered", label: "Ordered", small: `${new Date(o.created_at).toLocaleDateString("en-GB")} · ${o.total ? `${egp(o.total)}, pay on delivery` : "Free"}` },
     { key: "being_made", label: "Being made", small: "Our team is creating the pictures and the three tales. Usually 5 days." },
     { key: "awaiting_approval", label: "Your approval", small: "We send every page to you on WhatsApp. Change anything, then approve." },
     { key: "printing", label: "Printing", small: "About 3 days after approval." },
-    { key: "delivered_paid", label: "Delivered", small: `Pay ${egp(o.total)} to the courier, cash or card.` },
+    { key: "delivered_paid", label: "Delivered", small: o.total ? `Pay ${egp(o.total)} to the courier, cash or card.` : "Nothing to pay." },
   ];
   const pos = (k: string) => STATUS_ORDER.indexOf(k as never);
   const cur = o.status === "approved" ? pos("printing") : o.status === "shipped" ? pos("delivered_paid") : idx;

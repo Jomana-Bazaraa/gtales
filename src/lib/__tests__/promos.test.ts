@@ -29,22 +29,24 @@ test("rules: inactive, not started, expired, used up", async () => {
   assert.equal(promoProblem({ ...base, max_uses: 30, uses: 29, expires_at: "2026-11-05T23:59:59+02:00" }, now), null);
 });
 
-test("GTALESFAMILY: 1 per phone (any spelling of the number), use given back on release; LAUNCH40 unlimited", async () => {
-  const { checkPromo, promoProblem, redeemPromo, releasePromo, listPromos } = await load();
+test("GTALESFAMILY: free, up to 5 per phone (any spelling of the number), use given back on release; LAUNCH40 alongside", async () => {
+  const { checkPromo, promoPrice, promoProblem, redeemPromo, releasePromo, listPromos } = await load();
   const fam = (await listPromos()).find((p) => p.code === "GTALESFAMILY")!;
-  assert.deepEqual([fam.percent_off, fam.covers_delivery, fam.max_uses, fam.max_per_phone], [100, false, 30, 1]);
+  assert.deepEqual([fam.percent_off, fam.covers_delivery, fam.max_uses, fam.max_per_phone], [100, true, 30, 5]);
+  assert.equal(promoPrice(749, 89, fam).total, 0, "free: books and delivery");
   assert.equal(new Date(fam.expires_at!).toISOString(), "2026-11-05T21:59:59.000Z");
   // the expiry is checked against the real clock; only run the claim flow while the code is live
   if (promoProblem(fam)) return;
   assert.equal((await redeemPromo("gtalesfamily", "+20 100 123 4567", "GT-1")).ok, true, "lower case works");
-  const again = await redeemPromo("GTALESFAMILY", "01001234567", "GT-2");
-  assert.deepEqual(again, { ok: false, reason: "phone_limit" }, "same number written differently");
+  for (const n of [2, 3, 4, 5]) assert.equal((await redeemPromo("GTALESFAMILY", "01001234567", `GT-${n}`)).ok, true, `use ${n} of 5`);
+  const again = await redeemPromo("GTALESFAMILY", "01001234567", "GT-6");
+  assert.deepEqual(again, { ok: false, reason: "phone_limit" }, "6th use, same number written differently");
   assert.deepEqual(await checkPromo("GTALESFAMILY", "01001234567"), { ok: false, reason: "phone_limit" });
   assert.equal((await checkPromo("GTALESFAMILY", "01112223334")).ok, true, "another number may");
-  assert.equal((await listPromos()).find((p) => p.code === "GTALESFAMILY")!.uses, 1);
+  assert.equal((await listPromos()).find((p) => p.code === "GTALESFAMILY")!.uses, 5);
   await releasePromo("GT-1");
-  assert.equal((await listPromos()).find((p) => p.code === "GTALESFAMILY")!.uses, 0);
-  assert.equal((await redeemPromo("GTALESFAMILY", "01001234567", "GT-3")).ok, true, "after cancel the number may use it again");
+  assert.equal((await listPromos()).find((p) => p.code === "GTALESFAMILY")!.uses, 4);
+  assert.equal((await redeemPromo("GTALESFAMILY", "01001234567", "GT-7")).ok, true, "after a cancel the number may use it again");
   for (const n of [1, 2, 3]) assert.equal((await redeemPromo("LAUNCH40", "01001234567", `GT-L${n}`)).ok, true);
   assert.deepEqual(await redeemPromo("NOPE", "01001234567", "GT-9"), { ok: false, reason: "invalid" });
 });

@@ -148,6 +148,8 @@ export function priceBreakdown(p: Pricing = getPricing()) {
 }
 
 export const egp = (n: number) => `${n.toLocaleString("en-EG")} EGP`;
+/** Prices that can be zero (a free order, free delivery): "Free" instead of "0 EGP". */
+export const egpOrFree = (n: number) => (n === 0 ? "Free" : egp(n));
 
 function num(v: string | undefined, d: number) {
   const n = Number(v);

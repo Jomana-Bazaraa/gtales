@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { sessionId, source, track } from "@/lib/track";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { COPY, egp, priceBreakdown, type Pricing } from "@/lib/gtales";
+import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -242,7 +242,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <F label="Street and building"><input className="field font-medium" placeholder="e.g. 12 Road 9, building 4, flat 3" value={d.street} onChange={(e) => u("street", e.target.value)} maxLength={200} /></F>
           <F label="Landmark (optional)"><input className="field font-medium" placeholder="e.g. next to Seoudi" value={d.landmark} onChange={(e) => u("landmark", e.target.value)} maxLength={120} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Best time to message you</span><div className="flex flex-wrap gap-2">{["Morning", "Afternoon", "Evening", "Any time"].map((t) => <Chip key={t} on={d.bestTime === t} onClick={() => u("bestTime", t)}>{t}</Chip>)}</div></div>
-          <F label="Promo code" hint={!d.promo.trim() ? undefined : promoOk ? promoLine(quote!) + " applied." : quote && !quote.ok && quote.code === d.promo.trim().toUpperCase() ? quote.message : "Checking…"}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
+          <F label="Promo code" hint={!d.promo.trim() ? undefined : promoOk ? (promoLine(quote!) === "Free" ? "Free: books and delivery." : promoLine(quote!) + " applied.") : quote && !quote.ok && quote.code === d.promo.trim().toUpperCase() ? quote.message : "Checking…"}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
         </>)}
 
         {step === "review" && (<>
@@ -257,9 +257,9 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
             <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(price.listPrice)}</b></div>
             {discount > 0 && <div className="flex justify-between text-mint"><span>{quote!.code} · {promoLine(quote!)}</span><b>−{egp(discount)}</b></div>}
-            <div className="flex justify-between"><span>Delivery, anywhere in Egypt</span><b>{delivery ? egp(delivery) : "Free"}</b></div>
+            <div className="flex justify-between"><span>Delivery, anywhere in Egypt</span><b>{egpOrFree(delivery)}</b></div>
             <div className="h-px bg-line" />
-            <div className="flex justify-between items-center"><span className="font-bold">Pay on delivery</span><b className="display text-[26px]">{egp(price.listPrice - discount + delivery)}</b></div>
+            <div className="flex justify-between items-center"><span className="font-bold">{price.listPrice - discount + delivery ? "Pay on delivery" : "To pay"}</span><b className="display text-[26px]">{egpOrFree(price.listPrice - discount + delivery)}</b></div>
           </div>
           <Promises variant="compact" />
         </>)}
@@ -271,7 +271,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         {step === "review" ? <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Sending…" : "Confirm my order"}</button>
           : (step === "dedication" || step === "context") ? <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
           : <button type="button" onClick={next} className="btn-primary w-full">Next</button>}
-        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : `${egp(price.listPrice - discount)} + ${egp(delivery)} delivery · pay on delivery`}</span>}
+        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : price.listPrice - discount + delivery === 0 ? `Free with ${quote?.code ?? "your code"}` : `${egp(price.listPrice - discount)} + ${egp(delivery)} delivery · pay on delivery`}</span>}
       </div>
     </div>
   );
@@ -329,7 +329,7 @@ function Row({ label, children, onEdit }: { label: string; children: React.React
   );
 }
 type PromoQuote = { ok: boolean; code?: string; message?: string; percent_off?: number; covers_delivery?: boolean; discount?: number; delivery?: number; total?: number };
-function promoLine(q: PromoQuote) { return `${q.percent_off === 100 ? "books free" : `${q.percent_off}% off`}${q.covers_delivery ? " + free delivery" : ""}`; }
+function promoLine(q: PromoQuote) { return q.percent_off === 100 && q.covers_delivery ? "Free" : `${q.percent_off === 100 ? "books free" : `${q.percent_off}% off`}${q.covers_delivery ? " + free delivery" : ""}`; }
 function cap(s: string) { return s.trim().replace(/\s+/g, " ").split(" ").map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(" "); }
 const safeRef = source;
 void COPY;
