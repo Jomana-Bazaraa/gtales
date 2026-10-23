@@ -109,7 +109,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       case "gender": if (!d.gender) return "Please choose one."; if (meta && !meta.sets[d.gender]) return `The ${d.gender} pictures for this story are coming soon. Please choose another story for now.`; return null;
       case "age": return d.age ? null : "Please choose an age.";
       case "place": { const p = d.place.trim(); if (p.length < 2 || p.length > 20) return "2 to 20 letters, please."; if (ARABIC.test(p)) return "Please write it in English letters, like Maadi."; return null; }
-      case "other": { const o = d.other.trim(); if (!o) return "Please write a name."; if (ARABIC.test(o)) return "Please write the name in English letters."; if (o.length > 14 || !LATIN.test(o)) return "Up to 14 English letters, please."; return null; }
+      case "other": { const o = d.other.trim(); if (!o) return bullied ? null : "Please write a name."; /* bullied: empty = "Sam" on submit */ if (ARABIC.test(o)) return "Please write the name in English letters."; if (o.length > 14 || !LATIN.test(o)) return "Up to 14 English letters, please."; return null; }
       case "sidekick": { const s2 = d.sidekick.trim(); if (s2 && (s2.length > 12 || ARABIC.test(s2))) return "Up to 12 English letters, please."; return null; }
       case "power_word": { const p = d.power_word.trim(); if (p.length < 2 || p.length > 24) return "2 to 24 characters, please."; return null; }
       case "need": return d.need ? null : "Please choose one.";
@@ -124,7 +124,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
   const values = () => ({
     slug: d.slug, name: cap(d.name), gender: d.gender || "boy", age: d.age || 6, place: d.place.trim(),
-    other: uses("other") ? cap(d.other) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || undefined) : undefined,
+    other: uses("other") ? cap(d.other.trim() || (bullied ? "Sam" : "")) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || undefined) : undefined,
     sidekick: uses("sidekick") ? cap(d.sidekick.trim() || "Bolt") : undefined,
     power_word: uses("power_word") ? bang(d.power_word) : undefined,
     need: uses("need") ? d.need : undefined,
@@ -220,7 +220,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
         {step === "other" && (bullied ? (<>
           <Q help="You can use a made-up name. It does not have to be the real child.">What name should we use for the child who is unkind?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other || "Sam"} onChange={(e) => u("other", e.target.value)} maxLength={14} />
+          <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} />
+          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use Sam.</p>
         </>) : (<>
           <Q>Who is often with your child at home?</Q>
           <div className="flex gap-2">
@@ -282,7 +283,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
           <Q help="Tap any part to change it.">Does this look right?</Q>
           <p className="m-0 text-[19px] leading-8">
             <B onClick={() => goTo("name")}>{name}</B>, <B onClick={() => goTo("age")}>{d.age}</B>, lives in <B onClick={() => goTo("place")}>{d.place.trim()}</B>.
-            {uses("other") && <> {bullied ? "The unkind child is called" : `${His} ${d.relation || "friend"} is`} <B onClick={() => goTo("other")}>{cap(d.other)}</B>.</>}
+            {uses("other") && <> {bullied ? "The unkind child is called" : `${His} ${d.relation || "friend"} is`} <B onClick={() => goTo("other")}>{cap(d.other.trim() || (bullied ? "Sam" : ""))}</B>.</>}
             {uses("sidekick") && <> {His} robot friend is called <B onClick={() => goTo("sidekick")}>{cap(d.sidekick.trim() || "Bolt")}</B>.</>}
             {uses("power_word") && <> When {he} wants to feel strong {he} says <B onClick={() => goTo("power_word")}>"{bang(d.power_word)}"</B>.</>}
             {uses("need") && d.need && <> When {he}'s upset, {he} says <B onClick={() => goTo("need")}>&ldquo;{d.need}&rdquo;</B></>}
