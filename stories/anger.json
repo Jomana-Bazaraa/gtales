@@ -2,6 +2,7 @@
   "slug": "anger",
   "struggle": "Anger and hitting",
   "title": "{{name}} and the Great Blocktown Smash",
+  "default_strength": "builder",
   "uses": ["name", "age", "place", "other", "sidekick", "power_word", "need", "strength"],
   "other_rule": null,
   "back_blurb": [

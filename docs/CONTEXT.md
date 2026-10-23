@@ -20,7 +20,7 @@ Keep sections short. Delete lines that are no longer true instead of piling on.
 | Area | Status | Notes |
 |---|---|---|
 | Landing, Tales catalogue, tale pages | Done | Copy per SPEC §5–6; six tales with real covers and sample pages |
-| Free story (form → book → reader → PDF) | Done | 12-question form, text-only engine, team template. All 6 stories × boy/girl live. PDF (A4, 17 pages) is a job rendered by the GitHub Action `pdf.yml`; parent sees "being made" ~2 min, then instant |
+| Free story (form → book → reader → PDF) | Done | **Two screens** (24 Oct): name/age 4–8/boy-girl/story, then the kid's cards with 🎲 Surprise me; opens straight on page 1 (phone test: homepage → first page 14.5 s). Defaults for every empty field. Email optional on the story page. All 6 stories × boy/girl live. PDF via the GitHub Action |
 | Series order form (12 screens) | Done | Photo optional + text description; pay on delivery; no refunds |
 | My stories (passwordless) | Done | Order number + WhatsApp, or email magic link; tracker; "Order again" |
 | Admin | Done | Single password. Free stories (with PDF state + Generate PDF), Series orders (status pipeline, WhatsApp templates), Dashboard (today/7/30 days, by story/gender/age, sources, promo codes, conversion) + CSV, Settings |
@@ -64,11 +64,12 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Decisions (don't re-litigate without talking)
 
-- Ages **2–10** everywhere (the handoff form prompt says 4–8; Ayman overrode it, 10 Oct).
+- Ages: the fast form offers **4–8** buttons (Jomana, 24 Oct, for speed); the engine and the Series still accept 2–10 (Ayman's 10 Oct decision). Ayman: confirm.
 - The Series is **three** printed books: list 749 EGP, `LAUNCH40` → 449, delivery 89, total 538, **pay on delivery, no refunds** (parents approve every page on WhatsApp first).
 - Free story is **text-only** personalisation on fixed art. Images are never generated at runtime. Series art is made manually by the team.
 - The template is the only design; the story JSON is the only text source; the reference PDFs are only for comparison.
 - `ask` field is gone for good. `need` comes from the `need` cards in `stories/builder-options.json` (19 Oct; replaced the form's six sentences).
+- Free form = 2 screens, nothing required beyond name/age/boy-girl/story; no email, snack, "great at" or dedication (24 Oct). `{{strength}}` = the story's `default_strength`; empty fields → Bolt, "I'm a superhero!", Sam, "Can I have a hug?", Cairo.
 - Hero photo in the order form is optional; a text description can replace it; no full-body photo.
 - Price appears only on the delivery and review screens of the order form.
 - Promo codes live in Supabase `promo_codes`; a use is claimed when the order is placed and given back if it's cancelled. Settings' default code + % stays the advertised offer (22 Oct).
@@ -108,6 +109,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-24 · Claude for Jomana · Start is obvious + story in under a minute: phone-first hero (one huge "Make your child's free story · 2 min" button, 3-step strip, 2 real pages under it; printed books become a link); free form rebuilt into 2 screens (name/age 4–8/boy-girl/6 story covers → kid screen with cards + Other…, 🎲 Surprise me, other child empty "e.g. Sam", need only for anger/worry/feelings, optional place) → opens on page 1; snack/"great at"/dedication/email removed ("Email me this story" on the story page and at the end of the reader, `/api/books/[id]/email`); `default_strength` in each story JSON; new silly words in builder-options.json; API fills every default. Events landing_view, start_click, form_step_1, form_step_2 + Dashboard funnel by session. Phone test 390×844: no sideways scroll, button + steps above the fold, homepage → first page 14.5 s with human pauses; all-defaults story has no blanks. SPEC 1.12.
 - 2026-10-24 · Claude for Jomana · Resend "mock mode" on production: `wrangler deploy` deletes dashboard variables of type Text on every deploy unless `keep_vars` is set (Secrets survive). Added `"keep_vars": true` to `wrangler.jsonc`. Admin → Settings → "Send test email" shows Resend's raw response and whether RESEND_API_KEY / EMAIL_FROM / ADMIN_NOTIFY_EMAIL reach the server (never their values). **Jomana:** add RESEND_API_KEY as a Secret (runtime), redeploy, press Send test email.
 - 2026-10-24 · Claude for Jomana · Reviews "not working": the code was never on `main` (live site = PR #2; everything since, incl. reviews and promo codes, is only on `claude/pensive-bardeen-842ku4`). Hardened for the merge: promo redeem falls back to an uncounted LAUNCH40 check if migration 0004 isn't run (orders never fail); review submit returns a clear 503 and Admin → Reviews shows a banner if 0005 isn't run; Turnstile only enforced when BOTH keys are set; upload check falls back to the folder listing. Tested on a 390 px phone against Postgres: without 0004/0005 an order with LAUNCH40 = 538; with them, submit with photo → approve in admin → shown on the homepage. **Jomana:** run 0004 + 0005, then merge (see open item #1).
 - 2026-10-24 · Claude for Jomana · Fix: bullied form, the unkind child's name came back as "Sam" after deleting it (`value={d.other || "Sam"}`). Now empty with placeholder "e.g. Sam", optional, "Sam" only when submitted empty. No other field used that pattern.

@@ -1,5 +1,5 @@
 {
-  "_note": "Edit freely. 'label' is shown on the card (and read aloud). 'value' is what goes into the story. Values: no emoji, no ending punctuation. Snacks must read well after 'my', 'all the' and 'smells like' (use mass/plural nouns: 'mangoes', not 'a mango').",
+  "_note": "Edit freely. 'label' is shown on the card (and read aloud). 'value' is what goes into the story. Values: no emoji, no ending punctuation. Snacks must read well after 'my', 'all the' and 'smells like' (use mass/plural nouns: 'mangoes', not 'a mango'). Silly words: the story adds the '!' itself, so values have none (letters, digits like Sha3bolla, spaces; max 15).",
   "sidekick": [
     {"label": "🤖 Bolt", "value": "Bolt"},
     {"label": "🤖 Mr. Beep", "value": "Mr. Beep"},
@@ -32,14 +32,12 @@
     {"label": "🥬 Molokhia", "value": "molokhia"}
   ],
   "silly": [
-    {"label": "🩳 Pyjamas!", "value": "Pyjamas"},
-    {"label": "🥴 Wobble!", "value": "Wobble"},
-    {"label": "🫖 Bakbouk!", "value": "Bakbouk"},
-    {"label": "🫘 Fasoolya!", "value": "Fasoolya"},
-    {"label": "🩴 Shabshab!", "value": "Shabshab"},
-    {"label": "🍜 Noodles!", "value": "Noodles"},
-    {"label": "💥 Kaboom!", "value": "Kaboom"},
-    {"label": "🦘 Boing!", "value": "Boing"}
+    {"label": "🦁 Aslaaan!", "value": "Aslaaan"},
+    {"label": "🙌 Yastaaa!", "value": "Yastaaa"},
+    {"label": "🎉 Sha3bolla!", "value": "Sha3bolla"},
+    {"label": "🤷 Keda keda!", "value": "Keda keda"},
+    {"label": "🍟 Batates!", "value": "Batates"},
+    {"label": "🍩 Zalabya!", "value": "Zalabya"}
   ],
   "need": [
     {"label": "🤗 A hug", "value": "Can I have a hug?"},

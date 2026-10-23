@@ -1,17 +1,19 @@
 "use client";
 /**
- * GTales parent form — the form brief (docs/SPEC.md §7.2).
- * One question per screen, exact wording from the brief, only the fields the story `uses`,
- * live cover preview, review sentence, progress saved in the browser.
+ * Free story form, fast version (SPEC §7.2, 24 Oct): two screens, under a minute.
+ * Screen 1 (parent): hero's name, age, boy/girl, which story. Screen 2 (kid): sidekick, Power Word, silly word,
+ * plus only what the story needs (other child, "what helps"), place; all optional with 🎲 Surprise me.
+ * Empty fields get defaults on submit (src/stories/defaults.ts, applied again by the API).
  */
 import { useEffect, useMemo, useState } from "react";
-import { sessionId, source, track } from "@/lib/track";
-import builderOptions from "../../../stories/builder-options.json";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TALES } from "@/lib/gtales";
-import { storyImage } from "@/stories/images";
+import { sessionId, source, track } from "@/lib/track";
 import { Icon } from "@/components/ui/Icon";
+import { FORM_DEFAULTS } from "@/stories/defaults";
+import { findUnsafe } from "@/stories/safety";
+import builderOptions from "../../../stories/builder-options.json";
 
 export interface TaleMeta {
   slug: string;
@@ -22,124 +24,100 @@ export interface TaleMeta {
   other_rule: "not_sibling" | null;
 }
 
-const KEY = "gtales.free-draft.v3";
-type Step = "struggle" | "name" | "gender" | "age" | "place" | "other" | "sidekick" | "power_word" | "snack" | "silly" | "need" | "strength" | "dedication" | "email" | "review";
-
-interface Draft {
-  slug: string; name: string; gender: "boy" | "girl" | ""; age: number | 0; place: string;
-  other: string; relation: "brother" | "sister" | "cousin" | ""; sidekick: string; power_word: string;
-  need: string; strength: string; strengthOther: string; dedication: string; email: string; snack: string; silly: string;
-}
-const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", strength: "", strengthOther: "", dedication: "", email: "", snack: "", silly: "" };
-
-const STRUGGLE_LABEL: Record<string, string> = { anger: "Anger and hitting", anxiety: "Fears and worries", bullied: "Being bullied", lying: "Lying", feelings: "Big feelings", friendship: "Friendship" };
-// Story Builder cards: the team edits stories/builder-options.json, not this file.
-type BuilderCard = { label: string; value: string };
-const BUILDER = builderOptions as unknown as Record<"sidekick" | "power_word" | "snack" | "silly" | "need", BuilderCard[]>;
-const OWN_SIDEKICK = "__parent_types__";
-const plain = (label: string) => label.replace(/^[^A-Za-z0-9]+/, "").trim(); // "🤗 A hug" → "A hug"
-const STRENGTHS: [string, string][] = [
-  ["Drawing", "artist"], ["Football", "football player"], ["Building and Lego", "builder"], ["Swimming", "swimmer"], ["Dancing", "dancer"],
-  ["Reading", "reader"], ["Singing", "singer"], ["Helping others", "helper"], ["Running", "runner"],
-];
+const KEY = "gtales.free-draft.v4";
+type Card = { label: string; value: string };
+const B = builderOptions as unknown as Record<"sidekick" | "power_word" | "silly" | "need", Card[]>;
+const SIDEKICKS = B.sidekick.filter((c) => c.value !== "__parent_types__");
+const NAMES = ["Sam", "Omar", "Lina", "Yousef", "Malak", "Ziad", "Nour", "Adam"];
+const AGES = [4, 5, 6, 7, 8];
 const LATIN = /^[A-Za-z][A-Za-z '\-]*$/;
+const WORDS = /^[A-Za-z][A-Za-z ]*$/;
 const ARABIC = /[؀-ۿ]/;
 
-function Card({ on, onClick, children, disabled, sub }: { on: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; sub?: string }) {
-  return (
-    <button type="button" aria-pressed={on} disabled={disabled} onClick={onClick} className={`min-h-14 text-left rounded-2xl border-[3px] px-4 py-3 font-bold text-[17px] flex items-center justify-between gap-3 transition ${on ? "border-flame bg-flame-soft" : "border-line bg-white"} ${disabled ? "opacity-60" : ""}`}>
-      <span className="flex flex-col"><span>{children}</span>{sub && <span className="text-[12px] font-bold text-ink-soft">{sub}</span>}</span>
-      {on && <Icon name="check" size={22} strokeWidth={3} className="text-flame-deep shrink-0" />}
-    </button>
-  );
+interface Draft {
+  name: string; age: number; gender: "boy" | "girl" | ""; slug: string;
+  sidekick: string; power_word: string; silly: string; other: string; need: string; place: string;
 }
-const Q = ({ children, help }: { children: React.ReactNode; help?: string }) => (
-  <div className="flex flex-col gap-1.5">
-    <h1 className="text-[26px] leading-8 md:text-3xl font-bold">{children}</h1>
-    {help && <p className="m-0 text-[15px] leading-[22px] text-ink-soft">{help}</p>}
-  </div>
-);
+const EMPTY: Draft = { name: "", age: 0, gender: "", slug: "", sidekick: "", power_word: "", silly: "", other: "", need: FORM_DEFAULTS.need, place: "" };
+const pick = <T,>(xs: readonly T[]) => xs[Math.floor(Math.random() * xs.length)];
 
 export function CreateForm({ initialTale, metas }: { initialTale?: string; metas: TaleMeta[] }) {
   const router = useRouter();
   const [d, setD] = useState<Draft>({ ...EMPTY, slug: initialTale ?? "" });
-  const [i, setI] = useState(0);
+  const [screen, setScreen] = useState<1 | 2>(1);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
+  const [own, setOwn] = useState({ sidekick: false, power_word: false, silly: false }); // "Other…" open
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) { const s = JSON.parse(raw) as { d: Draft; i: number }; setD({ ...EMPTY, ...s.d, slug: initialTale || s.d.slug }); setI(initialTale && s.i === 0 ? 1 : s.i); }
-      else if (initialTale) setI(1);
-    } catch {}
+    try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw) as Draft; setD({ ...EMPTY, ...s, slug: initialTale || s.slug }); } } catch {}
     setReady(true);
     track("story_started", { meta: initialTale ? { tale: initialTale } : undefined });
+    track("form_step_1", { meta: initialTale ? { tale: initialTale } : undefined });
   }, [initialTale]);
-  useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d, i })); } catch {} }, [d, i, ready]);
+  useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} }, [d, ready]);
 
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
   const meta = useMemo(() => metas.find((m) => m.slug === d.slug), [metas, d.slug]);
   const uses = (t: string) => !!meta && meta.uses.includes(t);
-  const steps = useMemo<Step[]>(() => {
-    const s: Step[] = ["struggle", "name", "gender", "age", "place"];
-    if (uses("other")) s.push("other");
-    if (uses("sidekick")) s.push("sidekick");
-    if (uses("power_word")) s.push("power_word");
-    if (uses("sidekick")) s.push("snack", "silly"); // optional; the fun lines need the robot
-    if (uses("need")) s.push("need");
-    if (uses("strength")) s.push("strength");
-    s.push("dedication", "email", "review");
-    return s;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meta]);
-  const step = steps[Math.min(i, steps.length - 1)];
-  const total = meta ? steps.length - 1 : 12; // review is not counted; 12 until a story is chosen
-  const name = d.name.trim() ? cap(d.name) : "your child";
-  const he = d.gender === "girl" ? "she" : "he", his = d.gender === "girl" ? "her" : "his", He = d.gender === "girl" ? "She" : "He", His = d.gender === "girl" ? "Her" : "His";
   const bullied = meta?.other_rule === "not_sibling";
-  const previewGender: "boy" | "girl" | null = !meta ? null : d.gender && meta.sets[d.gender] ? d.gender : meta.sets.boy ? "boy" : meta.sets.girl ? "girl" : null;
-  const goTo = (s: Step) => { setErr(null); setI(steps.indexOf(s)); };
+  const name = cap(d.name) || "your child";
 
-  const valid = (s: Step): string | null => {
-    switch (s) {
-      case "struggle": return d.slug ? (meta?.available ? null : "This story is coming soon. Please pick another one.") : "Please choose one.";
-      case "name": { const n = d.name.trim(); if (!n) return "Please write your child's name."; if (ARABIC.test(n)) return "Please write the name in English letters, like Mariam."; if (n.length > 14) return "Up to 14 letters, please."; if (!LATIN.test(n)) return "English letters only, please."; return null; }
-      case "gender": if (!d.gender) return "Please choose one."; if (meta && !meta.sets[d.gender]) return `The ${d.gender} pictures for this story are coming soon. Please choose another story for now.`; return null;
-      case "age": return d.age ? null : "Please choose an age.";
-      case "place": { const p = d.place.trim(); if (p.length < 2 || p.length > 20) return "2 to 20 letters, please."; if (ARABIC.test(p)) return "Please write it in English letters, like Maadi."; return null; }
-      case "other": { const o = d.other.trim(); if (!o) return bullied ? null : "Please write a name."; /* bullied: empty = "Sam" on submit */ if (ARABIC.test(o)) return "Please write the name in English letters."; if (o.length > 14 || !LATIN.test(o)) return "Up to 14 English letters, please."; return null; }
-      case "sidekick": { const s2 = d.sidekick.trim(); if (s2 && (s2.length > 12 || ARABIC.test(s2))) return "Up to 12 English letters, please."; return null; }
-      case "power_word": { const p = d.power_word.trim(); if (p.length < 2 || p.length > 24) return "2 to 24 characters, please."; return null; }
-      case "need": return d.need ? null : "Please choose one.";
-      case "strength": return d.strength === "other" ? (d.strengthOther.trim().length >= 2 ? null : "Write one or two words, like chess player.") : d.strength ? null : "Please choose one.";
-      case "dedication": return d.dedication.length > 120 ? "Up to 120 characters, please." : null;
-      case "email": return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim()) ? null : "Please write an email address.";
-      default: return null;
-    }
+  const check1 = (): string | null => {
+    const n = d.name.trim();
+    if (!n) return "Please write the hero's name.";
+    if (ARABIC.test(n)) return "Please write the name in English letters, like Mariam.";
+    if (n.length > 14 || !LATIN.test(n)) return "Up to 14 English letters, please.";
+    if (!d.age) return "Please tap an age.";
+    if (!d.gender) return "Please tap boy or girl.";
+    if (!d.slug) return "Please pick a story.";
+    if (!meta?.available) return "This story is coming soon. Please pick another one.";
+    if (!meta.sets[d.gender]) return `The ${d.gender} pictures for this story are coming soon. Please pick another story.`;
+    return null;
   };
-  const next = () => { const e = valid(step); setErr(e); if (!e) setI((x) => Math.min(steps.length - 1, x + 1)); };
-  const back = () => { setErr(null); setI((x) => Math.max(0, x - 1)); };
+  const check2 = (): string | null => {
+    const sk = d.sidekick.trim(), pw = d.power_word.trim(), sl = d.silly.trim(), ot = d.other.trim(), pl = d.place.trim();
+    if (sk && (sk.length > 12 || !LATIN.test(sk))) return "Robot's name: up to 12 English letters.";
+    if (pw && (pw.length < 2 || pw.length > 24 || ARABIC.test(pw))) return "Power Word: 2 to 24 English characters.";
+    if (sl && (sl.length > 15 || !(WORDS.test(sl) || B.silly.some((c) => c.value === sl)))) return "Silly word: up to 15 letters and spaces.";
+    if (ot && (ot.length > 14 || !LATIN.test(ot))) return "Name: up to 14 English letters.";
+    if (pl && (pl.length < 2 || pl.length > 20 || ARABIC.test(pl))) return "Place: 2 to 20 English letters, like Maadi.";
+    const bad = findUnsafe([sk, pw, sl, ot, pl].join(" "));
+    if (bad) return "Please choose another word.";
+    return null;
+  };
 
-  const values = () => ({
-    slug: d.slug, name: cap(d.name), gender: d.gender || "boy", age: d.age || 6, place: d.place.trim(),
-    other: uses("other") ? cap(d.other.trim() || (bullied ? "Sam" : "")) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || undefined) : undefined,
-    sidekick: uses("sidekick") ? cap(d.sidekick.trim() || "Bolt") : undefined,
-    power_word: uses("power_word") ? bang(d.power_word) : undefined,
-    need: uses("need") ? d.need : undefined,
-    snack: d.snack || undefined,
-    silly: d.silly || undefined,
-    strength: uses("strength") ? (d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength) : undefined,
-    dedication: d.dedication.trim() || undefined, parent_name: d.email.split("@")[0], contact: d.email.trim(),
-  });
+  const next = () => {
+    const e = check1(); setErr(e);
+    if (e) return;
+    setScreen(2); window.scrollTo({ top: 0 });
+    track("form_step_2", { meta: { tale: d.slug } });
+  };
+  const surprise = () => {
+    setOwn({ sidekick: false, power_word: false, silly: false });
+    setD((p) => ({ ...p, sidekick: pick(SIDEKICKS).value, power_word: pick(B.power_word).value, silly: pick(B.silly).value, other: p.other || pick(NAMES), need: pick(B.need).value }));
+    setErr(null);
+  };
 
   const submit = async () => {
-    for (const s of steps) { const e = valid(s); if (e) { setI(steps.indexOf(s)); return setErr(e); } }
+    const e = check1() ?? check2();
+    if (e) { setErr(e); if (check1()) setScreen(1); return; }
     setBusy(true); setErr(null);
+    const body = {
+      slug: d.slug, name: cap(d.name), gender: d.gender, age: d.age, half: false,
+      place: d.place.trim() || FORM_DEFAULTS.place,
+      other: uses("other") ? cap(d.other.trim() || FORM_DEFAULTS.other) : undefined,
+      other_relation: uses("other") ? (bullied ? "school" : "friend") : undefined,
+      sidekick: uses("sidekick") ? cap(d.sidekick.trim() || FORM_DEFAULTS.sidekick) : undefined,
+      power_word: uses("power_word") ? bang(d.power_word.trim() || FORM_DEFAULTS.power_word) : undefined,
+      need: uses("need") ? d.need || FORM_DEFAULTS.need : undefined,
+      silly: d.silly.trim() || undefined,
+      ref: source(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
+    };
     let r: Response;
     try {
-      r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...values(), ref: safeRef(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "" }) });
+      r = await fetch("/api/books", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     } catch {
       setBusy(false);
       return setErr("No connection. Your answers are saved: check the internet and tap again.");
@@ -148,194 +126,137 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
     if (!r.ok) {
       setBusy(false);
       if (r.status === 429) return setErr("Please try again in a little while.");
-      if (r.status === 422) { goTo(stepFor(j.field)); return setErr("Please choose another word."); }
-      if (r.status === 400 && j.issues?.[0]) { goTo(stepFor(j.issues[0].path)); return setErr(j.issues[0].message); }
-      if (r.status === 404) { goTo("struggle"); return setErr(j.message); }
-      return setErr("Something went wrong. Please try again.");
+      if (r.status === 422) return setErr("Please choose another word.");
+      const issue = j.issues?.[0];
+      if (issue && ["name", "age", "gender", "slug"].includes(issue.path)) setScreen(1);
+      return setErr(issue?.message || j.message || "Something went wrong. Please try again.");
     }
     try { localStorage.removeItem(KEY); } catch {}
-    router.push(`/story/${j.id}`);
+    router.push(`/story/${j.id}/read`); // straight to the first page
   };
-
-  const strengthLabel = d.strength === "other" ? d.strengthOther.trim().toLowerCase() : d.strength;
 
   return (
     <div className="mx-auto max-w-xl w-full flex flex-col min-h-[calc(100dvh-64px)]">
       <div className="flex items-center gap-3 px-4 pt-3 pb-1">
-        {i > 0 ? (
-          <button type="button" onClick={back} aria-label="Back" className="w-12 h-12 rounded-full grid place-items-center text-ink"><Icon name="chevron" className="rotate-90" size={26} strokeWidth={2.5} /></button>
+        {screen === 2 ? (
+          <button type="button" onClick={() => { setErr(null); setScreen(1); }} aria-label="Back" className="w-12 h-12 rounded-full grid place-items-center text-ink"><Icon name="chevron" className="rotate-90" size={26} strokeWidth={2.5} /></button>
         ) : (
-          <Link href="/tales" aria-label="Back" className="w-12 h-12 rounded-full grid place-items-center text-ink"><Icon name="chevron" className="rotate-90" size={26} strokeWidth={2.5} /></Link>
+          <Link href="/" aria-label="Back" className="w-12 h-12 rounded-full grid place-items-center text-ink"><Icon name="chevron" className="rotate-90" size={26} strokeWidth={2.5} /></Link>
         )}
         <div className="flex-1 flex flex-col gap-1.5">
-          <div className="flex justify-between eyebrow !text-ink-soft"><span>{step === "review" ? "Check and go" : `${i + 1} of ${total}`}</span><span className="!text-mint">Free story</span></div>
-          <div className="h-2 rounded-full bg-sky-soft overflow-hidden"><div className="h-full bg-sky rounded-full transition-all" style={{ width: `${Math.min(100, ((i + 1) / total) * 100)}%` }} /></div>
+          <div className="flex justify-between eyebrow !text-ink-soft"><span>Step {screen} of 2</span><span className="!text-mint">Free story</span></div>
+          <div className="h-2 rounded-full bg-sky-soft overflow-hidden"><div className="h-full bg-sky rounded-full transition-all" style={{ width: screen === 1 ? "50%" : "100%" }} /></div>
         </div>
       </div>
 
-      {/* live cover preview once the name is in */}
-      {meta && d.name.trim() && previewGender && step !== "review" && step !== "name" && (
-        <CoverPreview slug={d.slug} gender={previewGender} title={meta.title.replace(/\{\{name\}\}/g, name)} name={name} />
-      )}
-
-      <div className="flex-1 px-4 py-5 flex flex-col gap-4">
+      <div className="flex-1 px-4 py-4 flex flex-col gap-5">
         <input id="website" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
-        {step === "struggle" && (<>
-          <Q>What would you like help with right now?</Q>
-          <div className="flex flex-col gap-2.5">
-            {TALES.map((t) => { const m = metas.find((x) => x.slug === t.slug); const soon = !m?.available; return (
-              <Card key={t.slug} on={d.slug === t.slug} disabled={soon} onClick={() => u("slug", t.slug)} sub={soon ? "Coming soon" : undefined}>{STRUGGLE_LABEL[t.slug] ?? t.title}</Card>
-            ); })}
+        {screen === 1 && (<>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-[26px] leading-8 font-bold">Who&apos;s the hero of this story?</span>
+            <input className="field text-xl" placeholder="e.g. Adam, Jana, Yassin" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
+            <span className="text-[14px] leading-5 text-ink-soft">This name becomes the hero of the story. You can use your child&apos;s name, a nickname, or any name you like.</span>
+          </label>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-bold text-[17px]">How old?</span>
+            <div className="grid grid-cols-5 gap-2">{AGES.map((a) => (
+              <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`h-14 rounded-2xl border-[3px] display font-bold text-2xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>
+            ))}</div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-bold text-[17px]">Boy or girl?</span>
+            <div className="grid grid-cols-2 gap-2">{(["boy", "girl"] as const).map((g) => (
+              <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`h-14 rounded-2xl border-[3px] font-bold text-xl ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>{g === "boy" ? "👦 Boy" : "👧 Girl"}</button>
+            ))}</div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-bold text-[17px]">Pick a story</span>
+            <div className="grid grid-cols-2 gap-2.5">
+              {TALES.map((t) => {
+                const m = metas.find((x) => x.slug === t.slug); const on = d.slug === t.slug; const soon = !m?.available;
+                return (
+                  <button key={t.slug} type="button" aria-pressed={on} disabled={soon} onClick={() => u("slug", t.slug)} className={`relative text-left rounded-2xl border-[3px] overflow-hidden bg-white ${on ? "border-flame" : "border-line"} ${soon ? "opacity-50" : ""}`}>
+                    {t.cover && /* eslint-disable-next-line @next/next/no-img-element */ <img src={t.cover} alt="" loading="lazy" className="w-full aspect-[5/4] object-cover object-top" />}
+                    <span className="block px-2.5 pt-1.5 font-bold text-[16px] leading-5">{t.title}</span>
+                    <span className="block px-2.5 pb-2 text-[12px] leading-4 text-ink-soft">{t.helps}</span>
+                    {on && <span className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-flame text-white grid place-items-center"><Icon name="check" size={18} strokeWidth={3} /></span>}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </>)}
 
-        {step === "name" && (<>
-          <Q>What's your child's name?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Adam, Jana, Yassin" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} />
-          {d.name.trim() && meta && previewGender && <CoverPreview slug={d.slug} gender={previewGender} title={meta.title.replace(/\{\{name\}\}/g, name)} name={name} inline />}
-        </>)}
-
-        {step === "gender" && (<>
-          <Q help="This picks the pictures and he/she in the story.">Is your child a boy or a girl?</Q>
-          <div className="grid grid-cols-2 gap-3">
-            {(["boy", "girl"] as const).map((g) => (
-              <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`h-24 rounded-2xl border-[3px] font-bold text-xl flex flex-col items-center justify-center gap-1 ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"} ${meta && !meta.sets[g] ? "opacity-60" : ""}`}>
-                {g === "boy" ? "Boy" : "Girl"}
-                {meta && !meta.sets[g] && <span className="pill bg-sun-soft text-ink !text-[10px]">Coming soon</span>}
-              </button>
-            ))}
+        {screen === 2 && (<>
+          <div className="flex flex-col gap-2">
+            <h1 className="m-0 text-[26px] leading-8 font-bold">Now the fun part! 🎉</h1>
+            <p className="m-0 text-[15px] text-ink-soft">Let {name} choose. Everything here is optional.</p>
+            <button type="button" onClick={surprise} className="btn-secondary self-start !h-12 text-lg">🎲 Surprise me</button>
           </div>
-        </>)}
 
-        {step === "age" && (<>
-          <Q>How old is your child?</Q>
-          <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>
-        </>)}
+          <Choice label="Robot friend's name" cards={SIDEKICKS} value={d.sidekick} open={own.sidekick} max={12} placeholder="e.g. Teddy, Lucky"
+            onPick={(v) => { u("sidekick", v); setOwn((o) => ({ ...o, sidekick: false })); }} onOwn={() => { setOwn((o) => ({ ...o, sidekick: true })); u("sidekick", ""); }} onType={(v) => u("sidekick", v)} />
+          <Choice label="Power Word (said out loud at the brave moment)" cards={B.power_word} value={d.power_word} open={own.power_word} max={24} placeholder="e.g. I can do it!"
+            onPick={(v) => { u("power_word", v); setOwn((o) => ({ ...o, power_word: false })); }} onOwn={() => { setOwn((o) => ({ ...o, power_word: true })); u("power_word", ""); }} onType={(v) => u("power_word", v)} />
+          <Choice label="Silly word" cards={B.silly} value={d.silly} open={own.silly} max={15} placeholder="Letters and spaces"
+            onPick={(v) => { u("silly", v); setOwn((o) => ({ ...o, silly: false })); }} onOwn={() => { setOwn((o) => ({ ...o, silly: true })); u("silly", ""); }} onType={(v) => u("silly", v.replace(/[^A-Za-z ]/g, ""))} />
 
-        {step === "place" && (<>
-          <Q help="Your area or city. It will appear in the story.">Where do you live?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Maadi, Zamalek, Smouha, Sheikh Zayed" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} />
-        </>)}
+          {uses("other") && (
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold text-[17px]">{bullied ? "A name for the child who is unkind (optional)" : "A brother, sister or friend in the story (optional)"}</span>
+              <input className="field" placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} autoComplete="off" />
+              <span className="text-[13px] text-ink-soft">{bullied ? "A made-up name is fine. " : ""}Leave it empty and we&apos;ll use Sam.</span>
+            </label>
+          )}
 
-        {step === "other" && (bullied ? (<>
-          <Q help="You can use a made-up name. It does not have to be the real child.">What name should we use for the child who is unkind?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} />
-          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use Sam.</p>
-        </>) : (<>
-          <Q>Who is often with your child at home?</Q>
-          <div className="flex gap-2">
-            {(["brother", "sister", "cousin"] as const).map((r) => <button key={r} type="button" aria-pressed={d.relation === r} onClick={() => u("relation", r)} className={`chip ${d.relation === r ? "chip-on" : ""}`}>{r[0].toUpperCase() + r.slice(1)}</button>)}
-          </div>
-          <input className="field text-xl" autoFocus placeholder={`e.g. ${his} ${d.relation || "brother"} Omar`} value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} />
-          <p className="m-0 text-[13px] text-ink-soft">Just the name, e.g. Omar, Lina, Yousef.</p>
-        </>))}
+          {uses("need") && (
+            <div className="flex flex-col gap-2">
+              <span className="font-bold text-[17px]">What helps when {d.gender === "girl" ? "she's" : d.gender === "boy" ? "he's" : "they're"} upset?</span>
+              <div className="grid grid-cols-2 gap-2">{B.need.map((c) => (
+                <button key={c.value} type="button" aria-pressed={d.need === c.value} onClick={() => u("need", c.value)} className={`min-h-12 rounded-2xl border-[3px] px-3 py-2 font-bold text-[15px] text-left ${d.need === c.value ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>{c.label}</button>
+              ))}</div>
+            </div>
+          )}
 
-        {step === "sidekick" && (<>
-          <Q help="In the story, a little robot friend will have this name.">What should the robot friend be called?</Q>
-          <div className="flex flex-wrap gap-2">{BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK).map((c) => <button key={c.value} type="button" aria-pressed={d.sidekick === c.value} onClick={() => u("sidekick", c.value)} className={`chip ${d.sidekick === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder={plain(BUILDER.sidekick.find((c) => c.value === OWN_SIDEKICK)?.label ?? "Or write your own")} value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} />
-          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we'll call the robot Bolt.</p>
-        </>)}
-
-        {step === "power_word" && (<>
-          <Q help="Your child will say this out loud in the story, at the brave moment.">What does your child say to feel strong or brave?</Q>
-          <div className="flex flex-wrap gap-2">{BUILDER.power_word.map((c) => <button key={c.value} type="button" aria-pressed={d.power_word === c.value} onClick={() => u("power_word", c.value)} className={`chip ${d.power_word === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder="Or write your own" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={24} />
-        </>)}
-
-        {step === "need" && (<>
-          <Q>When your child is sad or in a bad mood, what helps most?</Q>
-          <div className="flex flex-col gap-2.5">{BUILDER.need.map((c) => <Card key={c.value} on={d.need === c.value} onClick={() => u("need", c.value)}>{c.label}</Card>)}</div>
-        </>)}
-
-        {step === "snack" && (<>
-          <Q help="Optional. It turns up in a funny line in the story.">What's your child's favourite snack?</Q>
-          <div className="grid grid-cols-2 gap-2.5">{BUILDER.snack.map((c) => <Card key={c.value} on={d.snack === c.value} onClick={() => u("snack", c.value)}>{c.label}</Card>)}</div>
-        </>)}
-
-        {step === "silly" && (<>
-          <Q help="Optional. The robot shouts it in the story.">Pick a silly word!</Q>
-          <div className="grid grid-cols-2 gap-2.5">{BUILDER.silly.map((c) => <Card key={c.value} on={d.silly === c.value} onClick={() => u("silly", c.value)}>{c.label}</Card>)}</div>
-        </>)}
-
-        {step === "strength" && (<>
-          <Q help={`The story ends with "Best ___ in ${d.place.trim() || "Maadi"}".`}>What is your child great at?</Q>
-          <div className="grid grid-cols-2 gap-2.5">
-            {STRENGTHS.map(([label, saved]) => <Card key={saved} on={d.strength === saved} onClick={() => u("strength", saved)}>{label}</Card>)}
-            <Card on={d.strength === "other"} onClick={() => u("strength", "other")}>Something else</Card>
-          </div>
-          {d.strength === "other" && <input className="field text-xl" autoFocus placeholder="e.g. chess player" value={d.strengthOther} onChange={(e) => u("strengthOther", e.target.value)} maxLength={24} />}
-        </>)}
-
-        {step === "dedication" && (<>
-          <Q help="Optional. It goes on the first page.">Would you like to add a message for {name}?</Q>
-          <textarea className="field text-lg min-h-28" autoFocus placeholder={`e.g. For ${name}, who builds the tallest towers. We love you. Mama & Baba`} value={d.dedication} onChange={(e) => u("dedication", e.target.value)} maxLength={120} />
-          <span className="text-[12px] font-bold text-ink-soft text-right">{d.dedication.length} / 120</span>
-        </>)}
-
-        {step === "email" && (<>
-          <Q help="We send the story link there and keep it for you. Nothing else.">Where should we send the story?</Q>
-          <input className="field text-xl" type="email" inputMode="email" autoFocus placeholder="e.g. mariam@gmail.com" value={d.email} onChange={(e) => u("email", e.target.value)} maxLength={120} />
-        </>)}
-
-        {step === "review" && (<>
-          <Q help="Tap any part to change it.">Does this look right?</Q>
-          <p className="m-0 text-[19px] leading-8">
-            <B onClick={() => goTo("name")}>{name}</B>, <B onClick={() => goTo("age")}>{d.age}</B>, lives in <B onClick={() => goTo("place")}>{d.place.trim()}</B>.
-            {uses("other") && <> {bullied ? "The unkind child is called" : `${His} ${d.relation || "friend"} is`} <B onClick={() => goTo("other")}>{cap(d.other.trim() || (bullied ? "Sam" : ""))}</B>.</>}
-            {uses("sidekick") && <> {His} robot friend is called <B onClick={() => goTo("sidekick")}>{cap(d.sidekick.trim() || "Bolt")}</B>.</>}
-            {uses("power_word") && <> When {he} wants to feel strong {he} says <B onClick={() => goTo("power_word")}>"{bang(d.power_word)}"</B>.</>}
-            {uses("need") && d.need && <> When {he}'s upset, {he} says <B onClick={() => goTo("need")}>&ldquo;{d.need}&rdquo;</B></>}
-            {d.snack && <> Favourite snack: <B onClick={() => goTo("snack")}>{d.snack}</B>.</>}
-            {d.silly && <> Silly word: <B onClick={() => goTo("silly")}>{d.silly}</B>!</>}
-            {uses("strength") && strengthLabel && <> {He}'s great at being a <B onClick={() => goTo("strength")}>{strengthLabel}</B>.</>}
-          </p>
-          <p className="m-0 text-[15px] text-ink-soft">We'll send it to <B onClick={() => goTo("email")}>{d.email.trim()}</B>{d.dedication.trim() ? <> with your message: <B onClick={() => goTo("dedication")}>"{d.dedication.trim()}"</B></> : null}.</p>
+          <label className="flex flex-col gap-1.5">
+            <span className="font-bold text-[17px]">Where do you live? (optional)</span>
+            <input className="field" placeholder="e.g. Maadi, Smouha, Sheikh Zayed" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} />
+            <span className="text-[13px] text-ink-soft">It appears in the story. Leave it empty for Cairo.</span>
+          </label>
         </>)}
 
         {err && <p role="alert" className="m-0 text-sm font-bold text-danger">{err}</p>}
       </div>
 
       <div className="sticky bottom-0 bg-white border-t border-line px-4 py-3 flex flex-col gap-2">
-        {step === "review" ? (
-          <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Making the story…" : `Make ${name}'s story`}</button>
-        ) : step === "dedication" || step === "snack" || step === "silly" ? (
-          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { u(step, ""); setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
-        ) : (
-          <button type="button" onClick={next} className="btn-primary w-full">Next</button>
-        )}
-        <span className="text-center text-xs font-bold text-ink-soft">No photo, no phone number, no address.</span>
+        {screen === 1
+          ? <button type="button" onClick={next} className="btn-primary w-full !h-14 text-lg">Next →</button>
+          : <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-16 text-xl">{busy ? "Making the story…" : "Make my story! ✨"}</button>}
+        <span className="text-center text-xs font-bold text-ink-soft">Free · No photo, no phone number, no address.</span>
       </div>
     </div>
   );
 }
 
-function CoverPreview({ slug, gender, title, name, inline }: { slug: string; gender: "boy" | "girl"; title: string; name: string; inline?: boolean }) {
+/** Cards + "Other…" free text (SPEC §7.2 screen 2). */
+function Choice({ label, cards, value, open, max, placeholder, onPick, onOwn, onType }: { label: string; cards: Card[]; value: string; open: boolean; max: number; placeholder: string; onPick: (v: string) => void; onOwn: () => void; onType: (v: string) => void }) {
+  const custom = open || (!!value && !cards.some((c) => c.value === value));
   return (
-    <div className={`${inline ? "" : "mx-4 mt-2"} relative w-[150px] aspect-[5/7] rounded-xl overflow-hidden shadow-[0_3px_0_var(--line)] self-start`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={storyImage(slug, gender, "cover.jpg")} alt="" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-x-2 top-2 text-center text-white drop-shadow-[0_1px_3px_rgba(0,0,0,.7)]">
-        <span className="block text-[7px] font-extrabold tracking-[2px] uppercase text-[#ffd77a]">A GTales story</span>
-        <span className="block display font-bold text-[13px] leading-[14px] mt-0.5">{title}</span>
+    <div className="flex flex-col gap-2">
+      <span className="font-bold text-[17px]">{label}</span>
+      <div className="flex flex-wrap gap-2">
+        {cards.map((c) => <button key={c.value} type="button" aria-pressed={!custom && value === c.value} onClick={() => onPick(c.value)} className={`chip ${!custom && value === c.value ? "chip-on" : ""}`}>{c.label}</button>)}
+        <button type="button" aria-pressed={custom} onClick={onOwn} className={`chip ${custom ? "chip-on" : ""}`}>Other…</button>
       </div>
-      <span className="absolute left-2 bottom-1.5 text-[8px] font-extrabold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,.7)]">Made for {name}</span>
+      {custom && <input className="field" autoFocus placeholder={placeholder} value={value} onChange={(e) => onType(e.target.value)} maxLength={max} autoComplete="off" />}
     </div>
   );
-}
-function B({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className="font-extrabold text-sky underline decoration-2 underline-offset-4 min-h-8">{children}</button>;
 }
 function cap(s: string) {
   return s.trim().replace(/\s+/g, " ").split(" ").map((w) => w.split("-").map((p) => (p ? p[0].toUpperCase() + p.slice(1) : p)).join("-")).join(" ");
 }
 function bang(s: string) { const t = s.trim(); return /[.!?]$/.test(t) ? t : `${t}!`; }
-function stepFor(field: string | undefined): Step {
-  switch (field) {
-    case "slug": return "struggle"; case "name": return "name"; case "gender": return "gender"; case "age": return "age"; case "place": return "place";
-    case "other": case "other_relation": return "other"; case "sidekick": return "sidekick"; case "power_word": return "power_word"; case "need": return "need";
-    case "strength": return "strength"; case "dedication": return "dedication"; case "snack": return "snack"; case "silly": return "silly"; default: return "email";
-  }
-}
-const safeRef = source;

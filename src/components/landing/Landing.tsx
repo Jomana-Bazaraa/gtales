@@ -4,31 +4,51 @@ import { COPY, TALES, egp } from "@/lib/gtales";
 import { currentBreakdown } from "@/lib/pricing";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
+import { LandingView, StartButton } from "./StartButton";
 
 /* ============ 1. Hero ============ */
+const START_STEPS = ["Pick a story", "Add their name", "Play it!"];
+
+/** Mobile first: one huge free-story button above the fold, the 3 steps, two real pages (SPEC §5.1, 24 Oct). */
 export function Hero() {
   return (
     <section className="bg-surface-tint">
-      <div className="mx-auto max-w-6xl px-4 py-8 md:py-16 grid md:grid-cols-[1.05fr_1fr] gap-8 md:gap-10 items-center">
-        <div className="flex flex-col gap-5 md:gap-6">
-          <span className="eyebrow">{COPY.slogan}</span>
-          <h1 className="text-[34px] leading-[38px] md:text-[52px] md:leading-[56px] font-bold text-balance">
-            A personalised storybook where your child is the hero.
+      <LandingView />
+      <div className="mx-auto max-w-6xl px-4 pt-5 pb-8 md:py-16 grid md:grid-cols-[1.05fr_1fr] gap-6 md:gap-10 items-center">
+        <div className="min-w-0 flex flex-col gap-4 md:gap-6">
+          <h1 className="m-0 text-[30px] leading-[34px] md:text-[52px] md:leading-[56px] font-bold text-balance">
+            A storybook where your child is the hero.
           </h1>
-          <p className="text-[17px] leading-[26px] md:text-xl md:leading-8 text-ink-soft max-w-xl">
-            The only story where they see their own name, and their own face, on every page. Each tale unlocks a superpower.
+          <p className="m-0 text-[16px] leading-6 md:text-xl md:leading-8 text-ink-soft max-w-xl">
+            Free, ready in 2 minutes. Read it together on your phone tonight.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/order" className="btn-primary md:!h-14 md:!px-7 md:text-lg">{COPY.ctaPrimary}</Link>
-            <Link href="/tales" className="btn-secondary">{COPY.ctaSecondary}</Link>
+          <StartButton where="hero" className="btn-primary w-full md:w-auto md:self-start !h-16 !text-[20px] !px-6 text-center">
+            Make your child&apos;s free story · 2 min
+          </StartButton>
+          <ol className="m-0 p-0 list-none flex flex-wrap items-center justify-between md:justify-start gap-x-1 gap-y-1 md:gap-3 text-[12.5px] md:text-[15px] font-bold">
+            {START_STEPS.map((t, k) => (
+              <li key={t} className="flex items-center gap-1">
+                <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-sky text-white grid place-items-center text-[11px] md:text-[12px] shrink-0">{k + 1}</span>
+                <span className="whitespace-nowrap">{t}</span>
+                {k < START_STEPS.length - 1 && <span aria-hidden className="text-ink-soft ms-0.5">→</span>}
+              </li>
+            ))}
+          </ol>
+          {/* two real pages from a GTales book, right under the button (phones) */}
+          <div className="grid grid-cols-2 gap-2.5 md:hidden">
+            {[{ src: "/meet/page-7.jpg", alt: "A real story page: Adam hides behind the water tank and meets a friendly dog" }, { src: "/meet/page-12.jpg", alt: "A real Your turn page: Adam does the brave steps on the stairs" }].map((p) => (
+              <Image key={p.src} src={p.src} alt={p.alt} width={693} height={980} sizes="45vw" priority className="w-full h-auto rounded-xl shadow-[0_4px_0_var(--line)] bg-white" />
+            ))}
+            <p className="col-span-2 m-0 text-center text-[12px] font-bold text-ink-soft">Real pages from Adam&apos;s free story</p>
           </div>
-          <p className="text-[13px] md:text-sm font-bold text-ink-soft flex flex-wrap gap-x-2">
+          <Link href="/order" className="text-[15px] font-extrabold text-sky">Or order the printed books (3 books with your child&apos;s face) →</Link>
+          <p className="m-0 text-[13px] md:text-sm font-bold text-ink-soft flex flex-wrap gap-x-2">
             {COPY.trustLine.map((t, i) => (
               <span key={t}>{i > 0 && <span className="mr-2">·</span>}{t}</span>
             ))}
           </p>
         </div>
-        <FannedBooks />
+        <div className="hidden md:block"><FannedBooks /></div>
       </div>
     </section>
   );
@@ -234,7 +254,7 @@ export async function Pricing() {
               <Row ok={false}>A ready-made tale, not written for them</Row>
               <Row ok={false}>Digital only, nothing printed</Row>
             </div>
-            <Link href="/tales" className="btn-ghost self-start mt-auto">{COPY.ctaSecondary}</Link>
+            <StartButton where="pricing" className="btn-ghost self-start mt-auto">{COPY.ctaSecondary}</StartButton>
           </div>
         </div>
 
@@ -284,7 +304,7 @@ export function FinalCta() {
         <h2 className="text-[30px] leading-9 md:text-[40px] md:leading-[44px] font-bold">Ready to make your child the hero?</h2>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Link href="/order" className="btn-primary md:!h-14 md:!px-7 md:text-lg">{COPY.ctaPrimary}</Link>
-          <Link href="/tales" className="btn-ghost !border-white/40">{COPY.ctaSecondary}</Link>
+          <StartButton where="final" className="btn-ghost !border-white/40">{COPY.ctaSecondary}</StartButton>
         </div>
       </div>
     </section>

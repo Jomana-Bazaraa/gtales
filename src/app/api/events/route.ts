@@ -8,7 +8,7 @@ const STORY_EVENTS = new Set(["story_opened", "story_finished", "story_shared", 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   if (!body || typeof body.event !== "string") return NextResponse.json({ ok: false }, { status: 400 });
-  const allowed = new Set(["review_started", "story_started", "story_shared", "order_started", "page_view", "cta_click", "story_opened", "page_viewed", "challenge_completed", "story_finished", "audio_played", "pdf_downloaded", "share_clicked", "series_cta_clicked", "free_form_step", "order_form_step"]);
+  const allowed = new Set(["landing_view", "start_click", "form_step_1", "form_step_2", "review_started", "story_started", "story_shared", "order_started", "page_view", "cta_click", "story_opened", "page_viewed", "challenge_completed", "story_finished", "audio_played", "pdf_downloaded", "share_clicked", "series_cta_clicked", "free_form_step", "order_form_step"]);
   const ref = typeof body.meta?.ref === "string" ? String(body.meta.ref).replace(/[^a-z0-9_-]/gi, "").slice(0, 60) : undefined;
   if (!allowed.has(body.event)) return NextResponse.json({ ok: false }, { status: 400 });
   const story_id = typeof body.story_id === "string" ? body.story_id.slice(0, 40) : undefined;

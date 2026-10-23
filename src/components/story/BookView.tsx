@@ -9,6 +9,7 @@ import { track } from "@/lib/track";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import { EmailMe } from "./EmailMe";
 import type { StoryJson } from "@/stories/schema";
 
 const PAGE_W_PX = (210 / 25.4) * 96; // A4 width in CSS px
@@ -168,7 +169,9 @@ export function BookView({ html, story, backHref, pdfHref, bookId, tale }: { htm
         <p className="m-0 text-[20px] leading-7 font-bold text-balance">The end! Did your child enjoy it?</p>
         <p className="m-0 text-ink-soft text-[15px]">Tell other parents how it went. Photos and a short video are welcome.</p>
         <Link href={`/reviews/new?tale=${encodeURIComponent(tale)}`} onClick={() => beacon("cta_click", bookId)} className="btn-primary self-center">★ Add your review</Link>
-        <Link href={backHref} className="text-[15px] font-extrabold text-sky">Back to the story page</Link>
+        <div className="text-left mt-2"><EmailMe bookId={bookId} /></div>
+        <Link href={`/order?story=${bookId}`} onClick={() => beacon("series_cta_clicked", bookId)} className="btn-secondary self-center">Make it a real printed book →</Link>
+        <Link href={backHref} className="text-[15px] font-extrabold text-sky">Story page: PDF, parent guide, share</Link>
       </div>
     </div>
   );
