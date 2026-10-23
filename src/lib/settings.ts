@@ -8,14 +8,14 @@ import { isMockDb, supabase } from "./db";
 
 export interface Settings {
   list_price_egp: number; delivery_egp: number; default_promo: string; promo_percent: number; rate_limit_per_hour: number;
-  promo_bar: string; reviews_visible: boolean; production_days: number; delivery_days: number; whatsapp_number: string;
+  promo_bar: string; production_days: number; delivery_days: number; whatsapp_number: string;
 }
 const num = (v: string | undefined, d: number) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : d; };
 export const DEFAULTS: Settings = {
   list_price_egp: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 749), delivery_egp: num(process.env.NEXT_PUBLIC_DELIVERY_EGP, 89),
   default_promo: process.env.NEXT_PUBLIC_PROMO_CODE || "LAUNCH40", promo_percent: num(process.env.NEXT_PUBLIC_PROMO_PERCENT, 40),
   rate_limit_per_hour: num(process.env.RATE_LIMIT_PER_HOUR, 10),
-  promo_bar: "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery", reviews_visible: process.env.NEXT_PUBLIC_REVIEWS_VISIBLE === "true",
+  promo_bar: "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery",
   production_days: 5, delivery_days: 5, whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP || "",
 };
 const FILE = path.join(process.cwd(), ".data", "settings.json");

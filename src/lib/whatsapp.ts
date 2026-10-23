@@ -21,7 +21,7 @@ export function statusMessage(o: OrderRecord, base: string): string {
     case "approved": return `Thank you ${p}! ${n}'s books are approved and go to print now. Delivery in about 5 days. ${track}`;
     case "printing": return `Hi ${p}, ${n}'s three books are printing. The courier will call you before delivery. ${o.total ? `${o.total} EGP cash or card at the door.` : "Nothing to pay."} ${track}`;
     case "shipped": return `Hi ${p}, ${n}'s books are on their way to ${o.parent.city}. The courier will call ${o.parent.whatsapp}. ${o.total ? `${o.total} EGP on delivery.` : "Nothing to pay."}`;
-    case "delivered_paid": return `Hi ${p}, we hope ${n} loves the books! ${n}'s photos are now deleted from our system. If you have a minute, tell us how it went: did the story help? Reply here. ${COPY.slogan}`;
+    case "delivered_paid": return `Hi ${p}, we hope ${n} loves the books! ${n}'s photos are now deleted from our system. If you have a minute, tell us how it went: did the story help? Reply here, or add a review (photos welcome): ${base}/reviews/new ${COPY.slogan}`;
     case "cancelled": return `Hi ${p}, ${n}'s order ${o.id} has been cancelled and the photos deleted. If this is a mistake, reply here.`;
   }
 }

@@ -4,6 +4,7 @@ import { isValidAdminCookie } from "@/lib/admin-auth";
 import { Logo } from "@/components/SiteChrome";
 import { isMockDb } from "@/lib/db";
 import { isMockEmail } from "@/lib/email";
+import { countPending } from "@/lib/reviews";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const store = await cookies();
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     // login page renders without the chrome
     return <div className="flex-1" dir="ltr">{children}</div>;
   }
+  const pending = await countPending().catch(() => 0);
   return (
     <div className="flex-1 flex flex-col" dir="ltr">
       <header className="border-b border-line bg-white">
@@ -21,6 +23,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           <nav className="flex gap-4 text-sm font-semibold ms-auto">
             <Link href="/admin" className="hover:text-coral">Free stories</Link>
             <Link href="/admin/series" className="hover:text-coral">Series orders</Link>
+            <Link href="/admin/reviews" className="hover:text-coral">Reviews{pending > 0 && <span className="ms-1 rounded-full bg-flame text-white text-[11px] px-1.5">{pending}</span>}</Link>
             <Link href="/admin/dashboard" className="hover:text-coral">Dashboard</Link>
             <Link href="/admin/settings" className="hover:text-coral">Settings</Link>
             <form action="/api/admin/logout" method="post">

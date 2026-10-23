@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   await saveSettings({
     list_price_egp: n("list_price_egp"), delivery_egp: n("delivery_egp"), default_promo,
     promo_percent, production_days: n("production_days"), delivery_days: n("delivery_days"), rate_limit_per_hour: n("rate_limit_per_hour") || 10,
-    whatsapp_number: String(f.get("whatsapp_number") || "").replace(/\D/g, ""), promo_bar: String(f.get("promo_bar") || "").trim(), reviews_visible: f.get("reviews_visible") === "on",
+    whatsapp_number: String(f.get("whatsapp_number") || "").replace(/\D/g, ""), promo_bar: String(f.get("promo_bar") || "").trim(),
   });
   await syncDefaultPromo(default_promo, promo_percent); // the advertised code checks out at the advertised %
   return NextResponse.redirect(new URL("/admin/settings?saved=1", req.url), 303);

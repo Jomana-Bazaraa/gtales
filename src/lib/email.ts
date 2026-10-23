@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { KEEPERS } from "./keepers";
 import type { BookRecord, OrderRecord, StoryRecord } from "./types";
+import type { Review } from "./reviews";
 
 export const isMockEmail = !process.env.RESEND_API_KEY;
 const FROM = process.env.EMAIL_FROM || "GTales <stories@gtales.kids>";
@@ -79,7 +80,8 @@ export async function sendBookEmail(book: BookRecord, baseUrl: string) {
   const body = `<h2 style="margin:0 0 8px">${esc(book.child_name)}'s story is ready</h2>
      <p>${esc(book.title)}. Read it together on the phone, or download the PDF.</p>
      ${btn(url, "Open the story")}
-     <p style="font-size:13px;color:#6b5f58;margin-top:16px">Keep this email: the link is your way back to the story any time.</p>`;
+     <p style="font-size:13px;color:#6b5f58;margin-top:16px">Keep this email: the link is your way back to the story any time.</p>
+     <p style="margin-top:16px">Did your child enjoy it? <a href="${baseUrl}/reviews/new?tale=${encodeURIComponent(book.slug)}" style="color:#e8673f;font-weight:700">Tell other families</a>.</p>`;
   await send(book.contact, `${book.child_name}'s story is ready`, shell("en", body));
 }
 
@@ -96,6 +98,19 @@ export async function sendOrderNotice(o: OrderRecord, baseUrl: string) {
      <table style="font-size:14px;border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#6b5f58">${k}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("")}</table>
      ${btn(`${baseUrl}/admin/series/${o.id}`, "Open in admin")}`;
   await send(to, `New order ${o.id} · ${o.child.name} · ${o.total ? `${o.total} EGP` : `Free (${o.promo_code})`}`, shell("en", body));
+}
+
+/** Admin alert: a new review is waiting for approval (Admin → Reviews). */
+export async function sendReviewNotice(r: Review, baseUrl: string) {
+  const to = process.env.ADMIN_NOTIFY_EMAIL;
+  if (!to) return;
+  const media = [r.media.filter((m) => m.type === "image").length && `${r.media.filter((m) => m.type === "image").length} photo(s)`, r.media.some((m) => m.type === "video") && "1 video"].filter(Boolean).join(", ") || "no photos";
+  const body = `<h2 style="margin:0 0 8px">New review to check: ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</h2>
+     <p><b>${esc(r.first_name)}</b>${r.city ? `, ${esc(r.city)}` : ""}${r.child_age ? ` · child ${r.child_age}` : ""} · ${media}</p>
+     <p style="white-space:pre-wrap;background:#fff8ef;border-radius:12px;padding:12px">${esc(r.text.slice(0, 1200))}${r.text.length > 1200 ? "…" : ""}</p>
+     ${btn(`${baseUrl}/admin/reviews?status=pending`, "Approve or hide")}
+     <p style="font-size:13px;color:#6b5f58">It stays hidden until you approve it.</p>`;
+  await send(to, `New review to check · ${r.rating}★ · ${r.first_name}`, shell("en", body));
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);

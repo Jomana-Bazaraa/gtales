@@ -4,7 +4,7 @@ Do once. After this, every push to `main` builds and deploys on Cloudflare. Why 
 
 ## 1. Supabase (database + file storage)
 1. supabase.com → New project → name `gtales`, region Frankfurt (closest to Egypt), strong DB password.
-2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`. (0003 and 0004 are safe to re-run.)
+2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0005_reviews.sql`. (0003–0005 are safe to re-run.)
 3. Project settings → API: copy **Project URL** and the **service_role** key (never the anon key, never in client code).
 
 ## 2. GitHub (PDFs)
@@ -43,6 +43,7 @@ Local check of the Worker build: `npm run cf:preview` (needs `.dev.vars` with th
 3. Wait for Cloudflare to say the domain is **Active** (minutes to a few hours).
 4. Workers & Pages → `gtales` → Settings → **Domains & Routes** → Add → **Custom domain** → `gtales.kids`; again for `www.gtales.kids`.
 5. Analytics & Logs → **Web Analytics** → Add a site → `gtales.kids` → automatic setup (free, no cookie banner).
+6. **Turnstile** (bot check on the review form, free): Cloudflare → **Turnstile** → Add widget → name `gtales-reviews`, hostname `gtales.kids` (add `localhost` for testing), mode **Managed** → Create. Put the **Site key** in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Settings → Build variables AND runtime Variables) and the **Secret key** in `TURNSTILE_SECRET_KEY` (runtime, type Secret). Redeploy. Without them the form works but has no bot check.
 
 ## 5. Email
 **Sending (Resend):** resend.com → Domains → Add `gtales.kids` (region eu-west-1) → copy its records into Cloudflare → DNS: the `TXT resend._domainkey`, the `MX send` and `TXT send` records. Verify. Create an API key → `RESEND_API_KEY`.

@@ -29,7 +29,7 @@ export default async function AdminSettings({ searchParams }: PageProps<"/admin/
       </div>
       <div className="card p-4 flex flex-col gap-3">
         <F name="promo_bar" label="Promo bar text (empty = hidden)" value={s.promo_bar} />
-        <label className="flex items-center gap-2 font-bold text-sm"><input type="checkbox" name="reviews_visible" defaultChecked={s.reviews_visible} /> Show the reviews section (only once three real reviews with permission exist)</label>
+        <p className="m-0 text-sm text-ink-soft">Reviews: the home page section appears by itself once a review is approved in <a className="text-sky font-bold" href="/admin/reviews">Admin → Reviews</a>; the average rating shows from 3 reviews.</p>
       </div>
       <button className="btn-primary self-start">Save settings</button>
     </form>

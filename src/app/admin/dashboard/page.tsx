@@ -37,6 +37,9 @@ function metrics(ev: StoredEvent[], books: BookRecord[], orders: OrderRecord[]) 
     orders: placed.length,
     revenue: placed.reduce((a, o) => a + o.total, 0),
     delivered: orders.filter((o) => o.status === "delivered_paid").reduce((a, o) => a + o.total, 0),
+    reviewsStarted: ev.filter((e) => e.event === "review_started").length,
+    reviewsSubmitted: ev.filter((e) => e.event === "review_submitted").length,
+    reviewsApproved: ev.filter((e) => e.event === "review_approved").length,
   };
 }
 
@@ -128,6 +131,9 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
         ["Orders (not cancelled)", ...cols.map((c) => c.m.orders)],
         ["Revenue, orders placed (cash on delivery)", ...cols.map((c) => egp(c.m.revenue))],
         ["Revenue, delivered and paid", ...cols.map((c) => egp(c.m.delivered))],
+        ["Review form opened", ...cols.map((c) => c.m.reviewsStarted)],
+        ["Reviews submitted", ...cols.map((c) => c.m.reviewsSubmitted)],
+        ["Reviews approved", ...cols.map((c) => c.m.reviewsApproved)],
       ]} />
 
       <div className="flex gap-2 items-center flex-wrap">

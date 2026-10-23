@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.10 · 22 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.11 · 23 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -66,7 +66,7 @@ Decision (10 Oct): **no money-back guarantee and no refuse-at-door clause.** The
 3. **Never cap or advertise free stories.** No "one free story", no "unlimited". Say "a free story". Backend rate limit [config, default 10 stories / hour / device] is silent; on hit, show "Please try again in a little while."
 4. **Positive framing.** Tales are named by the strength (§1.1); the problem is the subtitle.
 5. **Images match words.** Alt text describes what the adjacent copy says. Missing art → neutral block "IMAGE NEEDED: <description>", never a mismatched picture.
-6. **No fake content.** Reviews section hidden until 3 real reviews with written permission. No placeholder names, cities or quotes on the live site. Sample data in designs is labelled.
+6. **No fake content.** Only real reviews from real parents, shown after the team approves them, with the parent's consent (§5.6). No placeholder names, cities or quotes on the live site. Sample data in designs is labelled.
 7. **Shorter page.** Each section answers the parent's next question once. Nothing repeats.
 8. **Buttons:** short, encouraging, no child names, no essays underneath. Primary CTA everywhere: "Create your child's books". Secondary: "Try a free story".
 9. **Words:** "approval", not "proof". "Our team", not "AI". "Tale" for a story in the Series, "story" for the free one. "Superpower" for the strength.
@@ -100,11 +100,13 @@ AC: no colour outside the token list; no dark-brown shadow under purple; all but
 | `/story/[id]` | Ready screen | link holder |
 | `/story/[id]/read` | Reader | link holder |
 | `/story/[id]/pdf` | Story PDF: opens the file, or "being made" and waits for it (§8) | link holder |
+| `/reviews` | All approved reviews, average from 3, "Add your review" | public |
+| `/reviews/new` | Review form (`?tale=` from the end of a free story) | public |
 | `/order?story=id` | Series order form (15 steps) | – (account created at submit) |
 | `/order/[id]/confirmed` | Confirmation | link holder |
 | `/signin` | Sign in (WhatsApp code / email link) | – |
 | `/my-stories` | Profiles, downloads, order tracking | signed in |
-| `/admin/*` | Free stories, Series orders, Dashboard, Settings (Feedback, Promo codes later) | admin (single account) |
+| `/admin/*` | Free stories, Series orders, Reviews, Dashboard, Settings (Feedback, Promo code screen later) | admin (single account) |
 | `/privacy` | Privacy | – |
 
 Every public page: `<title>`, meta description, OG image, canonical, `lang="en"`. Nav (desktop): How it works · Meet the book · Superpowers · Pricing · FAQ · "Try a free story" ghost · "Create your child's books" CTA. Phone: logo + CTA; sections reached by scrolling.
@@ -128,12 +130,22 @@ Seven sections, same order desktop and phone. Phone target: ≤ 5,200 px total h
    - Free story (left, surface-tint, muted): "A taste, in two minutes", "Free", ✓ name/interests/home words · ✓ interactive pages · ✓ 1 story PDF + colouring book + parent guide · ✗ standard pictures, not your child's face · ✗ ready-made tale · ✗ digital only. Ghost button "Try a free story".
    - The Series (right, wider, flame border, tag "The Series · printed · most loved"): "Three printed books + a complete parent guide", 749 struck → 449 EGP, LAUNCH40 pill, "+ 89 EGP delivery · pay on delivery", eight ✓ rows (face from photo, loved ones' faces, written from scratch, family memory, interactive pages, three printed books delivered, one complete guide, approve every page on WhatsApp), CTA, line "You approve every page before we print".
    - Below: `<Promises />` full (desktop grid of 5 / phone swipe strip).
-6. **Reviews.** Hidden until 3 real reviews with permission [config toggle].
+6. **Reviews: "Families love GTales"** (§5.6). Appears by itself once one review is approved; featured first, then newest. Phone: swipeable cards; desktop: masonry. Average rating and count only from 3 approved reviews. "Read all reviews" → `/reviews`, "Add your review" → `/reviews/new`.
 7. **FAQ + final CTA.** Collapsed rows, first open. Questions: How do you make the pictures? · What if I don't like something? ("You approve every page before printing, and you pay only on delivery. Nothing is printed until you say it's perfect.") · Is the free story the same book? · When do I pay? · What happens to the photo? Final band "Ready to make your child the hero?" with both buttons. Footer: logo, Privacy, WhatsApp, Instagram.
 
 AC: Lighthouse mobile ≥ 90 performance, ≥ 95 accessibility; phone height ≤ 5,200 px; no horizontal scroll; H1 is the only `<h1>`; every image has alt text matching its caption.
 
 ---
+
+
+### 5.6 Reviews wall and form
+
+**Form `/reviews/new`** (linked at the end of every free story in the reader, on the ready screen, in the free-story email, on the order confirmation page and in the "delivered" WhatsApp message; there is no customer order email because the order form asks for WhatsApp only). Fields: star rating 1–5 (required), review text (required, ≤ 5000), parent first name (required), city and child's age (optional), up to 3 photos and 1 video (optional). Photos are resized in the browser to 1600 px on the long side (this also removes location data); video MP4/MOV, ≤ 30 s, ≤ 50 MB. File inputs without `capture`, so phones offer camera and gallery. Two required boxes:
+1. "I am the parent/guardian of any child shown, and I agree to GTales showing this review, photos and video on its website and social media."
+2. "I understand I can ask for it to be removed at any time."
+Cloudflare Turnstile and a limit of 10 reviews per device per day (browser id or IP). After sending: "Thank you! 💛 Your review will appear after we check it (usually within 24 hours)."
+
+**Display:** §5 item 6 (home) and `/reviews`. Only approved reviews; first name · city · child age; images lazy-load; videos play muted when on screen, tap for sound.
 
 ## 6. Screens: Catalogue and Superpower page
 
@@ -270,7 +282,8 @@ Order statuses (short list, one admin): `ordered` → `being_made` → `awaiting
 
 ## 11. Admin (`/admin`, single account)
 
-Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo codes after launch).
+Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard · Settings (Feedback and a Promo code screen after launch).
+- **Reviews (`/admin/reviews`):** filters pending / approved / hidden with counts; each review with stars, text, first name · city · child age, source, story, consent time and media previews (signed, 1 h). Buttons: Approve, Hide, Feature (pin to top; also approves), Unpin, Delete (asks once; deletes the media files too). "+ Add a review" (`/admin/reviews/new`): same form, source = admin, a box the admin ticks to confirm the parent agreed to both consent sentences, publish now or later. ADMIN_NOTIFY_EMAIL gets an email for every new pending review.
 - **Orders:** table (order, child, three tales, parent, photo thumbnail, status, total); detail view shows every field from §9 including loved-ones' photos; status buttons advance the pipeline and send the WhatsApp template; notes; courier confirmation upload.
 - **Free stories:** list with child, parent email, tale, source, PDF state and Generate/Regenerate PDF.
 - **Dashboard:** see §13.
@@ -286,6 +299,7 @@ Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo
 **12.2 Photos:** stored in private bucket, signed URLs only; hero and loved-ones photos deleted automatically when an order reaches `delivered_paid` or `cancelled` (cron, daily), and the deletion logged. Reorders therefore re-ask for photos. Privacy page states this in plain words.
 **12.3 Events never contain** child names, photos or phone numbers.
 **12.4 Free-story PDFs** kept 12 months then deleted; the Ready link says so.
+**12.6 Reviews:** table `reviews` (id, created_at, rating 1–5, text ≤ 5000, first_name, city, child_age, story_slug, media [{type, path}], consent_at, status pending | approved | hidden, featured, source form | admin, approved_at, device_id, ip_hash) and a PRIVATE storage bucket `reviews` (50 MB per file, JPG/PNG/WebP/MP4/MOV only). The browser uploads straight to the bucket with one-time signed URLs; public pages show approved media only, through signed URLs that expire after 2 hours; pending media is never public. Public pages show first name, city and child's age only, never a child's full name, email, phone, device or IP. Removal on request within 7 days (privacy page, "Reviews").
 **12.5 Consent:** checkbox copy on photo steps: "I have permission to use these photos. They are used only to create the pictures and deleted when the books are delivered."
 
 ---
@@ -305,10 +319,11 @@ Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo
 | Account | signin_code_sent, signin_success, reorder_started |
 | Fulfilment | status_changed(from, to), approval_sent, edit_requested, approved, shipped, delivered_paid, cancelled |
 | Feedback | feedback_submitted, followup_answered |
+| Reviews | review_started (form opened), review_submitted (rating, photos, video), review_approved (approve, feature or admin-added) |
 
 **Ref tags:** `?ref=wa-group-<name>`, `?ref=counselor-<school>`, `?ref=instagram`, `?ref=share`; first ref per visitor stored and attached to every story and order.
 
-**Dashboard (`/admin/dashboard`):** a Today / 7 days / 30 days table of visitors (unique sessions), stories created, finished, shared, orders, revenue placed and revenue delivered-and-paid; for a chosen range: created → ordered conversion, parents (users) total and new, the funnel visitors → form opened → created → finished → shared → order placed, breakdowns by story, gender and age (created, finished, orders, conversion, revenue), top sources and promo codes. CSV export of events and orders. Books and orders are the truth for counts; events add sessions, finishes and shares. Page views and countries: Cloudflare Web Analytics (free, no cookies).
+**Dashboard (`/admin/dashboard`):** a Today / 7 days / 30 days table of visitors (unique sessions), stories created, finished, shared, orders, revenue placed and revenue delivered-and-paid, review form opened / submitted / approved; for a chosen range: created → ordered conversion, parents (users) total and new, the funnel visitors → form opened → created → finished → shared → order placed, breakdowns by story, gender and age (created, finished, orders, conversion, revenue), top sources and promo codes. CSV export of events and orders. Books and orders are the truth for counts; events add sessions, finishes and shares. Page views and countries: Cloudflare Web Analytics (free, no cookies).
 
 ---
 
@@ -361,6 +376,7 @@ Tabs: Free stories · Series orders · Dashboard · Settings (Feedback and Promo
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.11 (23 Oct 2026): reviews wall (§5.6): public form with photos/video, Turnstile, moderation in Admin → Reviews, home section + `/reviews`, privacy section; replaces the reviews toggle.
 - 1.10 (22 Oct 2026): multiple promo codes in Supabase (§11), GTALESFAMILY, promo usage on the Dashboard.
 - 1.9 (19 Oct 2026): age variants + fun lines (§7.1a, `stories/variants`), Story Builder cards from `stories/builder-options.json`, new optional form steps snack and silly word, power word up to 24 characters.
 - 1.8 (17 Oct 2026): launch on Cloudflare Workers (LAUNCH-PLAN §1): story PDFs rendered by a GitHub Action job with a "being made" page; Admin Dashboard and Dashboard event types (§13), `parents` table, session id and source on every event; ready screen gets "Send to WhatsApp" and Open Graph cover previews; domain gtales.kids.
