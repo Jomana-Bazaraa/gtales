@@ -23,6 +23,20 @@ async function send(to: string, subject: string, html: string) {
   if (error) throw new Error(error.message);
 }
 
+/** Admin → Settings "Send test email": Resend's raw answer plus which settings this server can see (never their values). */
+export async function sendTestEmail(to: string) {
+  const env = {
+    RESEND_API_KEY: process.env.RESEND_API_KEY ? `set (${process.env.RESEND_API_KEY.slice(0, 3)}…, ${process.env.RESEND_API_KEY.length} chars)` : "MISSING",
+    EMAIL_FROM: process.env.EMAIL_FROM || `not set (using ${FROM})`,
+    ADMIN_NOTIFY_EMAIL: process.env.ADMIN_NOTIFY_EMAIL || "not set",
+  };
+  if (isMockEmail) return { sent: false, reason: "RESEND_API_KEY is not reaching this server, so emails are only logged (mock mode).", env };
+  const { Resend } = await import("resend");
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const result = await resend.emails.send({ from: FROM, to, subject: "GTales test email", html: shell("en", `<h2 style="margin:0 0 8px">It works 🎉</h2><p>This test was sent from Admin → Settings at ${new Date().toISOString()}.</p>`) });
+  return { sent: !result.error, from: FROM, to, resend: result, env };
+}
+
 function shell(lang: "en" | "ar", body: string) {
   return `<!doctype html><html dir="${lang === "ar" ? "rtl" : "ltr"}"><body style="margin:0;background:#fff8ef;font-family:${lang === "ar" ? "Tahoma,Arial" : "Nunito,Arial"},sans-serif;color:#2a2320">
   <div style="max-width:560px;margin:0 auto;padding:32px 20px">

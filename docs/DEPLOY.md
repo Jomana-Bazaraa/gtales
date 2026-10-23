@@ -32,7 +32,8 @@ PDFs are rendered by `.github/workflows/pdf.yml`, never on the web server. The w
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `INTERNAL_RENDER_TOKEN`, `RESEND_API_KEY`,
    `EMAIL_FROM` (`GTales <stories@gtales.kids>`), `ADMIN_NOTIFY_EMAIL`, `GITHUB_PDF_TOKEN`,
    and again `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_WHATSAPP`. Leave `POLISH_PROVIDER` unset (= off) and `RATE_LIMIT_PER_HOUR` unset (= 10).
-5. Deployments → Retry/Deploy. The site is live on `https://gtales.<your-subdomain>.workers.dev`.
+5. `wrangler.jsonc` has `keep_vars: true`, so these survive every deploy (before 24 Oct, a deploy deleted dashboard variables of type Text; Secrets were always kept). After adding or changing a variable, Cloudflare offers **Deploy**: click it (or push to `main`). Check in Admin → Settings → **Send test email**.
+6. Deployments → Retry/Deploy. The site is live on `https://gtales.<your-subdomain>.workers.dev`.
    Static files in `public/` (story images, fonts) are served as free static assets. The Worker itself is ~2 MiB gzip (free limit 3 MiB).
 
 Local check of the Worker build: `npm run cf:preview` (needs `.dev.vars` with the runtime variables; never commit it).
