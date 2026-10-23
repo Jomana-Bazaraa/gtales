@@ -45,7 +45,12 @@ export async function POST(req: Request) {
     child_age: b.child_age ?? null, story_slug: b.story_slug && taleBySlug(b.story_slug) ? b.story_slug : null, media: b.media,
     consent_at: now, status: "pending", featured: false, source: "form", approved_at: null, device_id: b.device_id, ip_hash: ipHash,
   };
-  await insertReview(rec);
+  try {
+    await insertReview(rec);
+  } catch (e) {
+    console.error("[reviews] insert failed (is migration 0005 run?)", e);
+    return NextResponse.json({ error: "unavailable", message: "Sorry, reviews can't be saved right now. Please try again later." }, { status: 503 });
+  }
   await logEvent({ event: "review_submitted", tale: rec.story_slug ?? undefined, child_age: rec.child_age ?? undefined, session_id: b.device_id, meta: { rating: rec.rating, photos: photos.length, video: videos.length } });
   const site = await baseUrl();
   after(() => sendReviewNotice(rec, site).catch((e) => console.error("[email] review", e)));

@@ -61,7 +61,8 @@ export function checkTicket(ticket: string | undefined, deviceId: string): boole
 /** Cloudflare Turnstile. Without TURNSTILE_SECRET_KEY (local dev) it passes with a warning. */
 export async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
   const key = process.env.TURNSTILE_SECRET_KEY;
-  if (!key) { console.warn("[reviews] TURNSTILE_SECRET_KEY not set: skipping the bot check"); return true; }
+  // Both keys or no check: a secret without the (build-time) site key would block every review with no widget to tick.
+  if (!key || !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) { console.warn("[reviews] Turnstile keys not both set: skipping the bot check"); return true; }
   if (!token) return false;
   const body = new URLSearchParams({ secret: key, response: token, remoteip: ip });
   const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body }).then((x) => x.json()).catch(() => null);
@@ -101,9 +102,17 @@ export async function checkUploaded(m: ReviewMedia): Promise<boolean> {
     const st = await fs.stat(mockMediaFile(m.path)).catch(() => null);
     return !!st && st.size > 0 && st.size <= max;
   }
-  const { data } = await supabase().storage.from(BUCKET).info(m.path);
-  const size = Number((data as { size?: number } | null)?.size ?? 0);
-  const type = String((data as { contentType?: string } | null)?.contentType ?? "");
+  const { data, error } = await supabase().storage.from(BUCKET).info(m.path);
+  let size = Number((data as { size?: number } | null)?.size ?? 0);
+  let type = String((data as { contentType?: string } | null)?.contentType ?? "");
+  if (error || !size) {
+    // Fallback for Storage versions without /object/info: read the folder listing
+    const dir = m.path.slice(0, m.path.lastIndexOf("/")), name = m.path.slice(m.path.lastIndexOf("/") + 1);
+    const { data: list } = await supabase().storage.from(BUCKET).list(dir, { search: name, limit: 5 });
+    const f = list?.find((x) => x.name === name) as { metadata?: { size?: number; mimetype?: string } } | undefined;
+    size = Number(f?.metadata?.size ?? 0);
+    type = String(f?.metadata?.mimetype ?? "");
+  }
   return size > 0 && size <= max && MEDIA_TYPES[type]?.type === m.type;
 }
 /** Short-lived URLs for media, in order (null for a file that is gone). */
@@ -156,6 +165,13 @@ export async function countReviewsSince(deviceId: string, ipHash: string, sinceI
   if (isMockDb) return (await mockAll()).filter((r) => r.created_at >= sinceIso && r.source === "form" && (r.device_id === deviceId || r.ip_hash === ipHash)).length;
   const { count } = await supabase().from("reviews").select("id", { count: "exact", head: true }).eq("source", "form").gte("created_at", sinceIso).or(`device_id.eq.${deviceId},ip_hash.eq.${ipHash}`);
   return count ?? 0;
+}
+/** False when migration 0005 hasn't been run (no `reviews` table). */
+export async function reviewsReady(): Promise<boolean> {
+  if (isMockDb) return true;
+  // not a head/count query: on a missing table supabase-js reports no error for those
+  const { error, status } = await supabase().from("reviews").select("id").limit(1);
+  return !error && status < 400;
 }
 export async function countPending(): Promise<number> {
   if (isMockDb) return (await mockAll()).filter((r) => r.status === "pending").length;

@@ -109,7 +109,13 @@ export async function redeemPromo(code: string, whatsapp: string, orderId: strin
     return { ok: true, promo: p! };
   }
   const { data, error } = await supabase().rpc("redeem_promo", { p_code: code, p_phone: phone, p_order_id: orderId });
-  if (error) throw error;
+  if (error) {
+    // Migration 0004 not run yet (no redeem_promo): never block an order; accept a valid code without counting uses.
+    console.error("[promo] redeem_promo failed, falling back to an uncounted check:", error.message);
+    const p = await getPromo(code);
+    const problem = promoProblem(p);
+    return problem ? { ok: false, reason: problem } : { ok: true, promo: p! };
+  }
   const r = (Array.isArray(data) ? data[0] : data) as { ok: boolean; reason: PromoReason | null; code: string | null; percent_off: number; covers_delivery: boolean } | undefined;
   if (!r?.ok) return { ok: false, reason: r?.reason ?? "invalid" };
   const p = await getPromo(r.code!);

@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { taleBySlug } from "@/lib/gtales";
-import { listReviews, signMedia, type ReviewStatus } from "@/lib/reviews";
+import { listReviews, reviewsReady, signMedia, type ReviewStatus } from "@/lib/reviews";
 import { Stars } from "@/components/reviews/ReviewsWall";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ export default async function AdminReviews({ searchParams }: PageProps<"/admin/r
   if (!isValidAdminCookie(store.get("estoria_admin")?.value)) redirect("/admin/login");
   const sp = await searchParams;
   const status: ReviewStatus = TABS.includes(sp.status as ReviewStatus) ? (sp.status as ReviewStatus) : "pending";
-  const all = await listReviews(undefined, 1000);
+  const [all, ready] = await Promise.all([listReviews(undefined, 1000), reviewsReady()]);
   const rows = all.filter((r) => r.status === status).sort((a, b) => Number(b.featured) - Number(a.featured) || (a.created_at < b.created_at ? 1 : -1));
   const urls = await signMedia(rows.flatMap((r) => r.media.map((m) => m.path)), 3600);
   let k = 0;
@@ -30,6 +30,7 @@ export default async function AdminReviews({ searchParams }: PageProps<"/admin/r
         <h1 className="text-2xl font-bold">Reviews</h1>
         <Link href="/admin/reviews/new" className="btn-primary !h-10 !px-4 text-sm">+ Add a review</Link>
       </div>
+      {!ready && <p className="m-0 rounded-xl bg-coral-soft text-coral-dark font-bold p-3 text-sm">Reviews are not set up in Supabase yet: run <code>supabase/migrations/0005_reviews.sql</code> in the SQL Editor. Until then the form can&apos;t save and the wall stays hidden.</p>}
       <div className="flex gap-2 flex-wrap">
         {TABS.map((t) => <a key={t} href={`/admin/reviews?status=${t}`} className={`chip !min-h-9 ${t === status ? "chip-on" : ""}`}>{t[0].toUpperCase() + t.slice(1)} ({all.filter((r) => r.status === t).length})</a>)}
       </div>
