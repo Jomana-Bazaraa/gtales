@@ -1,6 +1,6 @@
 # GTales — Website Specification
 
-Version 1.12 · 24 Oct 2026 · Owner: Ayman Bazaraa
+Version 1.13 · 24 Oct 2026 · Owner: Ayman Bazaraa
 Status: source of truth for Claude Design (screens) and Claude Code (build). When a screen and this file disagree, this file wins; update it first, then the screen.
 
 How to use this file
@@ -118,7 +118,7 @@ Every public page: `<title>`, meta description, OG image, canonical, `lang="en"`
 Seven sections, same order desktop and phone. Phone target: ≤ 5,200 px total height at 390 px wide (measured 5,079 px on 10 Oct with readable type; the design board reached 3,700 px only with smaller type).
 
 0. **Promo bar** (dismissible, [config] text): "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery".
-1. **Hero (phone first, 24 Oct).** H1 "A storybook where your child is the hero." Subline "Free, ready in 2 minutes. Read it together on your phone tonight." One huge button "Make your child's free story · 2 min" → `/create` (event start_click), the strip "1 Pick a story → 2 Add their name → 3 Play it!", two real pages from Adam's free story under the button (phones), then the link "Or order the printed books (3 books with your child's face) →". All above the fold on a 390 × 844 phone except the pages. Event landing_view.
+1. **Hero.** H1 "A personalised storybook where your child is the hero." Subline "The only story where they see their own name, and their own face, on every page. Each tale unlocks a superpower." Buttons: CTA + "Try a free story". Trust line: "Ages 2–10 · You approve every page · Pay on delivery". Visual: three fanned book images (cover front, two story pages behind). No photo-to-hero transition.
 2. **How it works.** H2 "Four steps to three printed books". Four steps as coloured icon tiles (flame-soft, sky-soft, sun-soft, mint-soft) with a small ink number badge, joined by a dashed line (desktop) or stacked (phone). The time pill sits directly under the tile so all four align. No large numerals.
    - 10 minutes · Tell us about your child · "Name, photo, their people, what's hard right now."
    - 5 days · We create their story · "Three tales with their face in every picture."
@@ -372,6 +372,7 @@ Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard ·
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
+- 1.13 (24 Oct 2026): landing hero restored to 1.11 (Jomana); landing_view tracking kept.
 - 1.12 (24 Oct 2026): free story in two screens (§7.2) with Surprise me and defaults, story opens on the first page, email optional on the story page; phone-first hero with one big free-story button (§5.1); funnel events landing_view → start_click → form_step_1/2 → story_created; ages 4–8 buttons.
 - 1.11 (23 Oct 2026): reviews wall (§5.6): public form with photos/video, Turnstile, moderation in Admin → Reviews, home section + `/reviews`, privacy section; replaces the reviews toggle.
 - 1.10 (22 Oct 2026): multiple promo codes in Supabase (§11), GTALESFAMILY, promo usage on the Dashboard.
