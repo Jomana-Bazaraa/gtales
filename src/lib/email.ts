@@ -106,6 +106,7 @@ export async function sendOrderNotice(o: OrderRecord, baseUrl: string) {
   const rows: [string, string][] = [
     ["Order", o.id], ["Child", `${o.child.name}, ${o.child.age}, ${o.child.gender}`], ["Books", o.books.map((b) => b.struggle).join(" · ")],
     ["Parent", `${o.parent.name} · ${o.parent.whatsapp}`], ["Address", `${o.parent.street}, ${o.parent.city}, ${o.parent.governorate}`],
+    ...(o.parent.gift ? [["Gift", `for ${o.parent.gift.recipient}${o.parent.gift.message ? ` · first page: "${o.parent.gift.message}"` : ""}${o.parent.gift.hide_price ? " · NO PRICE in the parcel" : ""}`] as [string, string]] : []),
     ["Total", `${o.total ? `${o.total} EGP (cash on delivery)` : "Free"}${o.promo_code ? ` · ${o.promo_code}` : ""}`], ["Source", o.ref || "direct"],
   ];
   const body = `<h2 style="margin:0 0 8px">New Series order ${esc(o.id)}</h2>

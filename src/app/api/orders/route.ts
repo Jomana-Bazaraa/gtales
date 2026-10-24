@@ -23,7 +23,8 @@ const schema = z.object({
   words: z.object({ parent: z.string().trim().max(120).optional(), child: z.string().trim().max(120).optional(), nicknames: z.string().trim().max(120).optional() }),
   dedication: z.string().trim().max(200).optional(),
   activities: z.array(z.string().trim().max(40)).max(12).default([]),
-  parent: z.object({ name: z.string().trim().min(2).max(60), whatsapp: z.string().trim().regex(/^\+?[0-9 ]{10,16}$/), governorate: z.string().trim().min(2).max(40), city: z.string().trim().min(2).max(60), street: z.string().trim().min(3).max(200), landmark: z.string().trim().max(120).optional(), best_time: z.string().trim().max(40).optional() }),
+  parent: z.object({ name: z.string().trim().min(2).max(60), whatsapp: z.string().trim().regex(/^\+?[0-9 ]{10,16}$/), governorate: z.string().trim().min(2).max(40), city: z.string().trim().min(2).max(60), street: z.string().trim().min(3).max(200), landmark: z.string().trim().max(120).optional(), best_time: z.string().trim().max(40).optional(),
+    gift: z.object({ recipient: z.string().trim().min(2).max(60), message: z.string().trim().max(200).optional(), hide_price: z.boolean().default(false) }).optional() }),
   promo_code: z.string().trim().max(30).optional(),
   free_story_id: z.string().max(40).optional(),
   ref: z.string().trim().max(60).optional(),
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
   const o = parsed.data;
   if (o.website) return NextResponse.json({ id: nanoid(10) });
   try {
-    assertSafe({ name: o.child.name, dedication: o.dedication, ...Object.fromEntries(o.books.flatMap((b, i) => [[`book_${i + 1}`, b.struggle], [`setting_${i + 1}`, b.setting], ...b.people.map((p, k) => [`person_${i + 1}_${k + 1}`, `${p.name} ${p.description ?? ""}`])])) });
+    assertSafe({ name: o.child.name, dedication: o.dedication, gift_recipient: o.parent.gift?.recipient, gift_message: o.parent.gift?.message, ...Object.fromEntries(o.books.flatMap((b, i) => [[`book_${i + 1}`, b.struggle], [`setting_${i + 1}`, b.setting], ...b.people.map((p, k) => [`person_${i + 1}_${k + 1}`, `${p.name} ${p.description ?? ""}`])])) });
   } catch (e) {
     if (e instanceof SafetyError) return NextResponse.json({ error: "unsafe", field: e.field, message: "Please choose another word." }, { status: 422 });
     throw e;

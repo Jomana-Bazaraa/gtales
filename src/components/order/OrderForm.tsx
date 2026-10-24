@@ -26,8 +26,9 @@ interface Draft {
   dedication: string; activities: string[];
   books: Book[];
   parentName: string; whatsapp: string; governorate: string; city: string; street: string; landmark: string; bestTime: string; promo: string;
+  isGift: boolean; giftTo: string; giftMessage: string; hidePrice: boolean;
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "" };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true };
 
 const STRENGTHS = ["Building", "Drawing", "Football", "Swimming", "Dancing", "Reading", "Singing", "Helping", "Running", "Making people laugh", "Puzzles"];
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
@@ -101,6 +102,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         if (!/^\+?[0-9 ]{10,16}$/.test(d.whatsapp.trim())) return "A WhatsApp number, like 010 1234 5678.";
         if (!d.governorate) return "Please choose a governorate.";
         if (d.city.trim().length < 2 || d.street.trim().length < 3) return "City and street, please.";
+        if (d.isGift && d.giftTo.trim().length < 2) return "Who is the gift for? Please write their name.";
         return null;
       }
       default: return null;
@@ -131,7 +133,8 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       world: { favourites: d.favourites, notes: d.worldText.trim() || undefined },
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
       dedication: d.dedication.trim() || undefined, activities: d.activities,
-      parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined },
+      parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined,
+        gift: d.isGift ? { recipient: d.giftTo.trim(), message: d.giftMessage.trim() || undefined, hide_price: d.hidePrice } : undefined },
       promo_code: d.promo.trim() || undefined, free_story_id: prefill.storyId, ref: safeRef(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
     };
     let r: Response;
@@ -142,7 +145,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       return setErr("No connection. Your answers are saved: check the internet and tap Confirm my order again.");
     }
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) { setBusy(false); if (j.field === "promo") goTo("delivery"); return setErr(j.message || j.issues?.[0]?.message || "Something went wrong. Please try again."); }
+    if (!r.ok) { setBusy(false); if (j.field === "promo" || String(j.field ?? "").startsWith("gift")) goTo("delivery"); return setErr(j.message || j.issues?.[0]?.message || "Something went wrong. Please try again."); }
     try { localStorage.removeItem(KEY); } catch {}
     router.push(`/order/${j.id}/confirmed`);
   };
@@ -235,6 +238,12 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
         {step === "delivery" && (<>
           <Q help="We send every page to this WhatsApp number for your approval, then the books to this address.">Where do we send the books?</Q>
+          <label className="flex gap-3 items-center rounded-2xl border-[3px] border-line bg-white px-4 py-3 font-bold text-[17px]"><input type="checkbox" className="w-6 h-6 shrink-0 accent-[var(--flame)]" checked={d.isGift} onChange={(e) => u("isGift", e.target.checked)} />🎁 This is a gift</label>
+          {d.isGift && (<div className="flex flex-col gap-4 rounded-2xl bg-surface-tint p-4">
+            <F label="Recipient's name" hint="The person who receives the parcel."><input className="field font-medium" placeholder="e.g. Nour Hassan" value={d.giftTo} onChange={(e) => u("giftTo", e.target.value)} maxLength={60} /></F>
+            <F label="Gift message (optional)" hint={`Printed on the first page. ${d.giftMessage.length} / 200`}><textarea className="field font-medium min-h-24" placeholder={`e.g. Happy birthday ${name}! Love, Auntie Mona`} value={d.giftMessage} onChange={(e) => u("giftMessage", e.target.value)} maxLength={200} /></F>
+            <label className="flex gap-3 items-center text-[15px] font-bold"><input type="checkbox" className="w-5 h-5 shrink-0" checked={d.hidePrice} onChange={(e) => u("hidePrice", e.target.checked)} />Don&apos;t include the price</label>
+          </div>)}
           <F label="Your name"><input className="field font-medium" value={d.parentName} onChange={(e) => u("parentName", e.target.value)} maxLength={60} /></F>
           <F label="WhatsApp number"><input className="field font-medium" inputMode="tel" placeholder="010 1234 5678" value={d.whatsapp} onChange={(e) => u("whatsapp", e.target.value)} maxLength={16} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Governorate</span><div className="flex flex-wrap gap-2">{GOVS.map((g) => <Chip key={g} on={d.governorate === g} onClick={() => u("governorate", g)}>{g}</Chip>)}</div></div>
@@ -253,6 +262,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <Row label="World and words" onEdit={() => goTo("world")}>{[...d.favourites, d.worldText.trim(), d.wordsParent.trim(), d.wordsChild.trim()].filter(Boolean).join(" · ") || "—"}</Row>
           <Row label="Play pages" onEdit={() => goTo("activities")}>{d.activities.join(", ") || "We'll choose for you"}</Row>
           <Row label="Message" onEdit={() => goTo("dedication")}>{d.dedication.trim() || "None"}</Row>
+          {d.isGift && <Row label="🎁 Gift" onEdit={() => goTo("delivery")}>For {d.giftTo.trim()}{d.giftMessage.trim() ? ` · "${d.giftMessage.trim()}"` : ""} · {d.hidePrice ? "no price in the parcel" : "price included"}</Row>}
           <Row label="Delivery" onEdit={() => goTo("delivery")}>{d.parentName}, {d.whatsapp} · {d.street}, {d.city}, {d.governorate}</Row>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
             <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(price.listPrice)}</b></div>
