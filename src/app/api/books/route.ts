@@ -4,6 +4,7 @@ import { z } from "zod";
 import { countRecentBooks, insertBook } from "@/lib/db";
 import { logEvent } from "@/lib/events";
 import { sendBookEmail } from "@/lib/email";
+import { EMAIL_RE, egyptMobile } from "@/lib/contact";
 import { rememberParent } from "@/lib/parents";
 import { baseUrl } from "@/lib/site";
 import { getSettings } from "@/lib/settings";
@@ -20,9 +21,8 @@ import type { BookRecord } from "@/lib/types";
 export const maxDuration = 60;
 
 const bodySchema = formSchema.extend({
-  // The 2-screen form (24 Oct) asks no email; it can be added on the story page (/api/books/[id]/email)
   parent_name: z.string().trim().max(60).optional().default(""),
-  contact: z.string().trim().max(120).optional().default(""),
+  contact: z.string().trim().max(120).optional().default(""), // required below: email, or an Egyptian mobile if the parent has no email (SPEC §7.2)
   ref: z.string().trim().max(60).optional(),
   session_id: z.string().max(60).optional(),
   website: z.string().max(0).optional(), // honeypot
@@ -45,10 +45,12 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "invalid", issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) }, { status: 400 });
   const f = parsed.data;
   if (f.website) return NextResponse.json({ id: nanoid(12) });
-  // Free story: email only (optional), never a phone number (form brief).
-  if (f.contact && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.contact)) {
-    return NextResponse.json({ error: "invalid", issues: [{ path: "email", message: "Please write an email address." }] }, { status: 400 });
+  // Free story: an email, or an Egyptian mobile number instead; one of the two is required.
+  const phone = f.contact.includes("@") ? null : egyptMobile(f.contact);
+  if (!EMAIL_RE.test(f.contact) && !phone) {
+    return NextResponse.json({ error: "invalid", issues: [{ path: "email", message: "Please write an email address, or tap \"No email?\" to use your WhatsApp number." }] }, { status: 400 });
   }
+  if (phone) f.contact = phone;
 
   try {
     assertSafe({ name: f.name, place: f.place, other: f.other, strength: f.strength, sidekick: f.sidekick, power_word: f.power_word, dedication: f.dedication, snack: f.snack, silly: f.silly });

@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { listBooks, listPdfJobs } from "@/lib/db";
 import { taleBySlug } from "@/lib/gtales";
+import { waLink } from "@/lib/whatsapp";
+import { baseUrl } from "@/lib/site";
 import type { PdfJob } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,7 @@ export default async function AdminStories() {
   const store = await cookies();
   if (!isValidAdminCookie(store.get("estoria_admin")?.value)) redirect("/admin/login");
   const [books, jobs] = await Promise.all([listBooks(300), listPdfJobs(1000)]);
+  const site = await baseUrl();
   const lastJob = new Map<string, PdfJob>();
   for (const j of jobs) if (!lastJob.has(j.book_id)) lastJob.set(j.book_id, j); // newest first
   return (
@@ -33,7 +36,7 @@ export default async function AdminStories() {
                 <tr key={b.id} className="border-t border-line align-top">
                   <td className="p-3 whitespace-nowrap text-ink-soft">{new Date(b.created_at).toLocaleString("en-GB", { timeZone: "Africa/Cairo" })}</td>
                   <td className="p-3 font-semibold">{b.child_name} <span className="text-ink-soft font-normal">({b.form.age}, {b.gender})</span></td>
-                  <td className="p-3">{b.parent_name}<br /><a className="text-indigo" href={`mailto:${b.contact}`}>{b.contact}</a></td>
+                  <td className="p-3">{b.parent_name}<br />{(b.contact ?? "").includes("@") ? <a className="text-indigo" href={`mailto:${b.contact}`}>{b.contact}</a> : b.contact && <a className="text-indigo" target="_blank" rel="noreferrer" href={waLink(b.contact, `Hi! Here is ${b.child_name}'s GTales story: ${site}/story/${b.id}`)}>WhatsApp {b.contact}</a>}</td>
                   <td className="p-3">{taleBySlug(b.slug)?.title ?? b.slug}{b.polished && <span className="ms-1 text-[10px] font-bold uppercase bg-coral-soft text-coral-dark rounded px-1">AI</span>}</td>
                   <td className="p-3 text-ink-soft">{b.ref || "direct"}</td>
                   <td className="p-3">

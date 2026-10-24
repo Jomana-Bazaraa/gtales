@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { sessionId, source, track } from "@/lib/track";
 import { findUnsafe } from "@/stories/safety";
 import { FORM_DEFAULTS } from "@/stories/defaults";
+import { EMAIL_RE, egyptMobile } from "@/lib/contact";
 import builderOptions from "../../../stories/builder-options.json";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,8 +32,9 @@ interface Draft {
   slug: string; name: string; gender: "boy" | "girl" | ""; age: number | 0; place: string;
   other: string; relation: "brother" | "sister" | "cousin" | ""; sidekick: string; power_word: string;
   need: string; dedication: string; email: string; silly: string;
+  phone: string; byPhone: boolean; // "No email? Use your WhatsApp number instead"
 }
-const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", dedication: "", email: "", silly: "" };
+const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", dedication: "", email: "", silly: "", phone: "", byPhone: false };
 
 const STRUGGLE_LABEL: Record<string, string> = { anger: "Anger and hitting", anxiety: "Fears and worries", bullied: "Being bullied", lying: "Lying", feelings: "Big feelings", friendship: "Friendship" };
 // Story Builder cards: the team edits stories/builder-options.json, not this file.
@@ -132,7 +134,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       case "need": return d.need ? null : "Please choose one.";
       case "silly": { const w = d.silly.trim(); if (!w || BUILDER.silly.some((c) => c.value === w)) return null; if (w.length > 15 || !/^[A-Za-z][A-Za-z ]*$/.test(w)) return "Up to 15 letters and spaces, please."; return findUnsafe(w) ? "Please choose another word." : null; }
       case "dedication": return d.dedication.length > 120 ? "Up to 120 characters, please." : null;
-      case "email": return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email.trim()) ? null : "Please write an email address.";
+      case "email": if (d.byPhone) return egyptMobile(d.phone) ? null : "Please write an Egyptian mobile number, like 010 1234 5678.";
+        return EMAIL_RE.test(d.email.trim()) ? null : "Please write your email address.";
       default: return null;
     }
   };
@@ -161,7 +164,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
     power_word: uses("power_word") ? bang(d.power_word) : undefined,
     need: uses("need") ? d.need : undefined,
     silly: d.silly || undefined,
-    dedication: d.dedication.trim() || undefined, parent_name: d.email.split("@")[0], contact: d.email.trim(),
+    dedication: d.dedication.trim() || undefined, parent_name: d.byPhone ? "" : d.email.trim().split("@")[0], contact: d.byPhone ? egyptMobile(d.phone) ?? d.phone.trim() : d.email.trim(),
   });
 
   const submit = async () => {
@@ -301,8 +304,15 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         </>)}
 
         {step === "email" && (<>
-          <Q help="We send the story link there and keep it for you. Nothing else.">Where should we send the story?</Q>
-          <input className="field text-xl" type="email" inputMode="email" autoFocus placeholder="e.g. mariam@gmail.com" value={d.email} onChange={(e) => u("email", e.target.value)} maxLength={120} enterKeyHint="next" />
+          {d.byPhone ? (<>
+            <Q help="We use it only about your story. Nothing else.">What&apos;s your WhatsApp number?</Q>
+            <input key="phone" className="field text-xl" type="tel" inputMode="tel" autoComplete="tel" autoFocus placeholder="e.g. 010 1234 5678" value={d.phone} onChange={(e) => u("phone", e.target.value)} maxLength={20} enterKeyHint="next" />
+            <button type="button" onClick={() => { put({ byPhone: false }); setErr(null); }} className="self-start text-[15px] font-extrabold text-sky underline underline-offset-4 min-h-8">Use my email instead</button>
+          </>) : (<>
+            <Q help="We send the story link there and keep it for you. Nothing else.">Where should we send the story?</Q>
+            <input key="email" className="field text-xl" type="email" inputMode="email" autoComplete="email" autoFocus placeholder="e.g. mariam@gmail.com" value={d.email} onChange={(e) => u("email", e.target.value)} maxLength={120} enterKeyHint="next" />
+            <button type="button" onClick={() => { put({ byPhone: true }); setErr(null); }} className="self-start text-[15px] font-extrabold text-sky underline underline-offset-4 min-h-8">No email? Use your WhatsApp number instead</button>
+          </>)}
         </>)}
 
         {step === "review" && (<>
@@ -315,7 +325,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
             {uses("need") && d.need && <> When {he}'s upset, {he} says <B onClick={() => goTo("need")}>&ldquo;{d.need}&rdquo;</B></>}
             {d.silly && <> Silly word: <B onClick={() => goTo("silly")}>{d.silly}</B>!</>}
           </p>
-          <p className="m-0 text-[15px] text-ink-soft">We'll send it to <B onClick={() => goTo("email")}>{d.email.trim()}</B>{d.dedication.trim() ? <> with your message: <B onClick={() => goTo("dedication")}>"{d.dedication.trim()}"</B></> : null}.</p>
+          <p className="m-0 text-[15px] text-ink-soft">{d.byPhone ? "Your WhatsApp number" : "We'll send it to"} <B onClick={() => goTo("email")}>{d.byPhone ? d.phone.trim() : d.email.trim()}</B>{d.dedication.trim() ? <> with your message: <B onClick={() => goTo("dedication")}>"{d.dedication.trim()}"</B></> : null}.</p>
         </>)}
 
         {err && <p role="alert" className="m-0 text-sm font-bold text-danger">{err}</p>}
@@ -329,7 +339,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         ) : (
           <button type="submit" ref={nextRef} className="btn-primary w-full">Next</button>
         )}
-        <span className="text-center text-xs font-bold text-ink-soft">No photo, no phone number, no address.</span>
+        <span className="text-center text-xs font-bold text-ink-soft">No photo, no address.</span>
       </div>
       </form>
     </div>

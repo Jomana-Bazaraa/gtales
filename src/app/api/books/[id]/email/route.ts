@@ -13,9 +13,10 @@ export async function POST(req: Request, { params }: RouteContext<"/api/books/[i
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return NextResponse.json({ error: "invalid", message: "Please write an email address." }, { status: 400 });
   const book = await getBook(id);
   if (!book) return NextResponse.json({ error: "not_found" }, { status: 404 });
-  if (book.contact && book.contact !== email) return NextResponse.json({ error: "taken", message: "This story was already sent to another address." }, { status: 409 });
+  const hadEmail = (book.contact ?? "").includes("@");
+  if (hadEmail && book.contact !== email) return NextResponse.json({ error: "taken", message: "This story was already sent to another address." }, { status: 409 });
   const parent_id = await rememberParent(email, { first_book_id: id, source: book.ref });
-  await updateBook(id, { contact: email, parent_id });
+  if (!hadEmail) await updateBook(id, book.contact ? { parent_id } : { contact: email, parent_id }); // a WhatsApp contact is kept
   await logEvent({ event: "story_emailed", story_id: id, tale: book.slug, parent_id });
   const site = await baseUrl();
   after(() => sendBookEmail({ ...book, contact: email }, site).catch((e) => console.error("[email] book", e)));

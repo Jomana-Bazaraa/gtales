@@ -26,7 +26,7 @@ export function BookActions({ book, url }: { book: BookRecord; url: string }) {
       <span className="text-xs font-bold text-ink-soft">The PDF is made the first time you open it, about two minutes.</span>
       <a href={`https://wa.me/?text=${encodeURIComponent(`${book.child_name}'s story on GTales: ${url}?ref=share`)}`} target="_blank" rel="noreferrer" onClick={() => beacon("story_shared", { via: "whatsapp_link" })} className="btn-ghost w-full md:w-auto md:self-start">Send to WhatsApp</a>
       <Link href={`/reviews/new?tale=${encodeURIComponent(book.slug)}`} className="text-left text-[15px] font-extrabold text-sky inline-flex items-center gap-2">★ Loved it? Add your review</Link>
-      {!book.contact && <EmailMe bookId={book.id} compact />}
+      {!(book.contact ?? "").includes("@") && <EmailMe bookId={book.id} compact />}
       <button type="button" onClick={share} className="text-left text-[15px] font-extrabold text-sky inline-flex items-center gap-2"><Icon name="heart" size={18} />Make a story for another child</button>
     </div>
   );

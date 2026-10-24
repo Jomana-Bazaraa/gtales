@@ -18,7 +18,7 @@ declare global {
   interface Window { GTales?: { fitPages: (root: Element) => void } }
 }
 
-export function BookView({ html, story, backHref, pdfHref, bookId }: { html: string; story: StoryJson; backHref: string; pdfHref: string; bookId: string }) {
+export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: { html: string; story: StoryJson; backHref: string; pdfHref: string; bookId: string; hasEmail: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
 
@@ -166,7 +166,7 @@ export function BookView({ html, story, backHref, pdfHref, bookId }: { html: str
       </div>
       {/* end of the story: no review prompt here (Jomana, 24 Oct) */}
       <div className="mx-auto max-w-md px-4 pb-16 -mt-8 flex flex-col gap-3 text-center">
-        <div className="text-left"><EmailMe bookId={bookId} /></div>
+        {!hasEmail && <div className="text-left"><EmailMe bookId={bookId} /></div>}
         <Link href={`/order?story=${bookId}`} onClick={() => beacon("series_cta_clicked", bookId)} className="btn-secondary self-center">Make it a real printed book →</Link>
         <Link href={backHref} className="text-[15px] font-extrabold text-sky">Story page: PDF, parent guide, share</Link>
       </div>
