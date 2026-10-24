@@ -4,7 +4,7 @@ import { sendReviewNotice } from "@/lib/email";
 import { logEvent } from "@/lib/events";
 import { taleBySlug } from "@/lib/gtales";
 import { reviewFields } from "@/lib/review-schema";
-import { checkTicket, checkUploaded, countReviewsSince, hashIp, insertReview, LIMITS, newReviewId, type Review } from "@/lib/reviews";
+import { checkTicket, checkUploaded, countReviewsSince, errText, hashIp, insertReview, LIMITS, newReviewId, type Review } from "@/lib/reviews";
 import { baseUrl } from "@/lib/site";
 import { assertSafe, SafetyError } from "@/stories/safety";
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   try {
     await insertReview(rec);
   } catch (e) {
-    console.error("[reviews] insert failed (is migration 0005 run?)", e);
+    console.error("[reviews] insert failed (is migration 0005 run?):", errText(e));
     return NextResponse.json({ error: "unavailable", message: "Sorry, reviews can't be saved right now. Please try again later." }, { status: 503 });
   }
   await logEvent({ event: "review_submitted", tale: rec.story_slug ?? undefined, child_age: rec.child_age ?? undefined, session_id: b.device_id, meta: { rating: rec.rating, photos: photos.length, video: videos.length } });

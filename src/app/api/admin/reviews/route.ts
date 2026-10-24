@@ -5,7 +5,7 @@ import { isValidAdminCookie } from "@/lib/admin-auth";
 import { logEvent } from "@/lib/events";
 import { taleBySlug } from "@/lib/gtales";
 import { reviewFields } from "@/lib/review-schema";
-import { checkUploaded, insertReview, LIMITS, newReviewId, type Review } from "@/lib/reviews";
+import { errText, checkUploaded, insertReview, LIMITS, newReviewId, type Review } from "@/lib/reviews";
 
 const body = reviewFields.extend({
   consent_confirmed: z.literal(true, { message: "Tick the box to confirm the parent agreed." }),
@@ -31,7 +31,12 @@ export async function POST(req: Request) {
     child_age: b.child_age ?? null, story_slug: b.story_slug && taleBySlug(b.story_slug) ? b.story_slug : null, media: b.media,
     consent_at: now, status: b.status, featured: false, source: "admin", approved_at: b.status === "approved" ? now : null,
   };
-  await insertReview(rec);
+  try {
+    await insertReview(rec);
+  } catch (e) {
+    console.error("[reviews] admin insert failed:", errText(e));
+    return NextResponse.json({ error: "unavailable", message: `Database error: ${errText(e)}. Is migration 0005 run in Supabase?` }, { status: 503 });
+  }
   if (rec.status === "approved") await logEvent({ event: "review_approved", meta: { review: rec.id, rating: rec.rating, source: "admin" } });
   return NextResponse.json({ ok: true, id: rec.id });
 }

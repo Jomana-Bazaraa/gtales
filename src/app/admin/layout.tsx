@@ -17,17 +17,18 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex-1 flex flex-col" dir="ltr">
       <header className="border-b border-line bg-white">
-        <div className="mx-auto max-w-6xl px-4 h-14 flex items-center gap-5">
+        {/* phones: the menu wraps under the logo instead of widening the page */}
+        <div className="mx-auto max-w-6xl px-4 py-2 min-h-14 flex flex-wrap items-center gap-x-5 gap-y-1">
           <Logo className="!text-lg" />
           <span className="text-xs font-bold text-ink-soft uppercase tracking-wider">Admin</span>
-          <nav className="flex gap-4 text-sm font-semibold ms-auto">
-            <Link href="/admin" className="hover:text-coral">Free stories</Link>
-            <Link href="/admin/series" className="hover:text-coral">Series orders</Link>
+          <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold md:ms-auto">
+            <Link href="/admin" className="hover:text-coral whitespace-nowrap">Free stories</Link>
+            <Link href="/admin/series" className="hover:text-coral whitespace-nowrap">Series orders</Link>
             <Link href="/admin/reviews" className="hover:text-coral">Reviews{pending > 0 && <span className="ms-1 rounded-full bg-flame text-white text-[11px] px-1.5">{pending}</span>}</Link>
             <Link href="/admin/dashboard" className="hover:text-coral">Dashboard</Link>
             <Link href="/admin/settings" className="hover:text-coral">Settings</Link>
             <form action="/api/admin/logout" method="post">
-              <button className="text-ink-soft hover:text-coral">Log out</button>
+              <button className="text-ink-soft hover:text-coral whitespace-nowrap">Log out</button>
             </form>
           </nav>
         </div>

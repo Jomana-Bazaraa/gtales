@@ -92,7 +92,7 @@ export async function createUploadUrl(contentType: string, prefix: "pending" | "
   const p = `${prefix}/${new Date().toISOString().slice(0, 10)}/${nanoid(16)}.${t.ext}`;
   if (isMockDb) return { url: mockUrl("put", p, 30 * 60), path: p };
   const { data, error } = await supabase().storage.from(BUCKET).createSignedUploadUrl(p);
-  if (error || !data) throw error ?? new Error("upload url");
+  if (error || !data) throw new Error(error ? errText(error) : "upload url");
   return { url: data.signedUrl, path: p };
 }
 /** The file exists, is a photo/video of the claimed type and within the size limit. */
@@ -131,8 +131,8 @@ async function removeMedia(paths: string[]) {
 // ---------- reviews ----------
 export async function insertReview(r: Review): Promise<void> {
   if (isMockDb) return mockSave([r, ...(await mockAll())]);
-  const { error } = await supabase().from("reviews").insert(r);
-  if (error) throw error;
+  const { error, status, statusText } = await supabase().from("reviews").insert(r);
+  if (error) throw new Error(`HTTP ${status} ${statusText} · ${errText(error)}`);
 }
 export async function getReview(id: string): Promise<Review | null> {
   if (isMockDb) return (await mockAll()).find((r) => r.id === id) ?? null;
@@ -191,6 +191,13 @@ export async function publicReviews(limit = 200): Promise<{ reviews: PublicRevie
   });
   const average = approved.length ? approved.reduce((a, r) => a + r.rating, 0) / approved.length : 0;
   return { reviews, count: approved.length, average };
+}
+
+/** Supabase errors are plain objects (they log as {}): the readable parts for the server log. */
+export function errText(e: unknown): string {
+  if (e instanceof Error && !("code" in e)) return e.message;
+  const o = (e ?? {}) as { message?: string; code?: string; details?: string; hint?: string; statusCode?: string | number; error?: string };
+  return [o.code ?? o.statusCode, o.message ?? o.error, o.details, o.hint].filter(Boolean).join(" · ") || JSON.stringify(e);
 }
 
 export function newReviewId(): string { return `rv_${nanoid(12)}`; }
