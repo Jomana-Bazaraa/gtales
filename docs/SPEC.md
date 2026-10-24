@@ -205,14 +205,17 @@ Written by hand by the team, never by AI; the story JSON is never edited. `GTale
 - `little`: replacement challenges (two big emoji choices, no riddles) used when the child is 5 or younger; 6+ keep the originals.
 The result is stored with the book, so the reader, print page and PDF all show the same text. AC: every tale × boy/girl × ages 4 and 8, with and without snack/silly, renders with no `{{`, no `undefined` (`npm test`) and no "too much text" from `fitPages` (`npm run check:fit`).
 
-### 7.2 The form (two screens, under a minute; 24 Oct)
+### 7.2 The form (one question per screen, auto-saved)
 
-Progress bar "Step 1 of 2" / "Step 2 of 2", answers auto-saved in the browser. After "Make my story!" the reader opens on the first page.
-
-| Screen | Asks | Rules |
+| Step | Asks | Rules |
 |---|---|---|
-| 1 (parent) | "Who's the hero of this story?" name, helper "This name becomes the hero of the story. You can use your child's name, a nickname, or any name you like." · age (buttons 4 5 6 7 8) · boy/girl · pick the story (6 cards with covers, pre-selected from `?tale=`) · one button "Next →" | name 1–14 English letters, spaces, hyphens; boy/girl picks the image set and pronouns; ages 4–5 get the `little` challenges (§7.1a) |
-| 2 (kid, all optional) | 🎲 "Surprise me" (fills every card) · robot friend's name · Power Word · silly word (each: cards from `stories/builder-options.json` + "Other…" free text) · the other child's name (empty, placeholder "e.g. Sam") · "What helps when they're upset?" (4 cards, only when the tale uses `need`; default "Can I have a hug?") · "Where do you live? (optional)" · big button "Make my story! ✨" | Other…: robot ≤ 12 letters, Power Word 2–24 characters, silly word ≤ 15 letters and spaces; every free text through the bad-word filter. Defaults on submit (`src/stories/defaults.ts`, applied again by the API): robot Bolt, Power Word "I'm a superhero!", other child Sam, need "Can I have a hug?", place Cairo. `{{strength}}` is the story's own `default_strength` (anger builder, worry explorer, bullied friend, lying truth-teller, feelings feelings-finder, friendship teammate). No snack, no "great at", no dedication, no email (the story page offers "Email me this story") |
+| 1 | Which superpower should this story build? | picks the tale; pre-selected from `?tale=` |
+| 2 | Hero's name · boy or girl · age | name 1–14 chars, letters, spaces, hyphens, first letter capitalised automatically; boy/girl picks the image set and pronouns; age 2–10 (written in words in the story) |
+| 3 | A place they know: neighbourhood or city | free text 2–20 chars, e.g. "Maadi", "Smouha" |
+| 4 | The other child: name + relation | brother, sister, cousin, friend; bullying tale only: a child at school or the park (`other_rule`) |
+| 6 | The child chooses: sidekick name · Power Word · silly word | cards from `stories/builder-options.json` (the team edits that file); sidekick also free text 1–12 chars (empty = Bolt); power word card or own text 2–24 chars; silly word: the cards in `stories/builder-options.json` (Aslaaan, Yastaaa, Sha3bolla, Keda keda, Batates, Zalabya) or "Other…" (≤ 15 letters and spaces, bad-word filter), optional (Skip), only feeds the fun lines; no snack (24 Oct); `{{strength}}` is the story's `default_strength` (no "great at" question) |
+| 7 | Need | the `need` cards in `stories/builder-options.json` (a hug, to talk, quiet time, to play); shown only when the tale uses `need` (step skipped otherwise). `ask` no longer exists. |
+| 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
 Boy or girl picks the image set; a gender whose set is missing shows "Coming soon" in the form and is refused by the API, never substituted with the other gender's pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
 
@@ -372,7 +375,7 @@ Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard ·
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
-- 1.13 (24 Oct 2026): landing hero restored to 1.11 (Jomana); landing_view tracking kept.
+- 1.13 (24 Oct 2026): landing hero and the one-question-per-page free form restored (Jomana); kept: new silly words + Other…, no snack, no "great at" (story default), invisible landing_view/free_form_step tracking.
 - 1.12 (24 Oct 2026): free story in two screens (§7.2) with Surprise me and defaults, story opens on the first page, email optional on the story page; phone-first hero with one big free-story button (§5.1); funnel events landing_view → start_click → form_step_1/2 → story_created; ages 4–8 buttons.
 - 1.11 (23 Oct 2026): reviews wall (§5.6): public form with photos/video, Turnstile, moderation in Admin → Reviews, home section + `/reviews`, privacy section; replaces the reviews toggle.
 - 1.10 (22 Oct 2026): multiple promo codes in Supabase (§11), GTALESFAMILY, promo usage on the Dashboard.

@@ -34,8 +34,8 @@ function metrics(ev: StoredEvent[], books: BookRecord[], orders: OrderRecord[]) 
     // funnel by unique session (24 Oct): where do visitors drop?
     landing: new Set(ev.filter((e) => e.event === "landing_view").map((e) => e.session_id)).size,
     startClick: new Set(ev.filter((e) => e.event === "start_click").map((e) => e.session_id)).size,
-    step1: new Set(ev.filter((e) => e.event === "form_step_1").map((e) => e.session_id)).size,
-    step2: new Set(ev.filter((e) => e.event === "form_step_2").map((e) => e.session_id)).size,
+    step1: new Set(ev.filter((e) => e.event === "story_started" || e.event === "form_step_1").map((e) => e.session_id)).size,
+    step2: new Set(ev.filter((e) => (e.event === "free_form_step" && (e.meta as { name?: string } | undefined)?.name === "review") || e.event === "form_step_2").map((e) => e.session_id)).size,
     created: books.length,
     finished: distinct("story_finished"),
     shared: ev.filter((e) => e.event === "story_shared" || e.event === "share_clicked").length,
@@ -112,7 +112,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
   });
   const taleTitle = (slug: string) => TALES.find((t) => t.slug === slug)?.title ?? slug;
   const m = metrics(E, B, O);
-  const funnel: [string, number][] = [["Visitors", m.visitors], ["Saw the home page", m.landing], ["Tapped start", m.startClick], ["Form step 1", m.step1], ["Form step 2", m.step2], ["Story created", m.created], ["Story finished", m.finished], ["Order placed", m.orders]];
+  const funnel: [string, number][] = [["Visitors", m.visitors], ["Saw the home page", m.landing], ["Tapped start", m.startClick], ["Opened the form", m.step1], ["Reached the last page", m.step2], ["Story created", m.created], ["Story finished", m.finished], ["Order placed", m.orders]];
   const max = Math.max(1, ...funnel.map((f) => f[1]));
 
   const breakdown = (title: string, rows: ReturnType<typeof group>, label: (k: string | number) => string) =>
