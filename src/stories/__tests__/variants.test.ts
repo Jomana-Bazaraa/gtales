@@ -29,7 +29,7 @@ for (const [slug, raw] of Object.entries(FILES)) {
   });
 
   for (const gender of ["boy", "girl"] as const) {
-    for (const age of [4, 8]) {
+    for (const age of [2, 4, 8, 10]) {
       for (const fun of [true, false]) {
         test(`${slug} ${gender} age ${age} ${fun ? "with" : "without"} snack/silly: renders with no holes`, async () => {
           const form = formFor(st, gender, age, fun);
@@ -50,8 +50,8 @@ for (const [slug, raw] of Object.entries(FILES)) {
     }
   }
 
-  test(`${slug}: age 4–5 gets the little challenges, 6+ keeps the originals`, () => {
-    for (const age of [4, 5, 6, 8]) {
+  test(`${slug}: ages 2–5 get the little challenges, 6–10 keep the originals`, () => {
+    for (const age of [2, 3, 4, 5, 6, 7, 8, 9, 10]) {
       const form = formFor(st, "girl", age, true);
       const varied = applyStoryVariants(st, form);
       for (const p of st.pages.filter((x) => x.challenge)) {

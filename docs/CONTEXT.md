@@ -55,7 +55,7 @@ npm install
 npm run dev            # http://localhost:3000 ; phone on same Wi-Fi: http://<laptop-ip>:3000
 npm test               # 157 tests: every story × gender × 4 names, pronoun diff, image sets, static lists, variants (ages 4/8, fun lines on/off)
 npm run check:stories  # story files parse, tokens match "uses", image sets complete
-npm run check:fit      # every story × gender × age 4/8 × with/without snack+silly in Chrome: no "too much text"
+npm run check:fit      # every story × gender × age 2/4/8/10 × with/without snack+silly in Chrome: no "too much text"
 npm run build          # must pass before pushing
 npm run cf:preview     # the real Cloudflare Worker build on http://localhost:8787 (needs .dev.vars + Supabase)
 npm run pdf:jobs       # render queued PDFs locally (needs Chrome: PUPPETEER_EXECUTABLE_PATH)
@@ -64,7 +64,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Decisions (don't re-litigate without talking)
 
-- Ages: the fast form offers **4–8** buttons (Jomana, 24 Oct, for speed); the engine and the Series still accept 2–10 (Ayman's 10 Oct decision). Ayman: confirm.
+- Ages **2–10** everywhere (Ayman 10 Oct; reconfirmed by Jomana 24 Oct). Ages 2–5 get the `little` challenges, 6–10 the original text.
 - The Series is **three** printed books: list 749 EGP, `LAUNCH40` → 449, delivery 89, total 538, **pay on delivery, no refunds** (parents approve every page on WhatsApp first).
 - Free story is **text-only** personalisation on fixed art. Images are never generated at runtime. Series art is made manually by the team.
 - The template is the only design; the story JSON is the only text source; the reference PDFs are only for comparison.
@@ -109,6 +109,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-24 · Claude for Jomana · Ages 2–10 in the form (restored); 2–5 get the `little` challenges, 6–10 the original text. Tests now cover every age 2–10 (little vs original) and render ages 2/4/8/10: 212 tests; `check:fit` 96 books, 0 "too much text".
 - 2026-10-24 · Claude for Jomana · Free story form restored to one question per page (CreateForm.tsx from be22c92, incl. the "Sam" fix), minus the snack and "great at" pages (story defaults); silly-word page: new cards + Other… (≤ 15 letters/spaces, bad-word filter). Invisible free_form_step tracking per page; Dashboard funnel "Opened the form → Reached the last page". Phone-tested the whole bullied flow.
 - 2026-10-24 · Claude for Jomana · Landing restored exactly as before the 24 Oct redesign (`Landing.tsx` from be22c92: "Create your child's books" → /order, "Try a free story" → /tales); only an invisible landing_view tracker kept. SPEC 1.13.
 - 2026-10-24 · Claude for Jomana · Start is obvious + story in under a minute: phone-first hero (one huge "Make your child's free story · 2 min" button, 3-step strip, 2 real pages under it; printed books become a link); free form rebuilt into 2 screens (name/age 4–8/boy-girl/6 story covers → kid screen with cards + Other…, 🎲 Surprise me, other child empty "e.g. Sam", need only for anger/worry/feelings, optional place) → opens on page 1; snack/"great at"/dedication/email removed ("Email me this story" on the story page and at the end of the reader, `/api/books/[id]/email`); `default_strength` in each story JSON; new silly words in builder-options.json; API fills every default. Events landing_view, start_click, form_step_1, form_step_2 + Dashboard funnel by session. Phone test 390×844: no sideways scroll, button + steps above the fold, homepage → first page 14.5 s with human pauses; all-defaults story has no blanks. SPEC 1.12.

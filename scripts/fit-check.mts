@@ -35,7 +35,7 @@ let combos = 0, overflowing = 0;
 try {
   for (const [slug, raw] of Object.entries(FILES)) {
     const st = storySchema.parse(raw);
-    for (const gender of ["boy", "girl"] as const) for (const age of [4, 8]) for (const fun of [true, false]) {
+    for (const gender of ["boy", "girl"] as const) for (const age of [2, 4, 8, 10]) for (const fun of [true, false]) {
       const form: StoryForm = { slug: st.slug, gender, age, half: false, strength: "builder", other_relation: st.other_rule === "not_sibling" ? "school" : "brother", ...FULL, ...(fun ? { snack: "ice cream", silly: "Fasoolya" } : {}) };
       const html = await renderBookHtml(fillStory(applyStoryVariants(st, form), form), form, "web");
       const key = `/__book/${slug}-${gender}-${age}-${fun}`;
