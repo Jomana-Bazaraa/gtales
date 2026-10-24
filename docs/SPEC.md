@@ -217,6 +217,8 @@ The result is stored with the book, so the reader, print page and PDF all show t
 | 7 | Need | the `need` cards in `stories/builder-options.json` (a hug, to talk, quiet time, to play); shown only when the tale uses `need` (step skipped otherwise). `ask` no longer exists. |
 | 8 | Parent's first name · WhatsApp number or email | one contact required (no dedication: the template has no dedication page) |
 
+**Surprise me and Enter (builder pages: sidekick, power word, silly word, need).** Each page has a "🎲 Surprise me" button that picks a random card at once (the value is in the form before anything else happens). Enter or Next on any page = Next; on a builder page left empty it uses the default first (robot Bolt, "I'm a superhero!", a random silly word, "Can I have a hug?"; bullied tale: the unkind child = Sam).
+
 Boy or girl picks the image set; a gender whose set is missing shows "Coming soon" in the form and is refused by the API, never substituted with the other gender's pictures (handoff rule). Safety: every free-text field is checked for rude or unsafe words in English and Franco-Arabic before it goes anywhere; on a hit the parent is asked to change it, and it is never printed. Footer on every step: "No photo, no address."
 
 ### 7.3 fillStory (no AI, always works)

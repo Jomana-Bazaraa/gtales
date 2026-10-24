@@ -4,9 +4,10 @@
  * One question per screen, exact wording from the brief, only the fields the story `uses`,
  * live cover preview, review sentence, progress saved in the browser.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { sessionId, source, track } from "@/lib/track";
 import { findUnsafe } from "@/stories/safety";
+import { FORM_DEFAULTS } from "@/stories/defaults";
 import builderOptions from "../../../stories/builder-options.json";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,6 +42,17 @@ const OWN_SIDEKICK = "__parent_types__";
 const plain = (label: string) => label.replace(/^[^A-Za-z0-9]+/, "").trim(); // "🤗 A hug" → "A hug"
 const LATIN = /^[A-Za-z][A-Za-z '\-]*$/;
 const ARABIC = /[؀-ۿ]/;
+const pick = (cards: BuilderCard[]) => cards[Math.floor(Math.random() * cards.length)].value;
+type BuilderStep = "sidekick" | "power_word" | "silly" | "need";
+const BUILDER_STEPS: BuilderStep[] = ["sidekick", "power_word", "silly", "need"];
+const SURPRISE: Record<BuilderStep, () => string> = {
+  sidekick: () => pick(BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK)),
+  power_word: () => pick(BUILDER.power_word),
+  silly: () => pick(BUILDER.silly),
+  need: () => pick(BUILDER.need),
+};
+// Enter / Next on an empty builder page uses these (the same values the story falls back to).
+const EMPTY_BUILDER: Record<BuilderStep, () => string> = { sidekick: () => FORM_DEFAULTS.sidekick, power_word: () => FORM_DEFAULTS.power_word, silly: SURPRISE.silly, need: () => FORM_DEFAULTS.need };
 
 function Card({ on, onClick, children, disabled, sub }: { on: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; sub?: string }) {
   return (
@@ -65,11 +77,13 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
   const [sillyOwn, setSillyOwn] = useState(false); // silly word "Other…" free text
+  // dRef is always the latest draft, so "Surprise me" then Enter (or a fast tap on Next) never reads a stale value
+  const dRef = useRef(d); // every change goes through put(), so this never lags behind d
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) { const s = JSON.parse(raw) as { d: Draft; i: number }; setD({ ...EMPTY, ...s.d, slug: initialTale || s.d.slug }); setI(initialTale && s.i === 0 ? 1 : s.i); }
+      if (raw) { const s = JSON.parse(raw) as { d: Draft; i: number }; const saved = { ...EMPTY, ...s.d, slug: initialTale || s.d.slug }; dRef.current = saved; setD(saved); setI(initialTale && s.i === 0 ? 1 : s.i); }
       else if (initialTale) setI(1);
     } catch {}
     setReady(true);
@@ -77,7 +91,10 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   }, [initialTale]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d, i })); } catch {} }, [d, i, ready]);
 
-  const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
+  const put = (patch: Partial<Draft>) => { const n = { ...dRef.current, ...patch }; dRef.current = n; setD(n); return n; };
+  const u = <K extends keyof Draft>(k: K, v: Draft[K]) => put({ [k]: v } as Partial<Draft>);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const surprise = (s: BuilderStep) => { if (s === "silly") setSillyOwn(false); u(s, SURPRISE[s]()); setErr(null); nextRef.current?.focus(); };
   const meta = useMemo(() => metas.find((m) => m.slug === d.slug), [metas, d.slug]);
   const uses = (t: string) => !!meta && meta.uses.includes(t);
   const steps = useMemo<Step[]>(() => {
@@ -101,7 +118,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   const previewGender: "boy" | "girl" | null = !meta ? null : d.gender && meta.sets[d.gender] ? d.gender : meta.sets.boy ? "boy" : meta.sets.girl ? "girl" : null;
   const goTo = (s: Step) => { setErr(null); setI(steps.indexOf(s)); };
 
-  const valid = (s: Step): string | null => {
+  const valid = (s: Step, d: Draft = dRef.current): string | null => {
+    const meta = metas.find((m) => m.slug === d.slug);
     switch (s) {
       case "struggle": return d.slug ? (meta?.available ? null : "This story is coming soon. Please pick another one.") : "Please choose one.";
       case "name": { const n = d.name.trim(); if (!n) return "Please write your child's name."; if (ARABIC.test(n)) return "Please write the name in English letters, like Mariam."; if (n.length > 14) return "Up to 14 letters, please."; if (!LATIN.test(n)) return "English letters only, please."; return null; }
@@ -118,10 +136,25 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       default: return null;
     }
   };
-  const next = () => { const e = valid(step); setErr(e); if (!e) setI((x) => Math.min(steps.length - 1, x + 1)); };
+  const next = () => {
+    let cur = dRef.current;
+    if ((BUILDER_STEPS as Step[]).includes(step) && !cur[step as BuilderStep].trim()) { if (step === "silly") setSillyOwn(false); cur = put({ [step]: EMPTY_BUILDER[step as BuilderStep]() }); }
+    if (step === "other" && bullied && !cur.other.trim()) cur = put({ other: FORM_DEFAULTS.other });
+    const e = valid(step, cur); setErr(e); if (!e) setI((x) => Math.min(steps.length - 1, x + 1));
+  };
+  // Enter anywhere on the page (not in the message box, not on a button) = Next; inputs submit the <form> below
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      if (e.key !== "Enter" || e.isComposing || t.closest("button, a, textarea, input, select")) return;
+      e.preventDefault(); nextRef.current?.click();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const back = () => { setErr(null); setI((x) => Math.max(0, x - 1)); };
 
-  const values = () => ({
+  const values = (d: Draft = dRef.current) => ({
     slug: d.slug, name: cap(d.name), gender: d.gender || "boy", age: d.age || 6, place: d.place.trim(),
     other: uses("other") ? cap(d.other.trim() || (bullied ? "Sam" : "")) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || undefined) : undefined,
     sidekick: uses("sidekick") ? cap(d.sidekick.trim() || "Bolt") : undefined,
@@ -174,6 +207,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         <CoverPreview slug={d.slug} gender={previewGender} title={meta.title.replace(/\{\{name\}\}/g, name)} name={name} />
       )}
 
+      <form noValidate onSubmit={(e) => { e.preventDefault(); if (step === "review") { if (!busy) void submit(); } else next(); }} className="flex-1 flex flex-col">
       <div className="flex-1 px-4 py-5 flex flex-col gap-4">
         <input id="website" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
@@ -188,7 +222,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
         {step === "name" && (<>
           <Q>What's your child's name?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Adam, Jana, Yassin" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} />
+          <input className="field text-xl" autoFocus placeholder="e.g. Adam, Jana, Yassin" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} enterKeyHint="next" />
           {d.name.trim() && meta && previewGender && <CoverPreview slug={d.slug} gender={previewGender} title={meta.title.replace(/\{\{name\}\}/g, name)} name={name} inline />}
         </>)}
 
@@ -211,38 +245,42 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
         {step === "place" && (<>
           <Q help="Your area or city. It will appear in the story.">Where do you live?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Maadi, Zamalek, Smouha, Sheikh Zayed" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} />
+          <input className="field text-xl" autoFocus placeholder="e.g. Maadi, Zamalek, Smouha, Sheikh Zayed" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} enterKeyHint="next" />
         </>)}
 
         {step === "other" && (bullied ? (<>
           <Q help="You can use a made-up name. It does not have to be the real child.">What name should we use for the child who is unkind?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} />
+          <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} enterKeyHint="next" />
           <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use Sam.</p>
         </>) : (<>
           <Q>Who is often with your child at home?</Q>
           <div className="flex gap-2">
             {(["brother", "sister", "cousin"] as const).map((r) => <button key={r} type="button" aria-pressed={d.relation === r} onClick={() => u("relation", r)} className={`chip ${d.relation === r ? "chip-on" : ""}`}>{r[0].toUpperCase() + r.slice(1)}</button>)}
           </div>
-          <input className="field text-xl" autoFocus placeholder={`e.g. ${his} ${d.relation || "brother"} Omar`} value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} />
+          <input className="field text-xl" autoFocus placeholder={`e.g. ${his} ${d.relation || "brother"} Omar`} value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} enterKeyHint="next" />
           <p className="m-0 text-[13px] text-ink-soft">Just the name, e.g. Omar, Lina, Yousef.</p>
         </>))}
 
         {step === "sidekick" && (<>
           <Q help="In the story, a little robot friend will have this name.">What should the robot friend be called?</Q>
           <div className="flex flex-wrap gap-2">{BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK).map((c) => <button key={c.value} type="button" aria-pressed={d.sidekick === c.value} onClick={() => u("sidekick", c.value)} className={`chip ${d.sidekick === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder={plain(BUILDER.sidekick.find((c) => c.value === OWN_SIDEKICK)?.label ?? "Or write your own")} value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} />
+          <input className="field text-xl" placeholder={plain(BUILDER.sidekick.find((c) => c.value === OWN_SIDEKICK)?.label ?? "Or write your own")} value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} enterKeyHint="next" />
           <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we'll call the robot Bolt.</p>
+          <button type="button" onClick={() => surprise("sidekick")} className="chip self-start">🎲 Surprise me</button>
         </>)}
 
         {step === "power_word" && (<>
           <Q help="Your child will say this out loud in the story, at the brave moment.">What does your child say to feel strong or brave?</Q>
           <div className="flex flex-wrap gap-2">{BUILDER.power_word.map((c) => <button key={c.value} type="button" aria-pressed={d.power_word === c.value} onClick={() => u("power_word", c.value)} className={`chip ${d.power_word === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder="Or write your own" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={24} />
+          <input className="field text-xl" placeholder="Or write your own" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={24} enterKeyHint="next" />
+          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use &ldquo;{FORM_DEFAULTS.power_word}&rdquo;</p>
+          <button type="button" onClick={() => surprise("power_word")} className="chip self-start">🎲 Surprise me</button>
         </>)}
 
         {step === "need" && (<>
           <Q>When your child is sad or in a bad mood, what helps most?</Q>
           <div className="flex flex-col gap-2.5">{BUILDER.need.map((c) => <Card key={c.value} on={d.need === c.value} onClick={() => u("need", c.value)}>{c.label}</Card>)}</div>
+          <button type="button" onClick={() => surprise("need")} className="chip self-start">🎲 Surprise me</button>
         </>)}
 
         {step === "silly" && (<>
@@ -251,7 +289,8 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
             {BUILDER.silly.map((c) => <Card key={c.value} on={!sillyOwn && d.silly === c.value} onClick={() => { setSillyOwn(false); u("silly", c.value); }}>{c.label}</Card>)}
             <Card on={sillyOwn} onClick={() => { setSillyOwn(true); u("silly", ""); }}>Other…</Card>
           </div>
-          {sillyOwn && <input className="field text-xl" autoFocus placeholder="Letters and spaces" value={d.silly} onChange={(e) => u("silly", e.target.value.replace(/[^A-Za-z ]/g, ""))} maxLength={15} />}
+          <button type="button" onClick={() => surprise("silly")} className="chip self-start">🎲 Surprise me</button>
+          {sillyOwn && <input className="field text-xl" autoFocus placeholder="Letters and spaces" value={d.silly} onChange={(e) => u("silly", e.target.value.replace(/[^A-Za-z ]/g, ""))} maxLength={15} enterKeyHint="next" />}
         </>)}
 
 
@@ -263,7 +302,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
         {step === "email" && (<>
           <Q help="We send the story link there and keep it for you. Nothing else.">Where should we send the story?</Q>
-          <input className="field text-xl" type="email" inputMode="email" autoFocus placeholder="e.g. mariam@gmail.com" value={d.email} onChange={(e) => u("email", e.target.value)} maxLength={120} />
+          <input className="field text-xl" type="email" inputMode="email" autoFocus placeholder="e.g. mariam@gmail.com" value={d.email} onChange={(e) => u("email", e.target.value)} maxLength={120} enterKeyHint="next" />
         </>)}
 
         {step === "review" && (<>
@@ -284,14 +323,15 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
 
       <div className="sticky bottom-0 bg-white border-t border-line px-4 py-3 flex flex-col gap-2">
         {step === "review" ? (
-          <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Making the story…" : `Make ${name}'s story`}</button>
+          <button type="submit" ref={nextRef} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Making the story…" : `Make ${name}'s story`}</button>
         ) : step === "dedication" || step === "silly" ? (
-          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { u(step, ""); setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
+          <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { u(step, ""); setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="submit" ref={nextRef} className="btn-primary w-full">Next</button></div>
         ) : (
-          <button type="button" onClick={next} className="btn-primary w-full">Next</button>
+          <button type="submit" ref={nextRef} className="btn-primary w-full">Next</button>
         )}
         <span className="text-center text-xs font-bold text-ink-soft">No photo, no phone number, no address.</span>
       </div>
+      </form>
     </div>
   );
 }
