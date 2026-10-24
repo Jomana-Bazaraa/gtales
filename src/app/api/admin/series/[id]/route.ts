@@ -34,5 +34,6 @@ export async function POST(req: Request, { params }: RouteContext<"/api/admin/se
   if (form.has("notes")) patch.notes = String(form.get("notes")).slice(0, 2000);
   if (form.has("courier_confirmation")) patch.courier_confirmation = String(form.get("courier_confirmation")).slice(0, 200);
   await updateOrder(id, patch);
-  return NextResponse.redirect(new URL(`/admin/series/${id}`, req.url), 303);
+  const back = String(form.get("back") ?? "");
+  return NextResponse.redirect(new URL(/^\/admin\/[\w/-]*$/.test(back) ? back : `/admin/series/${id}`, req.url), 303);
 }
