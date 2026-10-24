@@ -101,7 +101,7 @@ AC: no colour outside the token list; no dark-brown shadow under purple; all but
 | `/story/[id]/read` | Reader | link holder |
 | `/story/[id]/pdf` | Story PDF: opens the file, or "being made" and waits for it (§8) | link holder |
 | `/reviews` | All approved reviews, average from 3, "Add your review" | public |
-| `/reviews/new` | Review form (`?tale=` from the end of a free story) | public |
+| `/reviews/new` | Review form (`?tale=` from the story page) | public |
 | `/order?story=id` | Series order form (15 steps) | – (account created at submit) |
 | `/order/[id]/confirmed` | Confirmation | link holder |
 | `/signin` | Sign in (WhatsApp code / email link) | – |
@@ -140,7 +140,7 @@ AC: Lighthouse mobile ≥ 90 performance, ≥ 95 accessibility; phone height ≤
 
 ### 5.6 Reviews wall and form
 
-**Form `/reviews/new`** (linked at the end of every free story in the reader, on the ready screen, in the free-story email, on the order confirmation page and in the "delivered" WhatsApp message; there is no customer order email because the order form asks for WhatsApp only). Fields: star rating 1–5 (required), review text (required, ≤ 5000), parent first name (required), city and child's age (optional), up to 3 photos and 1 video (optional). Photos are resized in the browser to 1600 px on the long side (this also removes location data); video MP4/MOV, ≤ 30 s, ≤ 50 MB. File inputs without `capture`, so phones offer camera and gallery. Two required boxes:
+**Form `/reviews/new`** (linked on the ready screen (not at the end of the story in the reader: removed 24 Oct), in the free-story email, on the order confirmation page and in the "delivered" WhatsApp message; there is no customer order email because the order form asks for WhatsApp only). Fields: star rating 1–5 (required), review text (required, ≤ 5000), parent first name (required), city and child's age (optional), up to 3 photos and 1 video (optional). Photos are resized in the browser to 1600 px on the long side (this also removes location data); video MP4/MOV, ≤ 30 s, ≤ 50 MB. File inputs without `capture`, so phones offer camera and gallery. Two required boxes:
 1. "I am the parent/guardian of any child shown, and I agree to GTales showing this review, photos and video on its website and social media."
 2. "I understand I can ask for it to be removed at any time."
 Cloudflare Turnstile and a limit of 10 reviews per device per day (browser id or IP). After sending: "Thank you! 💛 Your review will appear after we check it (usually within 24 hours)."

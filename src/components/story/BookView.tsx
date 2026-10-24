@@ -18,7 +18,7 @@ declare global {
   interface Window { GTales?: { fitPages: (root: Element) => void } }
 }
 
-export function BookView({ html, story, backHref, pdfHref, bookId, tale }: { html: string; story: StoryJson; backHref: string; pdfHref: string; bookId: string; tale: string }) {
+export function BookView({ html, story, backHref, pdfHref, bookId }: { html: string; story: StoryJson; backHref: string; pdfHref: string; bookId: string }) {
   const root = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
 
@@ -164,12 +164,9 @@ export function BookView({ html, story, backHref, pdfHref, bookId, tale }: { htm
       <div style={{ overflowX: "clip" }}>
         <div ref={root} className="gt-book gt-view" dangerouslySetInnerHTML={{ __html: html }} />
       </div>
-      {/* end of the story: ask for a review (SPEC §5.6) */}
+      {/* end of the story: no review prompt here (Jomana, 24 Oct) */}
       <div className="mx-auto max-w-md px-4 pb-16 -mt-8 flex flex-col gap-3 text-center">
-        <p className="m-0 text-[20px] leading-7 font-bold text-balance">The end! Did your child enjoy it?</p>
-        <p className="m-0 text-ink-soft text-[15px]">Tell other parents how it went. Photos and a short video are welcome.</p>
-        <Link href={`/reviews/new?tale=${encodeURIComponent(tale)}`} onClick={() => beacon("cta_click", bookId)} className="btn-primary self-center">★ Add your review</Link>
-        <div className="text-left mt-2"><EmailMe bookId={bookId} /></div>
+        <div className="text-left"><EmailMe bookId={bookId} /></div>
         <Link href={`/order?story=${bookId}`} onClick={() => beacon("series_cta_clicked", bookId)} className="btn-secondary self-center">Make it a real printed book →</Link>
         <Link href={backHref} className="text-[15px] font-extrabold text-sky">Story page: PDF, parent guide, share</Link>
       </div>
