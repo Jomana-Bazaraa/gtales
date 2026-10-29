@@ -75,7 +75,7 @@ export async function POST(req: Request) {
   const form = {
     ...f,
     sidekick: story.uses.includes("sidekick") ? f.sidekick || "Bolt" : f.sidekick,
-    strength: f.strength || (story.uses.includes("strength") ? story.default_strength ?? "hero" : undefined),
+    strength: story.uses.includes("strength") ? story.default_strength ?? "hero" : undefined, // always the story's own (29 Oct)
     other_relation: f.other_relation ?? (story.other_rule === "not_sibling" ? "school" : "friend"),
   };
   const t0 = Date.now();

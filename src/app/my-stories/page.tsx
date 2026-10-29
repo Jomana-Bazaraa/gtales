@@ -32,7 +32,7 @@ export default async function MyStoriesPage({ searchParams }: PageProps<"/my-sto
 
         {hero && (
           <div className="rounded-3xl bg-surface-tint p-4 flex flex-col gap-3">
-            <div><span className="eyebrow !text-ink-soft">Saved hero</span><p className="m-0 display text-[20px] font-bold">{hero.child.name}, {hero.child.age}</p><p className="m-0 text-sm text-ink-soft">{hero.parent.city} · {hero.strengths.slice(0, 3).join(", ")}</p></div>
+            <div><span className="eyebrow !text-ink-soft">Saved hero</span><p className="m-0 display text-[20px] font-bold">{hero.child.name}, {hero.child.age}</p><p className="m-0 text-sm text-ink-soft">{hero.parent.city}</p></div>
             <div className="grid grid-cols-2 gap-2"><Link href={`/order?reorder=${hero.id}`} className="btn-primary">Order again</Link><Link href="/tales" className="btn-ghost">New free story</Link></div>
             <p className="m-0 text-[12px] text-ink-soft">Everything is pre-filled from the last order. The photos were deleted after delivery, so a reorder asks for them again.</p>
           </div>

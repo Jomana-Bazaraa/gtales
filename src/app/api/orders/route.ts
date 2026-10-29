@@ -12,12 +12,11 @@ import { assertSafe, SafetyError } from "@/stories/safety";
 import type { OrderRecord } from "@/lib/types";
 
 const person = z.object({ who: z.string().trim().min(1).max(20), name: z.string().trim().min(1).max(20), description: z.string().trim().max(200).optional(), photo_key: z.string().max(80).optional() });
-const book = z.object({ struggle: z.string().trim().min(2).max(60), context: z.string().trim().max(200).optional(), people: z.array(person).max(4).default([]), setting: z.string().trim().max(120).optional() });
+const book = z.object({ struggle: z.string().trim().min(2).max(60), people: z.array(person).max(4).default([]), setting: z.string().trim().max(120).optional() });
 
 const schema = z.object({
   child: z.object({ name: z.string().trim().min(1).max(14).regex(/^[A-Za-z][A-Za-z '\-]*$/), age: z.number().int().min(2).max(10), gender: z.enum(["boy", "girl"]), description: z.string().trim().max(300).optional() }),
   photos: z.object({ face: z.string().max(80).optional() }).default({}),
-  strengths: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
   books: z.array(book).min(1).max(3),
   world: z.object({ favourites: z.array(z.string().trim().min(1).max(40)).max(20).default([]), notes: z.string().trim().max(300).optional(), snack: z.string().trim().max(20).optional(), silly: z.string().trim().max(14).optional() }),
   words: z.object({ parent: z.string().trim().max(120).optional(), child: z.string().trim().max(120).optional(), nicknames: z.string().trim().max(120).optional() }),
@@ -66,7 +65,7 @@ export async function POST(req: Request) {
   const parent_id = await rememberParent(o.parent.whatsapp, { name: o.parent.name, source: o.ref, first_order_id: id });
   const rec: OrderRecord = {
     id, status: "ordered", edit_requested: false,
-    child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
+    child: o.child, photos: o.photos, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
     quantity, promo_code: code, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
     free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,

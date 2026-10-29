@@ -16,14 +16,13 @@ import { Promises } from "@/components/ui/Promises";
 export interface Prefill { name?: string; age?: number; gender?: "boy" | "girl"; struggle?: string; storyId?: string }
 
 const KEY = "gtales.order-draft.v1";
-type Step = "hero" | "strengths" | "struggles" | "context" | "world" | "dedication" | "activities" | "book1" | "book2" | "book3" | "delivery" | "review";
+type Step = "hero" | "struggles" | "world" | "dedication" | "activities" | "book1" | "book2" | "book3" | "delivery" | "review";
 
 interface Person { who: string; name: string; description: string; photo_key: string }
 interface Book { people: Person[]; setting: string }
 interface Draft {
   name: string; age: number | 0; gender: "boy" | "girl" | ""; face: string; description: string;
-  strengths: string[]; strengthText: string;
-  struggles: string[]; context: string[];
+  struggles: string[];
   favourites: string[]; worldText: string; wordsParent: string; wordsChild: string; nicknames: string;
   dedication: string; activities: string[];
   books: Book[];
@@ -31,9 +30,8 @@ interface Draft {
   isGift: boolean; giftTo: string; giftMessage: string; hidePrice: boolean;
   quantity: number; // printed books, 1–100
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true, quantity: 3 };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", struggles: [], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true, quantity: 3 };
 
-const STRENGTHS = ["Building", "Drawing", "Football", "Swimming", "Dancing", "Reading", "Singing", "Helping", "Running", "Making people laugh", "Puzzles"];
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
 const FAVES = ["Lego", "Cars", "Dinosaurs", "Football", "Dolls", "Koshari", "Pizza", "Mango", "The beach", "Teta's house", "Blue", "Pink", "Cats", "Horses"];
 const ACTIVITIES = ["Mazes", "Puzzles", "Colouring", "Riddles", "Maths questions", "Spot the difference", "Breathing games", "Counting", "Drawing"];
@@ -84,10 +82,10 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
   }, [d.promo, d.whatsapp, QTY]);
 
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
-  const toggle = (k: "strengths" | "favourites" | "activities", v: string) => setD((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
+  const toggle = (k: "favourites" | "activities", v: string) => setD((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
   const name = d.name.trim() || "your child";
   const steps = useMemo<Step[]>(() => {
-    const s: Step[] = ["hero", "strengths", "struggles", "context", "world", "dedication", "activities"];
+    const s: Step[] = ["hero", "struggles", "world", "dedication", "activities"];
     d.struggles.slice(0, 3).forEach((_, k) => s.push(`book${k + 1}` as Step));
     s.push("delivery", "review");
     return s;
@@ -99,7 +97,6 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
   const valid = (s: Step): string | null => {
     switch (s) {
       case "hero": if (!d.name.trim()) return "Please write the hero's name."; if (!d.age) return "Please choose an age."; if (!d.gender) return "Boy or girl?"; return null;
-      case "strengths": return d.strengths.length || d.strengthText.trim() ? null : "Pick one or write one.";
       case "struggles": return d.struggles.length ? null : "Pick or write at least one.";
       case "delivery": {
         if (d.parentName.trim().length < 2) return "Your name, please.";
@@ -132,8 +129,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
     setBusy(true); setErr(null);
     const payload = {
       child: { name: cap(d.name), age: d.age, gender: d.gender, description: d.description.trim() || undefined }, photos: { face: d.face || undefined },
-      strengths: [...d.strengths, ...(d.strengthText.trim() ? [d.strengthText.trim()] : [])],
-      books: d.struggles.slice(0, 3).map((st, k) => ({ struggle: st, context: d.context[k]?.trim() || undefined, people: d.books[k].people.filter((p) => p.name.trim()).map((p) => ({ who: p.who, name: cap(p.name), description: p.description.trim() || undefined, photo_key: p.photo_key || undefined })), setting: d.books[k].setting.trim() || undefined })),
+      books: d.struggles.slice(0, 3).map((st, k) => ({ struggle: st, people: d.books[k].people.filter((p) => p.name.trim()).map((p) => ({ who: p.who, name: cap(p.name), description: p.description.trim() || undefined, photo_key: p.photo_key || undefined })), setting: d.books[k].setting.trim() || undefined })),
       world: { favourites: d.favourites, notes: d.worldText.trim() || undefined },
       quantity: QTY,
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
@@ -191,12 +187,6 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           {d.face && <p className="m-0 text-[12px] leading-4 text-ink-soft">I have permission to use this photo. It is used only to create the pictures and deleted when the books are delivered.</p>}
         </>)}
 
-        {step === "strengths" && (<>
-          <Q help="Pick as many as you like, or write your own. The hero wins with these.">What is {name} good at?</Q>
-          <div className="flex flex-wrap gap-2">{STRENGTHS.map((s) => <Chip key={s} on={d.strengths.includes(s)} onClick={() => toggle("strengths", s)}>{s}</Chip>)}</div>
-          <input className="field" placeholder="Something else, e.g. climbing trees" value={d.strengthText} onChange={(e) => u("strengthText", e.target.value)} maxLength={40} />
-        </>)}
-
         {step === "struggles" && (<>
           <Q help="Up to three. Each one becomes a book. Tap a suggestion or write your own.">What's hard for {name} right now?</Q>
           <div className="flex flex-col gap-2">
@@ -212,13 +202,6 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
             <div className="flex gap-2"><input className="field" placeholder="Or write it, e.g. scared of dogs" value={struggleText} onChange={(e) => setStruggleText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addStruggle(struggleText); setStruggleText(""); } }} maxLength={60} /><button type="button" onClick={() => { addStruggle(struggleText); setStruggleText(""); }} className="btn-secondary !px-4">Add</button></div>
           </>)}
           <p className="m-0 text-[13px] text-ink-soft">{d.struggles.length} of 3 books chosen.</p>
-        </>)}
-
-        {step === "context" && (<>
-          <Q help="Optional. When or where does it happen? One line each is plenty.">Tell us a bit more</Q>
-          {d.struggles.map((s, k) => (
-            <F key={s} label={s}><input className="field font-medium" placeholder={k === 0 ? "e.g. at bedtime, when the lights go off" : "e.g. when his brother takes his toys"} value={d.context[k] ?? ""} onChange={(e) => { const c = [...d.context]; c[k] = e.target.value; u("context", c); }} maxLength={200} /></F>
-          ))}
         </>)}
 
         {step === "world" && (<>
@@ -277,8 +260,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         {step === "review" && (<>
           <Q help="Tap Edit to change anything.">Does this look right?</Q>
           <Row label="The hero" onEdit={() => goTo("hero")}>{cap(d.name)}, {d.age}, {d.gender} · {d.face ? "face photo ✓" : d.description.trim() ? "described ✓" : "no photo yet"}</Row>
-          <Row label="Good at" onEdit={() => goTo("strengths")}>{[...d.strengths, d.strengthText.trim()].filter(Boolean).join(", ")}</Row>
-          {d.struggles.map((s, k) => <Row key={s} label={`Book ${k + 1}: ${s}`} onEdit={() => goTo(`book${k + 1}` as Step)}>{[d.context[k]?.trim(), d.books[k].people.filter((p) => p.name.trim()).map((p) => `${cap(p.name)} (${p.who})`).join(", "), d.books[k].setting.trim()].filter(Boolean).join(" · ") || "No extra details"}</Row>)}
+          {d.struggles.map((s, k) => <Row key={s} label={`Book ${k + 1}: ${s}`} onEdit={() => goTo(`book${k + 1}` as Step)}>{[d.books[k].people.filter((p) => p.name.trim()).map((p) => `${cap(p.name)} (${p.who})`).join(", "), d.books[k].setting.trim()].filter(Boolean).join(" · ") || "No extra details"}</Row>)}
           <Row label="World and words" onEdit={() => goTo("world")}>{[...d.favourites, d.worldText.trim(), d.wordsParent.trim(), d.wordsChild.trim()].filter(Boolean).join(" · ") || "—"}</Row>
           <Row label="Play pages" onEdit={() => goTo("activities")}>{d.activities.join(", ") || "We'll choose for you"}</Row>
           <Row label="Message" onEdit={() => goTo("dedication")}>{d.dedication.trim() || "None"}</Row>
@@ -300,7 +282,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
       <div className="sticky bottom-0 bg-white border-t border-line px-4 py-3 flex flex-col gap-2">
         {step === "review" ? <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Sending…" : "Confirm my order"}</button>
-          : (step === "dedication" || step === "context") ? <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
+          : step === "dedication" ? <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
           : <button type="button" onClick={next} className="btn-primary w-full">Next</button>}
         {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : orderTotal === 0 ? `Free with ${quote?.code ?? "your code"}` : `${QTY} × ${egp(unit)} + ${egp(delivery)} delivery = ${egp(orderTotal)} · pay on delivery`}</span>}
       </div>

@@ -243,16 +243,16 @@ AC: no `{{token}}` or `undefined` in the output; no "too much text" warning; the
 **Story PDF.** Same HTML rendered by headless Chrome: A4, `printBackground: true`, zero margins, `preferCSSPageSize: true`; wait for `document.fonts.ready`, call `fitPages`, print. 17 pages: cover, 15 story pages, back cover. Made on first request, then stored: the web server (Cloudflare Workers) can't run Chrome, so the request queues a `pdf_jobs` row and starts the GitHub Action `pdf.yml`, which renders `/story/[id]/print` (token-protected), uploads to the `pdfs` bucket and sets `books.pdf_url`. The parent sees "<Name>'s PDF is being made" (about two minutes) with a link to read meanwhile; the PDF opens by itself when ready, and instantly after that. Admin → Free stories shows each PDF's state with Generate / Regenerate. Pages 1, 8 and 12 must match `docs/reference/worry-boy-template.pdf`. Colouring PDF: only when a tale ships a line-art set (none yet; button hidden).
 AC: no overflow, no empty tokens, no broken words; one boy book and one girl book per tale reviewed before launch.
 
-## 9. Series order form (`/order`, 12 screens)
+## 9. Series order form (`/order`, 10 screens)
 
 Restructured per Ayman's review (10 Oct): hero first, strengths before struggles, free-text struggles with suggestions (up to three → the three books), optional context, world and words, dedication, activities, then one screen per book (characters + setting), delivery, review. Smooth and quick: chips and suggestions everywhere, free text always allowed, optional fields say so, auto-saved, pre-filled from the free story when `?story=<id>` is present. The price line under the Next button appears only on the delivery and review screens; the early screens show no cost.
 
 | # | Screen | Asks | Saved as |
 |---|---|---|---|
 | 1 | The hero | Opens with a one-line note: "You will get three printed books. Each one is about one thing that is hard for your child right now." Name · age (2–10) · boy/girl · face photo (optional) · "Or describe {name}" free text (optional; hair, eyes, glasses…). No full-body photo. If neither photo nor description is given the team asks on WhatsApp. Pre-filled from the free story. | `child` (incl. `description`), `photos.face` |
-| 2 | What is Adam good at? | Chips (Building · Drawing · Football · Swimming · Dancing · Reading · Singing · Helping · Running · Making people laugh · Puzzles) + free text; pick any number | `strengths[]` |
+| ~~2~~ | ~~What is Adam good at?~~ | Removed 29 Oct (fixnow A4). `{{strength}}` = the story's fixed default: anger builder, worry explorer, bullied friend, lying truth-teller, feelings feelings-finder, friendship teammate | – |
 | 3 | What's hard for Adam right now? | Up to three, free text with suggestions: Tantrums · Hitting · Being bullied · Sleeping in the dark · Worries · Lying · Big feelings · Sharing · Making friends · Shyness · Screen time · New school. Each one becomes a book. | `struggles[1..3]` |
-| 4 | Tell us more (optional) | For each struggle: "When or where does it happen?" one line, e.g. "at bedtime", "when his brother takes his toys" | `context[]` |
+| ~~4~~ | ~~Tell us more~~ | Removed 29 Oct (fixnow A4): no "when or where does it happen" per struggle | – |
 | 5 | Adam's world | Favourite toys, foods, places, colours, animals (chips + text); "Words you say at home" (what you say to Adam, what Adam says, nicknames) | `world`, `words` |
 | 6 | A message for the first page | Optional, ≤ 200 characters. Skip as big as Next. | `dedication` |
 | 7 | What does Adam like to do? | Chips, any number: Mazes · Puzzles · Colouring · Riddles · Maths questions · Spot the difference · Breathing games · Counting · Drawing | `activities[]` |
@@ -356,7 +356,7 @@ Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard ·
 - [ ] Rate limit: 11th story in an hour from one device shows the soft message, never a number.
 - [ ] Reader: cream paper, Andika, swipe + edge tap + arrows + keyboard; Read to me highlights words; challenge page celebrates on correct answer.
 - [ ] PDF: A4, fonts embedded, no UI chrome, images complete, certificate last.
-- [ ] Order form: 12 screens per §9; hero first and pre-filled from the free story; up to three struggles with suggestions; one screen per book; photo required; review shows 3 × 149 + 89 = 536.
+- [ ] Order form: 10 screens per §9 (no "good at", no "tell us more"); hero first and pre-filled from the free story; up to three struggles with suggestions; one screen per book; photo required; review shows 3 × 149 + 89 = 536.
 - [ ] Order submit creates account, sends WhatsApp template, confirmation lists four next steps with "5 days" wording.
 - [ ] Sign in by WhatsApp code and by email link; wrong code 5× locks for 10 min.
 - [ ] My stories: profile card, Order again pre-fills steps, tracker matches admin status within 5 s of change, WhatsApp message sent per status.
@@ -379,7 +379,7 @@ Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard ·
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
-- 1.14 (29 Oct 2026): fixnow — end-of-story links removed from the reader; price per book 249, launch 40% automatic → 149 per book (rounded to whole EGP), delivery 89 per order, prices only from env; "Number of books" stepper (1–100, default 3), `orders.quantity` (migration 0007).
+- 1.14 (29 Oct 2026): fixnow — end-of-story links removed from the reader; price per book 249, launch 40% automatic → 149 per book (rounded to whole EGP), delivery 89 per order, prices only from env; "Number of books" stepper (1–100, default 3), `orders.quantity` (migration 0007); order form without "What is your child good at?" and "Tell us more" (strength = story default).
 - 1.13 (24 Oct 2026): landing hero and the one-question-per-page free form restored (Jomana); kept: new silly words + Other…, no snack, no "great at" (story default), invisible landing_view/free_form_step tracking.
 - 1.12 (24 Oct 2026): free story in two screens (§7.2) with Surprise me and defaults, story opens on the first page, email optional on the story page; phone-first hero with one big free-story button (§5.1); funnel events landing_view → start_click → form_step_1/2 → story_created; ages 4–8 buttons.
 - 1.11 (23 Oct 2026): reviews wall (§5.6): public form with photos/video, Turnstile, moderation in Admin → Reviews, home section + `/reviews`, privacy section; replaces the reviews toggle.

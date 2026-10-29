@@ -42,10 +42,8 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
             {o.child.description && <p className="m-0 text-sm">{o.child.description}</p>}
           </div>
         </Section>
-        <Section title="Good at">{o.strengths.join(", ")}</Section>
         {await Promise.all(o.books.map(async (b, k) => (
           <Section key={k} title={`Book ${k + 1}: ${b.struggle}`}>
-            {b.context && <p className="m-0 text-sm"><b>When/where:</b> {b.context}</p>}
             {b.setting && <p className="m-0 text-sm"><b>Special moment:</b> {b.setting}</p>}
             {b.people.length ? <ul className="m-0 ps-5 text-sm">{await Promise.all(b.people.map(async (p, j) => { const u = await photo(p.photo_key); return <li key={j}>{p.name} ({p.who}){p.description ? ` — ${p.description}` : ""}{u && /* eslint-disable-next-line @next/next/no-img-element */ <img src={u} alt="" className="inline-block w-12 h-12 object-cover rounded-lg ml-2 align-middle" />}</li>; }))}</ul> : <span className="text-sm text-ink-soft">No extra characters.</span>}
           </Section>
