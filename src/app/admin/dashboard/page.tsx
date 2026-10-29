@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
-import { dashboardStats, parseRange, rangeStart, RANGES, totalStories, type Breakdown, type DashboardStats } from "@/lib/dashboard";
+import { dashboardStats, parseRange, rangeStart, RANGES, totalStories, type Breakdown } from "@/lib/dashboard";
 import { TALES } from "@/lib/gtales";
 import { listPromos, promoProblem } from "@/lib/promos";
 

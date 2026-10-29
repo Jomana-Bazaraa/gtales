@@ -20,6 +20,8 @@ export const DEFAULTS: Settings = {
   promo_bar: COPY.promoBar(),
   production_days: 5, delivery_days: 5, whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP || "",
 };
+/** The promo bar text seeded by migration 0002 (old Series price): treated as "not customised", so the bar follows the price config. */
+const SEEDED_PROMO_BAR = "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery";
 const FILE = path.join(process.cwd(), ".data", "settings.json");
 let cache: { at: number; v: Settings } | null = null;
 
@@ -34,6 +36,7 @@ export async function getSettings(): Promise<Settings> {
     }
   } catch {}
   const v = { ...DEFAULTS, ...over } as Settings;
+  if (v.promo_bar === SEEDED_PROMO_BAR) v.promo_bar = DEFAULTS.promo_bar;
   cache = { at: Date.now(), v };
   return v;
 }

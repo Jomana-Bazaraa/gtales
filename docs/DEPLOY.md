@@ -4,7 +4,7 @@ Do once. After this, every push to `main` builds and deploys on Cloudflare. Why 
 
 ## 1. Supabase (database + file storage)
 1. supabase.com → New project → name `gtales`, region Frankfurt (closest to Egypt), strong DB password.
-2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0005_reviews.sql`. (0003–0005 are safe to re-run.)
+2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0005_reviews.sql`, `0007_order_quantity.sql`, `0008_dashboard_stats.sql` (there is no 0006). (0003–0008 are safe to re-run.)
 3. Project settings → API: copy **Project URL** and the **service_role** key (never the anon key, never in client code).
 
 ## 2. GitHub (PDFs)
@@ -27,7 +27,7 @@ PDFs are rendered by `.github/workflows/pdf.yml`, never on the web server. The w
    - Root directory: `/`
 3. Before the first build, **Settings → Build → Variables and secrets** (build-time; `NEXT_PUBLIC_*` are baked into the pages):
    `NODE_VERSION=22`, `NEXT_PUBLIC_SITE_URL=https://gtales.kids`, `NEXT_PUBLIC_WHATSAPP=20xxxxxxxxxx`
-   (pricing / `NEXT_PUBLIC_REVIEWS_VISIBLE` only if you change the defaults).
+   Prices (the only place they live; defaults 249 per book, 40% launch, 89 delivery per order): `NEXT_PUBLIC_LIST_PRICE_EGP`, `NEXT_PUBLIC_PROMO_PERCENT`, `NEXT_PUBLIC_DELIVERY_EGP`: set them here AND in runtime variables, or leave both unset. `NEXT_PUBLIC_SHOW_WHATS_INSIDE=1` shows the "What's inside every book" box.
 4. **Settings → Variables and Secrets** (runtime), type **Secret** for each:
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `INTERNAL_RENDER_TOKEN`, `RESEND_API_KEY`,
    `EMAIL_FROM` (`GTales <stories@gtales.kids>`), `ADMIN_NOTIFY_EMAIL`, `GITHUB_PDF_TOKEN`,
@@ -55,5 +55,5 @@ Local check of the Worker build: `npm run cf:preview` (needs `.dev.vars` with th
 - `/` loads over https; `/tales/anxiety` → form → book → reader; Story PDF shows "being made", then opens (Actions → pdf run is green).
 - Supabase Table Editor: rows in `books`, `events`, `parents`, `pdf_jobs`.
 - `/admin` opens with `ADMIN_PASSWORD`; Dashboard shows the story.
-- Place a Series order with `LAUNCH40` → total 538; the admin email arrives in the inbox (not spam).
+- Place a Series order (no code needed) with 3 books → 3 × 149 + 89 = 536 EGP; the admin email arrives in the inbox (not spam).
 - Then delete the Vercel project and uninstall the Vercel GitHub app.
