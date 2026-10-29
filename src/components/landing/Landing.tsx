@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { LaunchPrice } from "@/components/ui/LaunchPrice";
+import { WhatsInside } from "@/components/ui/WhatsInside";
 import Link from "next/link";
 import { COPY, TALES, egp } from "@/lib/gtales";
 import { currentBreakdown } from "@/lib/pricing";
@@ -237,6 +238,7 @@ export async function Pricing() {
           </div>
         </div>
 
+        <WhatsInside />
         <Promises />
       </div>
     </section>

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { LaunchPrice } from "@/components/ui/LaunchPrice";
+import { WhatsInside } from "@/components/ui/WhatsInside";
 import { booksLabel } from "@/lib/orders";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
@@ -177,6 +178,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <Q help={prefill.name ? "Filled in from the free story. Change anything." : "A few quick questions, then we start."}>The hero</Q>
           <p className="m-0 -mt-2 rounded-2xl bg-sun-soft px-4 py-3 text-[15px] leading-[22px] font-medium">You will get <b>three printed books</b>. Each one is about one thing that is hard for your child right now, with their face in every picture.</p>
           <LaunchPrice pricing={pricing} size="sm" />
+          <WhatsInside />
           <F label="Name"><input className="field text-xl" placeholder="e.g. Adam" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Age</span>
             <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>

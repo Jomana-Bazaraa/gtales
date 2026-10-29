@@ -161,6 +161,18 @@ function num(v: string | undefined, d: number) {
   return Number.isFinite(n) && n > 0 ? n : d;
 }
 
+/* ---------- "What's inside every book" box (fixnow A5) ----------
+ * Behind a flag: NEXT_PUBLIC_SHOW_WHATS_INSIDE=1 shows it on the homepage and the order page. Off by default:
+ * turn it on only once every line is really in the parcel (honest copy). */
+export const SHOW_WHATS_INSIDE = process.env.NEXT_PUBLIC_SHOW_WHATS_INSIDE === "1";
+export const WHATS_INSIDE: { icon: string; text: string }[] = [
+  { icon: "📖", text: "Your child's personalised printed story" },
+  { icon: "🧠", text: "All 6 GTales parent guides (research-based, with activities)" },
+  { icon: "🎨", text: "Colouring pages from the story" },
+  { icon: "⭐", text: "Personalised name stickers" },
+  { icon: "🎮", text: "Interactive \"Your turn\" games inside the book" },
+];
+
 /* ---------- The five promises (SPEC §1.2) ---------- */
 export interface Promise_ {
   id: "review" | "cod" | "five" | "crafted" | "play";

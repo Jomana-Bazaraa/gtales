@@ -379,7 +379,7 @@ Tabs: Free stories · Series orders · Reviews (badge = pending) · Dashboard ·
 | 5 | Email magic link provider | Build | Supabase auth OTP |
 
 Changelog
-- 1.14 (29 Oct 2026): fixnow — end-of-story links removed from the reader; price per book 249, launch 40% automatic → 149 per book (rounded to whole EGP), delivery 89 per order, prices only from env; "Number of books" stepper (1–100, default 3), `orders.quantity` (migration 0007); order form without "What is your child good at?" and "Tell us more" (strength = story default).
+- 1.14 (29 Oct 2026): fixnow — end-of-story links removed from the reader; price per book 249, launch 40% automatic → 149 per book (rounded to whole EGP), delivery 89 per order, prices only from env; "Number of books" stepper (1–100, default 3), `orders.quantity` (migration 0007); order form without "What is your child good at?" and "Tell us more" (strength = story default); "What's inside every book" box (homepage pricing section + order page first screen) behind `NEXT_PUBLIC_SHOW_WHATS_INSIDE=1`, off by default.
 - 1.13 (24 Oct 2026): landing hero and the one-question-per-page free form restored (Jomana); kept: new silly words + Other…, no snack, no "great at" (story default), invisible landing_view/free_form_step tracking.
 - 1.12 (24 Oct 2026): free story in two screens (§7.2) with Surprise me and defaults, story opens on the first page, email optional on the story page; phone-first hero with one big free-story button (§5.1); funnel events landing_view → start_click → form_step_1/2 → story_created; ages 4–8 buttons.
 - 1.11 (23 Oct 2026): reviews wall (§5.6): public form with photos/video, Turnstile, moderation in Admin → Reviews, home section + `/reviews`, privacy section; replaces the reviews toggle.
