@@ -25,6 +25,7 @@ const schema = z.object({
   activities: z.array(z.string().trim().max(40)).max(12).default([]),
   parent: z.object({ name: z.string().trim().min(2).max(60), whatsapp: z.string().trim().regex(/^\+?[0-9 ]{10,16}$/), governorate: z.string().trim().min(2).max(40), city: z.string().trim().min(2).max(60), street: z.string().trim().min(3).max(200), landmark: z.string().trim().max(120).optional(), best_time: z.string().trim().max(40).optional(),
     gift: z.object({ recipient: z.string().trim().min(2).max(60), message: z.string().trim().max(200).optional(), hide_price: z.boolean().default(false) }).optional() }),
+  quantity: z.number().int().min(1).max(100).default(3), // books (fixnow A3)
   promo_code: z.string().trim().max(30).optional(),
   free_story_id: z.string().max(40).optional(),
   ref: z.string().trim().max(60).optional(),
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     if (!promo.ok) return NextResponse.json({ error: "promo", field: "promo", message: `${PROMO_MESSAGES[promo.reason]} Remove it or check it.` }, { status: 422 });
   }
   // The launch % applies to every order without a code; an entered code is used instead only when it is cheaper.
-  const quantity = 3; // books per order (fixnow A3 makes this the parent's choice)
+  const quantity = o.quantity;
   const launch = promoPrice(p.listPrice, p.delivery, { percent_off: p.promoPercent, covers_delivery: false }, quantity);
   let price = launch, code: string | undefined = p.promoCode;
   if (promo?.ok) {
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
     id, status: "ordered", edit_requested: false,
     child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
-    promo_code: code, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
+    quantity, promo_code: code, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
     free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,
   };
   try {
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
     if (promo?.ok && code === promo.promo.code) await releasePromo(id);
     throw e;
   }
-  await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null, total: rec.total } });
+  await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, quantity, promo: rec.promo_code ?? null, total: rec.total } });
   const site = await baseUrl();
   after(() => sendOrderNotice(rec, site).catch((e) => console.error("[email] order", e)));
   return NextResponse.json({ id, total: rec.total });

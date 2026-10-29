@@ -5,6 +5,7 @@ import { Footer, Header } from "@/components/SiteChrome";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { getOrder } from "@/lib/db";
 import { COPY, egp, egpOrFree } from "@/lib/gtales";
+import { booksLine } from "@/lib/orders";
 
 export const metadata: Metadata = { title: "Order received — GTales" };
 
@@ -40,7 +41,7 @@ export default async function Confirmed({ params }: PageProps<"/order/[id]/confi
             ))}
           </ol>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-1 text-[15px]">
-            <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(o.list_price)}</b></div>
+            <div className="flex justify-between gap-3"><span>{booksLine(o).label}</span><b className="whitespace-nowrap">{egp(booksLine(o).amount)}</b></div>
             {o.discount > 0 && <div className="flex justify-between text-mint"><span>{o.promo_code}</span><b>−{egp(o.discount)}</b></div>}
             <div className="flex justify-between"><span>Delivery</span><b>{egpOrFree(o.delivery)}</b></div>
             <div className="flex justify-between font-bold"><span>{o.total ? "Pay on delivery" : "To pay"}</span><b>{egpOrFree(o.total)}</b></div>

@@ -174,9 +174,11 @@ export interface OrderRecord {
   words: { parent?: string; child?: string; nicknames?: string };
   dedication?: string;
   activities: string[];
-  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string; gift?: OrderGift };
+  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string; gift?: OrderGift; quantity?: number /* only if saved before migration 0007 */ };
+  /** Books ordered (1–100). Missing on orders placed before 29 Oct = 3 books: always read it via orderQuantity(). */
+  quantity?: number;
   promo_code?: string;
-  list_price: number;
+  list_price: number; // per book since 29 Oct (orders before: the price of the three-book Series)
   discount: number;
   delivery: number;
   total: number;

@@ -1,4 +1,4 @@
-import type { OrderStatus } from "./types";
+import type { OrderRecord, OrderStatus } from "./types";
 
 /** Status pipeline (SPEC §10). Parent-facing labels; the same words appear in My stories and WhatsApp. */
 export const STATUS_ORDER: OrderStatus[] = ["ordered", "being_made", "awaiting_approval", "approved", "printing", "shipped", "delivered_paid"];
@@ -10,3 +10,16 @@ export const STATUS_NEXT: Record<OrderStatus, string> = {
   awaiting_approval: "Check every page on WhatsApp and tell us what to change, or approve.", approved: "Thank you! Printing starts now.",
   printing: "About 3 days.", shipped: "The courier will call you. Pay cash or card at the door.", delivered_paid: "Enjoy the books! Photos are deleted now.", cancelled: "This order was cancelled.",
 };
+
+/** Books in an order: saved quantity; orders from before 29 Oct (no quantity) were the three-book Series. */
+export function orderQuantity(o: Pick<OrderRecord, "quantity" | "parent">): number {
+  return o.quantity ?? o.parent.quantity ?? 3;
+}
+export const booksLabel = (n: number) => `${n} printed book${n === 1 ? "" : "s"}`;
+/** The books line of an order's price: per-book orders (29 Oct on) "2 printed books × 249 EGP"; older orders had one Series price. */
+export function booksLine(o: Pick<OrderRecord, "quantity" | "list_price" | "parent" | "discount" | "delivery" | "total">): { label: string; amount: number } {
+  const q = orderQuantity(o);
+  // before 29 Oct list_price was the whole Series: its total doesn't add up per book (749 × 3 − 300 + 89 ≠ 538)
+  if (q * o.list_price - o.discount + o.delivery !== o.total) return { label: `${booksLabel(q)} (Series price)`, amount: o.list_price };
+  return { label: `${booksLabel(q)} × ${o.list_price} EGP`, amount: q * o.list_price };
+}

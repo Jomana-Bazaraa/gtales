@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { KEEPERS } from "./keepers";
 import type { BookRecord, OrderRecord, StoryRecord } from "./types";
+import { booksLabel, orderQuantity } from "./orders";
 import type { Review } from "./reviews";
 
 export const isMockEmail = !process.env.RESEND_API_KEY;
@@ -104,7 +105,7 @@ export async function sendOrderNotice(o: OrderRecord, baseUrl: string) {
   const to = process.env.ADMIN_NOTIFY_EMAIL;
   if (!to) return;
   const rows: [string, string][] = [
-    ["Order", o.id], ["Child", `${o.child.name}, ${o.child.age}, ${o.child.gender}`], ["Books", o.books.map((b) => b.struggle).join(" · ")],
+    ["Order", o.id], ["Child", `${o.child.name}, ${o.child.age}, ${o.child.gender}`], ["Books", `${booksLabel(orderQuantity(o))} · ${o.books.map((b) => b.struggle).join(" · ")}`],
     ["Parent", `${o.parent.name} · ${o.parent.whatsapp}`], ["Address", `${o.parent.street}, ${o.parent.city}, ${o.parent.governorate}`],
     ...(o.parent.gift ? [["Gift", `for ${o.parent.gift.recipient}${o.parent.gift.message ? ` · first page: "${o.parent.gift.message}"` : ""}${o.parent.gift.hide_price ? " · NO PRICE in the parcel" : ""}`] as [string, string]] : []),
     ["Total", `${o.total ? `${o.total} EGP (cash on delivery)` : "Free"}${o.promo_code ? ` · ${o.promo_code}` : ""}`], ["Source", o.ref || "direct"],
@@ -112,7 +113,7 @@ export async function sendOrderNotice(o: OrderRecord, baseUrl: string) {
   const body = `<h2 style="margin:0 0 8px">New Series order ${esc(o.id)}</h2>
      <table style="font-size:14px;border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#6b5f58">${k}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("")}</table>
      ${btn(`${baseUrl}/admin/series/${o.id}`, "Open in admin")}`;
-  await send(to, `New order ${o.id} · ${o.child.name} · ${o.total ? `${o.total} EGP` : `Free (${o.promo_code})`}`, shell("en", body));
+  await send(to, `New order ${o.id} · ${o.child.name} · ${booksLabel(orderQuantity(o))} · ${o.total ? `${o.total} EGP` : `Free (${o.promo_code})`}`, shell("en", body));
 }
 
 /** Admin alert: a new review is waiting for approval (Admin → Reviews). */

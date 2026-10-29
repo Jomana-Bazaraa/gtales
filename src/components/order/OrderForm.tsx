@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { LaunchPrice } from "@/components/ui/LaunchPrice";
+import { booksLabel } from "@/lib/orders";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -28,8 +29,9 @@ interface Draft {
   books: Book[];
   parentName: string; whatsapp: string; governorate: string; city: string; street: string; landmark: string; bestTime: string; promo: string;
   isGift: boolean; giftTo: string; giftMessage: string; hidePrice: boolean;
+  quantity: number; // printed books, 1–100
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true, quantity: 3 };
 
 const STRENGTHS = ["Building", "Drawing", "Football", "Swimming", "Dancing", "Reading", "Singing", "Helping", "Running", "Making people laugh", "Puzzles"];
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
@@ -56,7 +58,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
-  const QTY = 3; // books per order (fixnow A3 makes this a stepper)
+  const QTY = Math.min(100, Math.max(1, Math.floor(d.quantity) || 1)); // "Number of books" stepper
   const price = priceBreakdown(pricing, QTY);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       fetch(`/api/promo?code=${encodeURIComponent(code)}&quantity=${QTY}${wa}`, { signal: ctl.signal }).then((r) => r.json()).then((j: PromoQuote) => setQuote({ ...j, code: j.ok ? j.code : code })).catch(() => {});
     }, 350);
     return () => { clearTimeout(t); ctl.abort(); };
-  }, [d.promo, d.whatsapp]);
+  }, [d.promo, d.whatsapp, QTY]);
 
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
   const toggle = (k: "strengths" | "favourites" | "activities", v: string) => setD((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
@@ -133,6 +135,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       strengths: [...d.strengths, ...(d.strengthText.trim() ? [d.strengthText.trim()] : [])],
       books: d.struggles.slice(0, 3).map((st, k) => ({ struggle: st, context: d.context[k]?.trim() || undefined, people: d.books[k].people.filter((p) => p.name.trim()).map((p) => ({ who: p.who, name: cap(p.name), description: p.description.trim() || undefined, photo_key: p.photo_key || undefined })), setting: d.books[k].setting.trim() || undefined })),
       world: { favourites: d.favourites, notes: d.worldText.trim() || undefined },
+      quantity: QTY,
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
       dedication: d.dedication.trim() || undefined, activities: d.activities,
       parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined,
@@ -244,6 +247,17 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
         {step === "delivery" && (<>
           <Q help="We send every page to this WhatsApp number for your approval, then the books to this address.">Where do we send the books?</Q>
+          <div className="flex flex-col gap-2 rounded-2xl border-[3px] border-line bg-white px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor="quantity" className="font-bold text-[17px]">Number of books</label>
+              <div className="flex items-center gap-2">
+                <button type="button" aria-label="One book less" disabled={QTY <= 1} onClick={() => u("quantity", QTY - 1)} className="w-11 h-11 rounded-full border-[3px] border-line bg-white display font-bold text-2xl leading-none disabled:opacity-40">−</button>
+                <input id="quantity" aria-label="Number of books" inputMode="numeric" className="w-14 h-11 rounded-xl border-[3px] border-line text-center display font-bold text-xl" value={d.quantity || ""} onChange={(e) => u("quantity", Math.min(100, Number(e.target.value.replace(/\D/g, "")) || 0))} onBlur={() => u("quantity", QTY)} />
+                <button type="button" aria-label="One more book" disabled={QTY >= 100} onClick={() => u("quantity", QTY + 1)} className="w-11 h-11 rounded-full border-[3px] border-line bg-white display font-bold text-2xl leading-none disabled:opacity-40">+</button>
+              </div>
+            </div>
+            <p data-qty-summary className="m-0 text-[15px] font-bold text-ink-soft">{orderTotal === 0 ? `${booksLabel(QTY)} · free with ${quote?.code ?? "your code"}` : `${QTY} book${QTY === 1 ? "" : "s"} × ${egp(unit)} = ${unit * QTY} + ${delivery} delivery = ${egp(orderTotal)}`}</p>
+          </div>
           <label className="flex gap-3 items-center rounded-2xl border-[3px] border-line bg-white px-4 py-3 font-bold text-[17px]"><input type="checkbox" className="w-6 h-6 shrink-0 accent-[var(--flame)]" checked={d.isGift} onChange={(e) => u("isGift", e.target.checked)} />🎁 This is a gift</label>
           {d.isGift && (<div className="flex flex-col gap-4 rounded-2xl bg-surface-tint p-4">
             <F label="Recipient's name" hint="The person who receives the parcel."><input className="field font-medium" placeholder="e.g. Nour Hassan" value={d.giftTo} onChange={(e) => u("giftTo", e.target.value)} maxLength={60} /></F>
@@ -269,10 +283,11 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <Row label="Play pages" onEdit={() => goTo("activities")}>{d.activities.join(", ") || "We'll choose for you"}</Row>
           <Row label="Message" onEdit={() => goTo("dedication")}>{d.dedication.trim() || "None"}</Row>
           {d.isGift && <Row label="🎁 Gift" onEdit={() => goTo("delivery")}>For {d.giftTo.trim()}{d.giftMessage.trim() ? ` · "${d.giftMessage.trim()}"` : ""} · {d.hidePrice ? "no price in the parcel" : "price included"}</Row>}
+          <Row label="Number of books" onEdit={() => goTo("delivery")}>{booksLabel(QTY)}</Row>
           <Row label="Delivery" onEdit={() => goTo("delivery")}>{d.parentName}, {d.whatsapp} · {d.street}, {d.city}, {d.governorate}</Row>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
             <LaunchPrice pricing={pricing} size="sm" />
-            <div className="flex justify-between gap-3"><span>{QTY} printed books × {codeWins ? <>{egpOrFree(unit)} <span className="text-mint font-bold">({quote!.code} · {promoLine(quote!)})</span></> : egp(unit)}</span><b className="whitespace-nowrap">{egpOrFree(unit * QTY)}</b></div>
+            <div className="flex justify-between gap-3"><span>{booksLabel(QTY)} × {codeWins ? <>{egpOrFree(unit)} <span className="text-mint font-bold">({quote!.code} · {promoLine(quote!)})</span></> : egp(unit)}</span><b className="whitespace-nowrap">{egpOrFree(unit * QTY)}</b></div>
             <div className="flex justify-between gap-3"><span>Delivery, anywhere in Egypt (one per order)</span><b className="whitespace-nowrap">{egpOrFree(delivery)}</b></div>
             <div className="h-px bg-line" />
             <div className="flex justify-between items-center"><span className="font-bold">{orderTotal ? "Pay on delivery" : "To pay"}</span><b className="display text-[26px]">{egpOrFree(orderTotal)}</b></div>

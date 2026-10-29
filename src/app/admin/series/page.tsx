@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { listOrders } from "@/lib/db";
 import { egpOrFree } from "@/lib/gtales";
-import { STATUS_LABEL } from "@/lib/orders";
+import { booksLabel, orderQuantity, STATUS_LABEL } from "@/lib/orders";
 import { baseUrl } from "@/lib/site";
 import { statusMessage, waLink } from "@/lib/whatsapp";
 import type { OrderRecord, OrderStatus } from "@/lib/types";
@@ -71,7 +71,7 @@ function OrderCard({ o, base }: { o: OrderRecord; base: string }) {
         <Link href={`/admin/series/${o.id}`} className="font-extrabold text-sky break-all">{o.id}</Link>
         <span className="text-xs text-ink-soft whitespace-nowrap">{new Date(o.created_at).toLocaleDateString("en-GB", { timeZone: "Africa/Cairo" })}</span>
       </div>
-      <div><b>{o.child.name}</b>, {o.child.age} · {o.books.map((b) => b.struggle).join(" · ")}</div>
+      <div><b>{o.child.name}</b>, {o.child.age} · <b>{booksLabel(orderQuantity(o))}</b> · {o.books.map((b) => b.struggle).join(" · ")}</div>
       <div className="text-ink-soft">{o.parent.name} · {o.parent.city} · {egpOrFree(o.total)}</div>
       <div className="flex flex-wrap gap-1">
         <span className="pill bg-sky-soft text-sky">{STATUS_LABEL[o.status]}</span>

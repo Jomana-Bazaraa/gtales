@@ -210,6 +210,14 @@ export async function countRecentBooks(ip: string, contact: string, windowMinute
 export async function insertOrder(o: OrderRecord): Promise<void> {
   if (isMockDb) return writeJson("series", o.id, o);
   const { error } = await supabase().from("orders").insert(o);
+  if (error && /quantity/.test(error.message ?? "")) {
+    // Migration 0007 not run yet (no orders.quantity): never lose the order; keep the count inside `parent` (jsonb) for now.
+    console.error("[orders] no quantity column, run 0007_order_quantity.sql:", error.message);
+    const { quantity, ...rest } = o;
+    const retry = await supabase().from("orders").insert({ ...rest, parent: { ...o.parent, quantity } });
+    if (retry.error) throw retry.error;
+    return;
+  }
   if (error) throw error;
 }
 export async function updateOrder(id: string, patch: Partial<OrderRecord>): Promise<void> {

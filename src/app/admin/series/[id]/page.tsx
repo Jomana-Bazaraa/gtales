@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { getOrder, privatePhotoUrl } from "@/lib/db";
 import { egp } from "@/lib/gtales";
-import { STATUS_LABEL, STATUS_ORDER } from "@/lib/orders";
+import { booksLabel, booksLine, orderQuantity, STATUS_LABEL, STATUS_ORDER } from "@/lib/orders";
 import { statusMessage, waLink } from "@/lib/whatsapp";
 import { baseUrl } from "@/lib/site";
 
@@ -54,7 +54,7 @@ export default async function AdminSeriesOrder({ params }: PageProps<"/admin/ser
         <Section title="Play pages">{o.activities.join(", ") || "Team's choice"}</Section>
         <Section title="Message">{o.dedication || "None"}</Section>
         {o.parent.gift && <Section title="🎁 Gift"><p className="m-0 text-sm">For <b>{o.parent.gift.recipient}</b> (the address below is theirs) · ordered by {o.parent.name}</p><p className="m-0 text-sm">First-page message: {o.parent.gift.message ? <b>&ldquo;{o.parent.gift.message}&rdquo;</b> : "none"}</p>{o.parent.gift.hide_price && <p className="m-0 text-sm font-bold text-danger">No price anywhere in the parcel.</p>}</Section>}
-        <Section title="Delivery"><p className="m-0 text-sm">{o.parent.name} · <a className="text-sky" href={`https://wa.me/${o.parent.whatsapp.replace(/^0/, "20")}`}>{o.parent.whatsapp}</a> · best time {o.parent.best_time || "any"}</p><p className="m-0 text-sm">{o.parent.street}, {o.parent.city}, {o.parent.governorate}{o.parent.landmark ? ` (${o.parent.landmark})` : ""}</p><p className="m-0 text-sm">{egp(o.list_price)} − {egp(o.discount)} + {egp(o.delivery)} = <b>{egp(o.total)}</b> {o.promo_code ? `· ${o.promo_code}` : ""}</p></Section>
+        <Section title="Delivery"><p className="m-0 text-sm">{o.parent.name} · <a className="text-sky" href={`https://wa.me/${o.parent.whatsapp.replace(/^0/, "20")}`}>{o.parent.whatsapp}</a> · best time {o.parent.best_time || "any"}</p><p className="m-0 text-sm">{o.parent.street}, {o.parent.city}, {o.parent.governorate}{o.parent.landmark ? ` (${o.parent.landmark})` : ""}</p><p className="m-0 text-sm"><b>{booksLabel(orderQuantity(o))}</b>: {booksLine(o).label} = {egp(booksLine(o).amount)} − {egp(o.discount)} + {egp(o.delivery)} delivery = <b>{egp(o.total)}</b> {o.promo_code ? `· ${o.promo_code}` : ""}</p></Section>
         <Section title="Notes"><form action={`/api/admin/series/${o.id}`} method="post" className="flex flex-col gap-2"><textarea name="notes" defaultValue={o.notes ?? ""} className="field min-h-20" /><input name="courier_confirmation" defaultValue={o.courier_confirmation ?? ""} placeholder="Courier confirmation / tracking" className="field" /><button className="btn-ghost !h-10 self-start text-sm">Save notes</button></form></Section>
       </div>
     </div>
