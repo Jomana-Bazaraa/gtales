@@ -31,7 +31,7 @@ await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
 const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
 
 const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome", args: ["--no-sandbox"], headless: true });
-const FULL = { other: "Mohamed Ali", place: "Sheikh Zayed", sidekick: "Captain Bolt", power_word: "I'm a dinosaur! RAWR!", need: "I need some quiet time." };
+const FULL = { other: "Captain Koshary", place: "Egypt", sidekick: "Mr. Robot", power_word: "Mafeesh mosta7eel!", need: "Can I have a snack, please?" };
 let combos = 0, overflowing = 0;
 try {
   for (const [slug, raw] of Object.entries(FILES)) {

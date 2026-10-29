@@ -64,62 +64,67 @@ export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: {
         choice.classList.add("gt-on", o.correct ? "gt-ok" : "gt-no");
         bubble(card, o.response || (o.correct ? "Yes!" : "Try again."), o.correct);
         if (o.correct) { beacon("challenge_completed", bookId, p!.n); ding(); }
+        answer(page, o.response || (o.correct ? "Yes!" : "Try again."), o.correct);
         return;
       }
       const step = t.closest(".gt-steps li") as HTMLElement | null;
       if (step) {
         step.classList.toggle("gt-on");
         const li = Array.from(card.querySelectorAll(".gt-steps li"));
-        if (li.every((x) => x.classList.contains("gt-on"))) { bubble(card, ch.done ?? "Well done!", true); beacon("challenge_completed", bookId, p!.n); ding(); }
+        if (li.every((x) => x.classList.contains("gt-on"))) { bubble(card, ch.done ?? "Well done!", true); beacon("challenge_completed", bookId, p!.n); ding(); answer(page, ch.done ?? "Well done!", true); }
         return;
       }
       const box = t.closest(".gt-boxes i") as HTMLElement | null;
       if (box) {
         box.classList.toggle("gt-on");
         const bs = Array.from(card.querySelectorAll(".gt-boxes i"));
-        if (bs.every((x) => x.classList.contains("gt-on"))) { bubble(card, ch.done ?? "Well done!", true); beacon("challenge_completed", bookId, p!.n); ding(); }
+        if (bs.every((x) => x.classList.contains("gt-on"))) { bubble(card, ch.done ?? "Well done!", true); beacon("challenge_completed", bookId, p!.n); ding(); answer(page, ch.done ?? "Well done!", true); }
       }
     };
     el.addEventListener("click", onClick);
     return () => el.removeEventListener("click", onClick);
   }, [story, bookId]);
 
-  // Read to me: from the page in view to the next "Your turn" (the child answers, then taps again)
+  // Read to me: from the page in view to the next "Your turn". After the child answers, the response is read;
+  // correct → narration goes on by itself after 1 second; wrong → it waits. Stop (pause) switches this off.
   const [canSpeak, setCanSpeak] = useState(false);
-  const [reading, setReading] = useState(false);
+  const [reading, setReading] = useState(false); // true while narrating AND while waiting for an answer
   const run = useRef(0); // bumped on stop, so a cancelled queue never continues
+  const narrating = useRef(false); // the parent pressed play and has not pressed stop since
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setCanSpeak("speechSynthesis" in window); return () => { run.current++; window.speechSynthesis?.cancel(); }; }, []);
-  const stopReading = () => { run.current++; window.speechSynthesis.cancel(); clearMarks(root.current); setReading(false); };
-  const readToMe = () => {
-    if (reading) return stopReading();
+  useEffect(() => { setCanSpeak("speechSynthesis" in window); return () => { run.current++; narrating.current = false; window.speechSynthesis?.cancel(); }; }, []);
+  const stopReading = () => { narrating.current = false; run.current++; window.speechSynthesis.cancel(); clearMarks(root.current); setReading(false); };
+  const utter = (text: string, voice: SpeechSynthesisVoice | null) => {
+    // emoji become spaces of the same length, so word positions still match the highlighted spans
+    const u = new SpeechSynthesisUtterance(text.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu, (m) => " ".repeat(m.length)));
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = "en-GB";
+    u.rate = 0.9;
+    return u;
+  };
+  const readFrom = (from: number) => {
     const el = root.current; if (!el) return;
     const pages = Array.from(el.querySelectorAll<HTMLElement>(".gt-page"));
-    const from = Math.max(0, pages.findIndex((pg) => pg.getBoundingClientRect().bottom > window.innerHeight * 0.35));
     const queue: HTMLElement[] = [];
+    let stopsAtTurn = false;
     for (const pg of pages.slice(from)) {
       queue.push(...pg.querySelectorAll<HTMLElement>(".gt-title h1, .gt-story p, .gt-card .gt-q, .gt-riddle, .gt-choice, .gt-steps li"));
-      if (pg.querySelector(".gt-card")) break;
+      if (pg.querySelector(".gt-card")) { stopsAtTurn = true; break; }
     }
-    if (!queue.length) return;
+    if (!queue.length) { stopReading(); return; }
     const synth = window.speechSynthesis;
     const voice = pickVoice(synth);
     const me = ++run.current;
     setReading(true);
-    beacon("audio_played", bookId, Number(pages[from].querySelector(".gt-num")?.textContent) || 0);
     const say = (k: number) => {
       if (me !== run.current) return;
       clearMarks(el);
-      if (k >= queue.length) { setReading(false); return; }
+      if (k >= queue.length) { if (!stopsAtTurn) stopReading(); return; } // at a "Your turn": wait for the answer
       const part = queue[k];
       const spans = wrapWords(part);
       part.classList.add("gt-reading");
       const pg = part.closest(".gt-page");
       if (pg && (k === 0 || pg !== queue[k - 1].closest(".gt-page"))) window.scrollTo({ top: window.scrollY + pg.getBoundingClientRect().top - 64, behavior: "smooth" }); // 64: below the sticky top bar
-      // emoji become spaces of the same length, so word positions still match the highlighted spans
-      const u = new SpeechSynthesisUtterance((part.textContent ?? "").replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu, (m) => " ".repeat(m.length)));
-      if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = "en-GB";
-      u.rate = 0.9;
+      const u = utter(part.textContent ?? "", voice);
       u.onboundary = (e) => { if (e.name && e.name !== "word") return; spans.forEach((sp) => sp.classList.toggle("gt-say", Number(sp.dataset.a) <= e.charIndex && e.charIndex < Number(sp.dataset.b))); };
       u.onend = () => say(k + 1);
       u.onerror = (e) => { if (e.error !== "interrupted" && e.error !== "canceled") say(k + 1); };
@@ -127,6 +132,36 @@ export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: {
     };
     synth.cancel();
     say(0);
+  };
+  const onAnswer = (text: string, correct: boolean, page: HTMLElement) => {
+    if (!narrating.current) return; // only while Read to me is on (never after the parent pressed stop)
+    const el = root.current; if (!el) return;
+    const synth = window.speechSynthesis;
+    const me = ++run.current;
+    clearMarks(el);
+    synth.cancel();
+    const u = utter(text, pickVoice(synth));
+    const next = Array.from(el.querySelectorAll<HTMLElement>(".gt-page")).indexOf(page) + 1;
+    const goOn = () => { if (correct) setTimeout(() => { if (narrating.current && me === run.current) readFrom(next); }, 1000); };
+    u.onend = goOn;
+    u.onerror = (e) => { if (e.error !== "interrupted" && e.error !== "canceled") goOn(); };
+    synth.speak(u);
+  };
+  // the tap handler announces answers with a "gt-answer" event; re-subscribed each render so it sees the latest state
+  useEffect(() => {
+    const el = root.current; if (!el) return;
+    const on = (e: Event) => { const d = (e as CustomEvent<{ text: string; correct: boolean; page: HTMLElement }>).detail; onAnswer(d.text, d.correct, d.page); };
+    el.addEventListener("gt-answer", on);
+    return () => el.removeEventListener("gt-answer", on);
+  });
+  const readToMe = () => {
+    if (reading) return stopReading();
+    const el = root.current; if (!el) return;
+    const pages = Array.from(el.querySelectorAll<HTMLElement>(".gt-page"));
+    const from = Math.max(0, pages.findIndex((pg) => pg.getBoundingClientRect().bottom > window.innerHeight * 0.35));
+    narrating.current = true;
+    beacon("audio_played", bookId, Number(pages[from]?.querySelector(".gt-num")?.textContent) || 0);
+    readFrom(from);
   };
 
   useEffect(() => { beacon("story_opened", bookId); }, [bookId]);
@@ -172,6 +207,10 @@ export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: {
   );
 }
 
+/** A "Your turn" was answered: Read to me reads the response and, if correct, goes on (BookView onAnswer). */
+function answer(page: HTMLElement, text: string, correct: boolean) {
+  page.closest(".gt-book")?.dispatchEvent(new CustomEvent("gt-answer", { detail: { text, correct, page } }));
+}
 function bubble(card: HTMLElement, text: string, ok: boolean) {
   let b = card.querySelector(".gt-bubble") as HTMLElement | null;
   if (!b) { b = document.createElement("div"); card.appendChild(b); }

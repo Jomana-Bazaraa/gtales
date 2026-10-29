@@ -33,7 +33,8 @@ const bodySchema = formSchema.extend({
 function withDefaults(b: Record<string, unknown>): Record<string, unknown> {
   const empty = (k: string) => typeof b[k] !== "string" || !(b[k] as string).trim();
   const out = { ...b };
-  for (const [k, v] of Object.entries(FORM_DEFAULTS)) if (empty(k)) out[k] = v;
+  for (const k of ["sidekick", "power_word", "need"] as const) if (empty(k)) out[k] = FORM_DEFAULTS[k];
+  out.place = FORM_DEFAULTS.place; // always "Egypt" (U1): never what a request sends
   for (const k of ["silly", "snack", "strength", "dedication"]) if (empty(k)) delete out[k];
   return out;
 }
@@ -71,10 +72,12 @@ export async function POST(req: Request) {
   // Never use the boy pictures for a girl (handoff brief, step 2).
   if (!hasImageSet(f.slug, f.gender)) return NextResponse.json({ error: "invalid", issues: [{ path: "gender", message: `The ${f.gender} pictures for this tale are not ready yet.` }] }, { status: 400 });
 
-  // Defaults: sidekick → Bolt (form brief); strength → the story's own (the fast form doesn't ask).
+  // Defaults (src/stories/defaults.ts): sidekick, other; strength → the story's own (the fast form doesn't ask).
   const form = {
     ...f,
-    sidekick: story.uses.includes("sidekick") ? f.sidekick || "Bolt" : f.sidekick,
+    sidekick: story.uses.includes("sidekick") ? f.sidekick || FORM_DEFAULTS.sidekick : f.sidekick,
+    // "Who should join…" skipped → Zuzu; bullied tale's unkind child left empty → Sam
+    other: story.uses.includes("other") ? f.other || (story.other_rule === "not_sibling" ? FORM_DEFAULTS.bully : FORM_DEFAULTS.companion) : f.other,
     strength: story.uses.includes("strength") ? story.default_strength ?? "hero" : undefined, // always the story's own (29 Oct)
     other_relation: f.other_relation ?? (story.other_rule === "not_sibling" ? "school" : "friend"),
   };

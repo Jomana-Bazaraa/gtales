@@ -53,7 +53,7 @@ export type StoryPageJson = z.infer<typeof pageSchema>;
 export type StoryJson = z.infer<typeof storySchema>;
 
 /** What the form collects (SPEC §7.2). */
-export const RELATIONS = ["brother", "sister", "cousin", "friend", "school", "park"] as const;
+export const RELATIONS = ["brother", "sister", "cousin", "friend", "school", "park", "hero", "pet", "other"] as const; // hero/pet/other: "Who should join" chips
 export type Relation = (typeof RELATIONS)[number];
 export const STRENGTHS = ["builder", "artist", "football player", "swimmer", "dancer", "helper", "reader", "singer"] as const;
 
@@ -64,11 +64,11 @@ export const formSchema = z.object({
   age: z.number().int().min(2).max(10),
   half: z.boolean().default(false), // "six and a half"
   place: z.string().trim().min(2).max(20),
-  other: z.string().trim().min(1).max(14).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(),
+  other: z.string().trim().min(1).max(20).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(), // e.g. "Captain Koshary"
   other_relation: z.enum(RELATIONS).optional(),
   strength: z.string().trim().min(2).max(24).optional(),
   sidekick: z.string().trim().min(1).max(12).optional(),
-  power_word: z.string().trim().min(1).max(24).optional(),
+  power_word: z.string().trim().min(1).max(25).optional(),
   need: z.string().optional(),
   // Story Builder cards (stories/builder-options.json); only the variants' fun lines use them
   snack: z.string().trim().min(1).max(20).regex(/^[A-Za-z][A-Za-z '\-]*$/).optional(),

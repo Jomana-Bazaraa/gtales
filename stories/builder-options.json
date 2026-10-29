@@ -1,48 +1,191 @@
 {
-  "_note": "Edit freely. 'label' is shown on the card (and read aloud). 'value' is what goes into the story. Values: no emoji, no ending punctuation. Snacks must read well after 'my', 'all the' and 'smells like' (use mass/plural nouns: 'mangoes', not 'a mango'). Silly words: the story adds the '!' itself, so values have none (letters, digits like Sha3bolla, spaces; max 15).",
+  "_note": "Edit freely. 'label' is shown on the card (and read aloud). 'value' is what goes into the story (the label without the emoji). The form adds '✏️ Other…' (free text) itself. Silly words: the story adds the '!' itself, so values have none (letters, digits like Sha3bolla, spaces; max 15). Need: each value is the sentence the child says.",
   "sidekick": [
-    {"label": "🤖 Bolt", "value": "Bolt"},
-    {"label": "🤖 Mr. Beep", "value": "Mr. Beep"},
-    {"label": "🤖 Zuzu", "value": "Zuzu"},
-    {"label": "🤖 Captain Bolt", "value": "Captain Bolt"},
-    {"label": "🤖 Bombom", "value": "Bombom"},
-    {"label": "🤖 Sprocket", "value": "Sprocket"},
-    {"label": "🐱 Name it after my pet or friend", "value": "__parent_types__"}
+    {
+      "label": "🤖 Riri",
+      "value": "Riri"
+    },
+    {
+      "label": "🤖 Mr. Robot",
+      "value": "Mr. Robot"
+    },
+    {
+      "label": "🤖 Rami",
+      "value": "Rami"
+    },
+    {
+      "label": "🤖 Rania",
+      "value": "Rania"
+    }
   ],
   "power_word": [
-    {"label": "🦁 I'm a LION!", "value": "I'm a LION!"},
-    {"label": "🦸 I'm a superhero!", "value": "I'm a superhero!"},
-    {"label": "🍌 BANANAS!", "value": "BANANAS!"},
-    {"label": "🦖 I'm a dinosaur! RAWR!", "value": "I'm a dinosaur! RAWR!"},
-    {"label": "🍲 Koshary power!", "value": "Koshary power!"},
-    {"label": "🚀 Blast off!", "value": "Blast off!"},
-    {"label": "🧠 I'm a genius!", "value": "I'm a genius!"},
-    {"label": "⚽ GOOOAL!", "value": "GOOOAL!"}
+    {
+      "label": "💪 Ana Qawi awi!",
+      "value": "Ana Qawi awi!"
+    },
+    {
+      "label": "🦁 Ana asad!",
+      "value": "Ana asad!"
+    },
+    {
+      "label": "😎 I can do this!",
+      "value": "I can do this!"
+    },
+    {
+      "label": "🔥 Yalla bina!",
+      "value": "Yalla bina!"
+    },
+    {
+      "label": "🦸 Mafeesh mosta7eel!",
+      "value": "Mafeesh mosta7eel!"
+    },
+    {
+      "label": "😤 Bring it on!",
+      "value": "Bring it on!"
+    },
+    {
+      "label": "🚀 The sky's the limit!",
+      "value": "The sky's the limit!"
+    }
   ],
   "snack": [
-    {"label": "🍲 Koshary", "value": "koshary"},
-    {"label": "🍕 Pizza", "value": "pizza"},
-    {"label": "🍫 Chocolate", "value": "chocolate"},
-    {"label": "🍟 Fries", "value": "fries"},
-    {"label": "🥭 Mangoes", "value": "mangoes"},
-    {"label": "🍿 Popcorn", "value": "popcorn"},
-    {"label": "🍦 Ice cream", "value": "ice cream"},
-    {"label": "🥞 Feteer", "value": "feteer"},
-    {"label": "🍪 Biscuits", "value": "biscuits"},
-    {"label": "🥬 Molokhia", "value": "molokhia"}
+    {
+      "label": "🍲 Koshary",
+      "value": "koshary"
+    },
+    {
+      "label": "🍕 Pizza",
+      "value": "pizza"
+    },
+    {
+      "label": "🍫 Chocolate",
+      "value": "chocolate"
+    },
+    {
+      "label": "🍟 Fries",
+      "value": "fries"
+    },
+    {
+      "label": "🥭 Mangoes",
+      "value": "mangoes"
+    },
+    {
+      "label": "🍿 Popcorn",
+      "value": "popcorn"
+    },
+    {
+      "label": "🍦 Ice cream",
+      "value": "ice cream"
+    },
+    {
+      "label": "🥞 Feteer",
+      "value": "feteer"
+    },
+    {
+      "label": "🍪 Biscuits",
+      "value": "biscuits"
+    },
+    {
+      "label": "🥬 Molokhia",
+      "value": "molokhia"
+    }
   ],
   "silly": [
-    {"label": "🦁 Aslaaan!", "value": "Aslaaan"},
-    {"label": "🙌 Yastaaa!", "value": "Yastaaa"},
-    {"label": "🎉 Sha3bolla!", "value": "Sha3bolla"},
-    {"label": "🤷 Keda keda!", "value": "Keda keda"},
-    {"label": "🍟 Batates!", "value": "Batates"},
-    {"label": "🍩 Zalabya!", "value": "Zalabya"}
+    {
+      "label": "🔥 Keda keda!",
+      "value": "Keda keda"
+    },
+    {
+      "label": "😂 Aslaaan!",
+      "value": "Aslaaan"
+    },
+    {
+      "label": "✨ Yastaaa!",
+      "value": "Yastaaa"
+    },
+    {
+      "label": "🤪 Sha3bolla!",
+      "value": "Sha3bolla"
+    },
+    {
+      "label": "🍟 Batates!",
+      "value": "Batates"
+    },
+    {
+      "label": "🍩 Zalabya!",
+      "value": "Zalabya"
+    }
   ],
   "need": [
-    {"label": "🤗 A hug", "value": "Can I have a hug?"},
-    {"label": "🗣️ To talk", "value": "Can we talk?"},
-    {"label": "🧸 Quiet time", "value": "I need some quiet time."},
-    {"label": "🎮 To play", "value": "Can we play something?"}
-  ]
+    {
+      "label": "🤗 A big hug",
+      "value": "Can I have a big hug?"
+    },
+    {
+      "label": "🗣️ Talking about it",
+      "value": "Can we talk about it?"
+    },
+    {
+      "label": "🧸 Quiet time alone",
+      "value": "I need some quiet time."
+    },
+    {
+      "label": "🍪 A snack",
+      "value": "Can I have a snack, please?"
+    },
+    {
+      "label": "🎮 Playing something",
+      "value": "Can we play something?"
+    },
+    {
+      "label": "🎵 Music",
+      "value": "Can we put on some music?"
+    },
+    {
+      "label": "🌳 Going outside",
+      "value": "Can we go outside for a bit?"
+    },
+    {
+      "label": "😴 A nap",
+      "value": "I think I need a little nap."
+    }
+  ],
+  "companion": [
+    {
+      "label": "Sister",
+      "value": "sister",
+      "default": "Jana"
+    },
+    {
+      "label": "Brother",
+      "value": "brother",
+      "default": "Omar"
+    },
+    {
+      "label": "Cousin",
+      "value": "cousin",
+      "default": "Laila"
+    },
+    {
+      "label": "Best friend",
+      "value": "friend",
+      "default": "Mariam"
+    },
+    {
+      "label": "Imaginary hero",
+      "value": "hero",
+      "default": "Captain Koshary"
+    },
+    {
+      "label": "Pet",
+      "value": "pet",
+      "default": "Mishmish"
+    },
+    {
+      "label": "Someone else",
+      "value": "other",
+      "default": "Zuzu"
+    }
+  ],
+  "_companion_note": "Who joins the hero (stories with {{other}}, not the bullied one). 'default' = the name used when the parent picks the chip but writes no name; nothing picked = Zuzu."
 }

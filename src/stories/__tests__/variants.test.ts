@@ -9,7 +9,7 @@ import { applyStoryVariants, VARIANTS } from "../variants";
 // Age variants + fun lines (stories/variants). Layout ("too much text") is checked in a browser: npm run check:fit.
 type Variants = { fun: { page: number; requires: string[]; text: string }[]; little: Record<string, unknown> };
 
-const FULL = { name: "Abdelrahman", other: "Mohamed Ali", place: "Sheikh Zayed", sidekick: "Captain Bolt", power_word: "I'm a dinosaur! RAWR!", snack: "ice cream", silly: "Fasoolya", need: "I need some quiet time." };
+const FULL = { name: "Abdelrahman", other: "Captain Koshary", place: "Egypt", sidekick: "Mr. Robot", power_word: "Mafeesh mosta7eel!", snack: "ice cream", silly: "Fasoolya", need: "I need some quiet time." };
 const formFor = (st: StoryJson, gender: "boy" | "girl", age: number, fun: boolean): StoryForm => {
   const { snack, silly, ...rest } = FULL;
   return { slug: st.slug, gender, age, half: false, strength: "builder", other_relation: st.other_rule === "not_sibling" ? "school" : "brother", ...rest, ...(fun ? { snack, silly } : {}) };

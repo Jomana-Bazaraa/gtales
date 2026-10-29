@@ -25,30 +25,31 @@ export interface TaleMeta {
   other_rule: "not_sibling" | null;
 }
 
-const KEY = "gtales.free-draft.v5";
-type Step = "struggle" | "name" | "gender" | "age" | "place" | "other" | "sidekick" | "power_word" | "silly" | "need" | "dedication" | "email" | "review";
+const KEY = "gtales.free-draft.v6"; // v6 (U1–U3): no place, new option lists; older drafts start fresh
+type Step = "struggle" | "name" | "gender" | "age" | "other" | "sidekick" | "power_word" | "silly" | "need" | "dedication" | "email" | "review";
 
 interface Draft {
-  slug: string; name: string; gender: "boy" | "girl" | ""; age: number | 0; place: string;
-  other: string; relation: "brother" | "sister" | "cousin" | ""; sidekick: string; power_word: string;
+  slug: string; name: string; gender: "boy" | "girl" | ""; age: number | 0;
+  other: string; relation: string; sidekick: string; power_word: string; // relation: a companion chip value (builder-options.json)
   need: string; dedication: string; email: string; silly: string;
   phone: string; byPhone: boolean; // "No email? Use your WhatsApp number instead"
 }
-const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, place: "", other: "", relation: "", sidekick: "", power_word: "", need: "", dedication: "", email: "", silly: "", phone: "", byPhone: false };
+const EMPTY: Draft = { slug: "", name: "", gender: "", age: 0, other: "", relation: "", sidekick: "", power_word: "", need: "", dedication: "", email: "", silly: "", phone: "", byPhone: false };
 
 const STRUGGLE_LABEL: Record<string, string> = { anger: "Anger and hitting", anxiety: "Fears and worries", bullied: "Being bullied", lying: "Lying", feelings: "Big feelings", friendship: "Friendship" };
 // Story Builder cards: the team edits stories/builder-options.json, not this file.
-type BuilderCard = { label: string; value: string };
-const BUILDER = builderOptions as unknown as Record<"sidekick" | "power_word" | "silly" | "need", BuilderCard[]>;
-const OWN_SIDEKICK = "__parent_types__";
-const plain = (label: string) => label.replace(/^[^A-Za-z0-9]+/, "").trim(); // "🤗 A hug" → "A hug"
+type BuilderCard = { label: string; value: string; default?: string };
+const BUILDER = builderOptions as unknown as Record<"sidekick" | "power_word" | "silly" | "need" | "companion", BuilderCard[]>;
+/** Who joins the hero: the chip's default name when no name is written; nothing picked = Zuzu. */
+const companionName = (relation: string) => BUILDER.companion.find((c) => c.value === relation)?.default ?? FORM_DEFAULTS.companion;
+const OTHER_LABEL = "✏️ Other…";
 const LATIN = /^[A-Za-z][A-Za-z '\-]*$/;
 const ARABIC = /[؀-ۿ]/;
 const pick = (cards: BuilderCard[]) => cards[Math.floor(Math.random() * cards.length)].value;
 type BuilderStep = "sidekick" | "power_word" | "silly" | "need";
 const BUILDER_STEPS: BuilderStep[] = ["sidekick", "power_word", "silly", "need"];
 const SURPRISE: Record<BuilderStep, () => string> = {
-  sidekick: () => pick(BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK)),
+  sidekick: () => pick(BUILDER.sidekick),
   power_word: () => pick(BUILDER.power_word),
   silly: () => pick(BUILDER.silly),
   need: () => pick(BUILDER.need),
@@ -78,7 +79,9 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
-  const [sillyOwn, setSillyOwn] = useState(false); // silly word "Other…" free text
+  // "✏️ Other…" free text open on these builder pages
+  const [own, setOwn] = useState<Record<"sidekick" | "power_word" | "silly", boolean>>({ sidekick: false, power_word: false, silly: false });
+  const setOwnFor = (k: "sidekick" | "power_word" | "silly", v: boolean) => setOwn((o) => ({ ...o, [k]: v }));
   // dRef is always the latest draft, so "Surprise me" then Enter (or a fast tap on Next) never reads a stale value
   const dRef = useRef(d); // every change goes through put(), so this never lags behind d
 
@@ -96,11 +99,11 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   const put = (patch: Partial<Draft>) => { const n = { ...dRef.current, ...patch }; dRef.current = n; setD(n); return n; };
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => put({ [k]: v } as Partial<Draft>);
   const nextRef = useRef<HTMLButtonElement>(null);
-  const surprise = (s: BuilderStep) => { if (s === "silly") setSillyOwn(false); u(s, SURPRISE[s]()); setErr(null); nextRef.current?.focus(); };
+  const surprise = (s: BuilderStep) => { if (s !== "need") setOwnFor(s, false); u(s, SURPRISE[s]()); setErr(null); nextRef.current?.focus(); };
   const meta = useMemo(() => metas.find((m) => m.slug === d.slug), [metas, d.slug]);
   const uses = (t: string) => !!meta && meta.uses.includes(t);
   const steps = useMemo<Step[]>(() => {
-    const s: Step[] = ["struggle", "name", "gender", "age", "place"];
+    const s: Step[] = ["struggle", "name", "gender", "age"]; // no place question: {{place}} is always Egypt (U1)
     if (uses("other")) s.push("other");
     if (uses("sidekick")) s.push("sidekick");
     if (uses("power_word")) s.push("power_word");
@@ -115,7 +118,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   useEffect(() => { if (ready && meta) track("free_form_step", { page: i + 1, meta: { name: step, tale: meta.slug } }); }, [i, step, ready, meta]);
   const total = meta ? steps.length - 1 : 12; // review is not counted; 12 until a story is chosen
   const name = d.name.trim() ? cap(d.name) : "your child";
-  const he = d.gender === "girl" ? "she" : "he", his = d.gender === "girl" ? "her" : "his", He = d.gender === "girl" ? "She" : "He", His = d.gender === "girl" ? "Her" : "His";
+  const he = d.gender === "girl" ? "she" : "he", him = d.gender === "girl" ? "her" : "him", His = d.gender === "girl" ? "Her" : "His";
   const bullied = meta?.other_rule === "not_sibling";
   const previewGender: "boy" | "girl" | null = !meta ? null : d.gender && meta.sets[d.gender] ? d.gender : meta.sets.boy ? "boy" : meta.sets.girl ? "girl" : null;
   const goTo = (s: Step) => { setErr(null); setI(steps.indexOf(s)); };
@@ -127,10 +130,9 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
       case "name": { const n = d.name.trim(); if (!n) return "Please write your child's name."; if (ARABIC.test(n)) return "Please write the name in English letters, like Mariam."; if (n.length > 14) return "Up to 14 letters, please."; if (!LATIN.test(n)) return "English letters only, please."; return null; }
       case "gender": if (!d.gender) return "Please choose one."; if (meta && !meta.sets[d.gender]) return `The ${d.gender} pictures for this story are coming soon. Please choose another story for now.`; return null;
       case "age": return d.age ? null : "Please choose an age.";
-      case "place": { const p = d.place.trim(); if (p.length < 2 || p.length > 20) return "2 to 20 letters, please."; if (ARABIC.test(p)) return "Please write it in English letters, like Maadi."; return null; }
-      case "other": { const o = d.other.trim(); if (!o) return bullied ? null : "Please write a name."; /* bullied: empty = "Sam" on submit */ if (ARABIC.test(o)) return "Please write the name in English letters."; if (o.length > 14 || !LATIN.test(o)) return "Up to 14 English letters, please."; return null; }
+      case "other": { const o = d.other.trim(); if (!o) return null; /* optional: bullied = "Sam", others = the chip's name or Zuzu, on submit */ if (ARABIC.test(o)) return "Please write the name in English letters."; if (o.length > 20 || !LATIN.test(o)) return "Up to 20 English letters, please."; return null; }
       case "sidekick": { const s2 = d.sidekick.trim(); if (s2 && (s2.length > 12 || ARABIC.test(s2))) return "Up to 12 English letters, please."; return null; }
-      case "power_word": { const p = d.power_word.trim(); if (p.length < 2 || p.length > 24) return "2 to 24 characters, please."; return null; }
+      case "power_word": { const p = d.power_word.trim(); if (p.length < 2 || p.length > 25) return "2 to 25 characters, please."; return findUnsafe(p) ? "Please choose other words." : null; }
       case "need": return d.need ? null : "Please choose one.";
       case "silly": { const w = d.silly.trim(); if (!w || BUILDER.silly.some((c) => c.value === w)) return null; if (w.length > 15 || !/^[A-Za-z][A-Za-z ]*$/.test(w)) return "Up to 15 letters and spaces, please."; return findUnsafe(w) ? "Please choose another word." : null; }
       case "dedication": return d.dedication.length > 120 ? "Up to 120 characters, please." : null;
@@ -141,8 +143,7 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   };
   const next = () => {
     let cur = dRef.current;
-    if ((BUILDER_STEPS as Step[]).includes(step) && !cur[step as BuilderStep].trim()) { if (step === "silly") setSillyOwn(false); cur = put({ [step]: EMPTY_BUILDER[step as BuilderStep]() }); }
-    if (step === "other" && bullied && !cur.other.trim()) cur = put({ other: FORM_DEFAULTS.other });
+    if ((BUILDER_STEPS as Step[]).includes(step) && !cur[step as BuilderStep].trim()) { if (step !== "need") setOwnFor(step as "sidekick" | "power_word" | "silly", false); cur = put({ [step]: EMPTY_BUILDER[step as BuilderStep]() }); }
     const e = valid(step, cur); setErr(e); if (!e) setI((x) => Math.min(steps.length - 1, x + 1));
   };
   // Enter anywhere on the page (not in the message box, not on a button) = Next; inputs submit the <form> below
@@ -157,10 +158,11 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
   }, []);
   const back = () => { setErr(null); setI((x) => Math.max(0, x - 1)); };
 
+  const otherName = (d: Draft) => cap(d.other.trim() || (bullied ? FORM_DEFAULTS.bully : companionName(d.relation)));
   const values = (d: Draft = dRef.current) => ({
-    slug: d.slug, name: cap(d.name), gender: d.gender || "boy", age: d.age || 6, place: d.place.trim(),
-    other: uses("other") ? cap(d.other.trim() || (bullied ? "Sam" : "")) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || undefined) : undefined,
-    sidekick: uses("sidekick") ? cap(d.sidekick.trim() || "Bolt") : undefined,
+    slug: d.slug, name: cap(d.name), gender: d.gender || "boy", age: d.age || 6, place: FORM_DEFAULTS.place,
+    other: uses("other") ? otherName(d) : undefined, other_relation: uses("other") ? (bullied ? "school" : d.relation || "friend") : undefined,
+    sidekick: uses("sidekick") ? cap(d.sidekick.trim() || FORM_DEFAULTS.sidekick) : undefined,
     power_word: uses("power_word") ? bang(d.power_word) : undefined,
     need: uses("need") ? d.need : undefined,
     silly: d.silly || undefined,
@@ -246,37 +248,30 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
           <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>
         </>)}
 
-        {step === "place" && (<>
-          <Q help="Your area or city. It will appear in the story.">Where do you live?</Q>
-          <input className="field text-xl" autoFocus placeholder="e.g. Maadi, Zamalek, Smouha, Sheikh Zayed" value={d.place} onChange={(e) => u("place", e.target.value)} maxLength={20} enterKeyHint="next" />
-        </>)}
-
         {step === "other" && (bullied ? (<>
           <Q help="You can use a made-up name. It does not have to be the real child.">What name should we use for the child who is unkind?</Q>
           <input className="field text-xl" autoFocus placeholder="e.g. Sam" value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} enterKeyHint="next" />
           <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use Sam.</p>
         </>) : (<>
-          <Q>Who is often with your child at home?</Q>
-          <div className="flex gap-2">
-            {(["brother", "sister", "cousin"] as const).map((r) => <button key={r} type="button" aria-pressed={d.relation === r} onClick={() => u("relation", r)} className={`chip ${d.relation === r ? "chip-on" : ""}`}>{r[0].toUpperCase() + r.slice(1)}</button>)}
+          <Q help="Optional. Pick who it is, then a name if you like.">Who should join {name} in the story?</Q>
+          <div className="flex flex-wrap gap-2">
+            {BUILDER.companion.map((c) => <button key={c.value} type="button" aria-pressed={d.relation === c.value} onClick={() => u("relation", d.relation === c.value ? "" : c.value)} className={`chip ${d.relation === c.value ? "chip-on" : ""}`}>{c.label}</button>)}
           </div>
-          <input className="field text-xl" autoFocus placeholder={`e.g. ${his} ${d.relation || "brother"} Omar`} value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={14} enterKeyHint="next" />
-          <p className="m-0 text-[13px] text-ink-soft">Just the name, e.g. Omar, Lina, Yousef.</p>
+          <input className="field text-xl" placeholder={`e.g. ${d.relation ? companionName(d.relation) : "Omar"}`} value={d.other} onChange={(e) => u("other", e.target.value)} maxLength={20} enterKeyHint="next" />
+          <p className="m-0 text-[13px] text-ink-soft">Leave the name empty and we&apos;ll use {d.relation ? companionName(d.relation) : FORM_DEFAULTS.companion}.</p>
         </>))}
 
         {step === "sidekick" && (<>
           <Q help="In the story, a little robot friend will have this name.">What should the robot friend be called?</Q>
-          <div className="flex flex-wrap gap-2">{BUILDER.sidekick.filter((c) => c.value !== OWN_SIDEKICK).map((c) => <button key={c.value} type="button" aria-pressed={d.sidekick === c.value} onClick={() => u("sidekick", c.value)} className={`chip ${d.sidekick === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder={plain(BUILDER.sidekick.find((c) => c.value === OWN_SIDEKICK)?.label ?? "Or write your own")} value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} enterKeyHint="next" />
-          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we'll call the robot Bolt.</p>
+          <OwnChips cards={BUILDER.sidekick} value={d.sidekick} own={own.sidekick} onPick={(v) => { setOwnFor("sidekick", false); u("sidekick", v); }} onOwn={() => { setOwnFor("sidekick", true); u("sidekick", ""); }} />
+          {own.sidekick && <input className="field text-xl" autoFocus placeholder="The robot's name" value={d.sidekick} onChange={(e) => u("sidekick", e.target.value)} maxLength={12} enterKeyHint="next" />}
           <button type="button" onClick={() => surprise("sidekick")} className="chip self-start">🎲 Surprise me</button>
         </>)}
 
         {step === "power_word" && (<>
           <Q help="Your child will say this out loud in the story, at the brave moment.">What does your child say to feel strong or brave?</Q>
-          <div className="flex flex-wrap gap-2">{BUILDER.power_word.map((c) => <button key={c.value} type="button" aria-pressed={d.power_word === c.value} onClick={() => u("power_word", c.value)} className={`chip ${d.power_word === c.value ? "chip-on" : ""}`}>{c.label}</button>)}</div>
-          <input className="field text-xl" placeholder="Or write your own" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={24} enterKeyHint="next" />
-          <p className="m-0 text-[13px] text-ink-soft">Leave it empty and we&apos;ll use &ldquo;{FORM_DEFAULTS.power_word}&rdquo;</p>
+          <OwnChips cards={BUILDER.power_word} value={d.power_word} own={own.power_word} onPick={(v) => { setOwnFor("power_word", false); u("power_word", v); }} onOwn={() => { setOwnFor("power_word", true); u("power_word", ""); }} />
+          {own.power_word && <input className="field text-xl" autoFocus placeholder="Up to 25 characters" value={d.power_word} onChange={(e) => u("power_word", e.target.value)} maxLength={25} enterKeyHint="next" />}
           <button type="button" onClick={() => surprise("power_word")} className="chip self-start">🎲 Surprise me</button>
         </>)}
 
@@ -289,11 +284,11 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         {step === "silly" && (<>
           <Q help="Optional. The robot shouts it in the story.">Pick a silly word!</Q>
           <div className="grid grid-cols-2 gap-2.5">
-            {BUILDER.silly.map((c) => <Card key={c.value} on={!sillyOwn && d.silly === c.value} onClick={() => { setSillyOwn(false); u("silly", c.value); }}>{c.label}</Card>)}
-            <Card on={sillyOwn} onClick={() => { setSillyOwn(true); u("silly", ""); }}>Other…</Card>
+            {BUILDER.silly.map((c) => <Card key={c.value} on={!own.silly && d.silly === c.value} onClick={() => { setOwnFor("silly", false); u("silly", c.value); }}>{c.label}</Card>)}
+            <Card on={own.silly} onClick={() => { setOwnFor("silly", true); u("silly", ""); }}>{OTHER_LABEL}</Card>
           </div>
           <button type="button" onClick={() => surprise("silly")} className="chip self-start">🎲 Surprise me</button>
-          {sillyOwn && <input className="field text-xl" autoFocus placeholder="Letters and spaces" value={d.silly} onChange={(e) => u("silly", e.target.value.replace(/[^A-Za-z ]/g, ""))} maxLength={15} enterKeyHint="next" />}
+          {own.silly && <input className="field text-xl" autoFocus placeholder="Letters and spaces" value={d.silly} onChange={(e) => u("silly", e.target.value.replace(/[^A-Za-z ]/g, ""))} maxLength={15} enterKeyHint="next" />}
         </>)}
 
 
@@ -318,9 +313,9 @@ export function CreateForm({ initialTale, metas }: { initialTale?: string; metas
         {step === "review" && (<>
           <Q help="Tap any part to change it.">Does this look right?</Q>
           <p className="m-0 text-[19px] leading-8">
-            <B onClick={() => goTo("name")}>{name}</B>, <B onClick={() => goTo("age")}>{d.age}</B>, lives in <B onClick={() => goTo("place")}>{d.place.trim()}</B>.
-            {uses("other") && <> {bullied ? "The unkind child is called" : `${His} ${d.relation || "friend"} is`} <B onClick={() => goTo("other")}>{cap(d.other.trim() || (bullied ? "Sam" : ""))}</B>.</>}
-            {uses("sidekick") && <> {His} robot friend is called <B onClick={() => goTo("sidekick")}>{cap(d.sidekick.trim() || "Bolt")}</B>.</>}
+            <B onClick={() => goTo("name")}>{name}</B>, <B onClick={() => goTo("age")}>{d.age}</B>.
+            {uses("other") && <> {bullied ? "The unkind child is called" : `Joining ${him} in the story:`} <B onClick={() => goTo("other")}>{otherName(d)}</B>.</>}
+            {uses("sidekick") && <> {His} robot friend is called <B onClick={() => goTo("sidekick")}>{cap(d.sidekick.trim() || FORM_DEFAULTS.sidekick)}</B>.</>}
             {uses("power_word") && <> When {he} wants to feel strong {he} says <B onClick={() => goTo("power_word")}>"{bang(d.power_word)}"</B>.</>}
             {uses("need") && d.need && <> When {he}'s upset, {he} says <B onClick={() => goTo("need")}>&ldquo;{d.need}&rdquo;</B></>}
             {d.silly && <> Silly word: <B onClick={() => goTo("silly")}>{d.silly}</B>!</>}
@@ -359,6 +354,15 @@ function CoverPreview({ slug, gender, title, name, inline }: { slug: string; gen
     </div>
   );
 }
+/** Option chips from builder-options.json plus "✏️ Other…" (free text below). */
+function OwnChips({ cards, value, own, onPick, onOwn }: { cards: BuilderCard[]; value: string; own: boolean; onPick: (v: string) => void; onOwn: () => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {cards.map((c) => <button key={c.value} type="button" aria-pressed={!own && value === c.value} onClick={() => onPick(c.value)} className={`chip ${!own && value === c.value ? "chip-on" : ""}`}>{c.label}</button>)}
+      <button type="button" aria-pressed={own} onClick={onOwn} className={`chip ${own ? "chip-on" : ""}`}>{OTHER_LABEL}</button>
+    </div>
+  );
+}
 function B({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return <button type="button" onClick={onClick} className="font-extrabold text-sky underline decoration-2 underline-offset-4 min-h-8">{children}</button>;
 }
@@ -368,7 +372,7 @@ function cap(s: string) {
 function bang(s: string) { const t = s.trim(); return /[.!?]$/.test(t) ? t : `${t}!`; }
 function stepFor(field: string | undefined): Step {
   switch (field) {
-    case "slug": return "struggle"; case "name": return "name"; case "gender": return "gender"; case "age": return "age"; case "place": return "place";
+    case "slug": return "struggle"; case "name": return "name"; case "gender": return "gender"; case "age": return "age";
     case "other": case "other_relation": return "other"; case "sidekick": return "sidekick"; case "power_word": return "power_word"; case "need": return "need";
     case "dedication": return "dedication"; case "silly": return "silly"; default: return "email";
   }
