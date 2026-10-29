@@ -121,3 +121,22 @@ export function fromRows(since: string | null, allEvents: StoredEvent[], allBook
 
 /** TOTAL STORIES = free stories + books ordered (SUM of quantity). Same formula wherever a total is shown. */
 export const totalStories = (s: Pick<DashboardStats, "free_stories" | "books_ordered">) => s.free_stories + s.books_ordered;
+
+/**
+ * Public homepage counter (U7): TOTAL STORIES, all time. Database counts via gtales_dashboard (0008); before 0008,
+ * an exact count of books plus the books in non-cancelled orders (orders are few). Throws when nothing works:
+ * the route then answers 503 and the counter stays hidden.
+ */
+export async function publicTotalStories(): Promise<number> {
+  if (isMockDb) return totalStories(fromRows(null, [], await listBooks(100_000), await listOrders(100_000), 0, 0));
+  const { data, error } = await supabase().rpc("gtales_dashboard", { p_since: null });
+  if (!error && data) return totalStories(data as DashboardStats);
+  const books = await supabase().from("books").select("id", { count: "exact", head: true });
+  if (books.error || books.count == null) throw books.error ?? new Error("books count");
+  const pick = (cols: string) => supabase().from("orders").select(cols).neq("status", "cancelled").limit(10_000);
+  let rows = await pick("quantity, parent, status");
+  if (rows.error) rows = await pick("parent, status"); // before 0007
+  if (rows.error) throw rows.error;
+  const ordered = (rows.data as unknown as Pick<OrderRecord, "quantity" | "parent">[]).reduce((a, o) => a + orderQuantity(o), 0);
+  return books.count + ordered;
+}

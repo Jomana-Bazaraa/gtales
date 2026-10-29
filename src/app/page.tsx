@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { StoriesCounter } from "@/components/landing/StoriesCounter";
 import { Footer, Header, PromoBar } from "@/components/SiteChrome";
 import { Faq, FinalCta, Hero, HowItWorks, MeetTheBook, Pricing, Superpowers } from "@/components/landing/Landing";
 import { FamiliesLoveGTales } from "@/components/reviews/ReviewsWall";
@@ -24,6 +25,7 @@ export default async function Home() {
         <HowItWorks />
         <MeetTheBook />
         <Superpowers />
+        <StoriesCounter />
         <Pricing />
         <FamiliesLoveGTales reviews={reviews} count={count} average={average} />
         <Faq />
