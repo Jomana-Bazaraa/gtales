@@ -210,12 +210,20 @@ export async function countRecentBooks(ip: string, contact: string, windowMinute
 export async function insertOrder(o: OrderRecord): Promise<void> {
   if (isMockDb) return writeJson("series", o.id, o);
   const { error } = await supabase().from("orders").insert(o);
-  if (error && /quantity/.test(error.message ?? "")) {
-    // Migration 0007 not run yet (no orders.quantity): never lose the order; keep the count inside `parent` (jsonb) for now.
-    console.error("[orders] no quantity column, run 0007_order_quantity.sql:", error.message);
-    const { quantity, ...rest } = o;
-    const retry = await supabase().from("orders").insert({ ...rest, parent: { ...o.parent, quantity } });
-    if (retry.error) throw retry.error;
+  if (error && /'(quantity|language)' column/.test(error.message ?? "")) {
+    // Migration 0007 / 0009 not run yet (no orders.quantity / orders.language): never lose the order; keep the value
+    // inside `parent` (jsonb) for now (re-running the migration moves it into its column).
+    let row: Record<string, unknown> = { ...o };
+    let err: { message?: string } | null = error;
+    for (let k = 0; k < 2 && err; k++) {
+      const col = err.message?.match(/'(quantity|language)' column/)?.[1] as "quantity" | "language" | undefined;
+      if (!col) break;
+      console.error(`[orders] no orders.${col} column: run ${col === "quantity" ? "0007_order_quantity" : "0009_order_language"}.sql`);
+      const { [col]: v, ...rest } = row;
+      row = { ...rest, parent: { ...(rest.parent as object), [col]: v } };
+      err = (await supabase().from("orders").insert(row)).error;
+    }
+    if (err) throw err;
     return;
   }
   if (error) throw error;

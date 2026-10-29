@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { LaunchPrice } from "@/components/ui/LaunchPrice";
 import { WhatsInside } from "@/components/ui/WhatsInside";
-import { booksLabel } from "@/lib/orders";
+import { BOOK_LANGUAGES, booksLabel, languageLabel } from "@/lib/orders";
+import type { BookLanguage } from "@/lib/types";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -30,8 +31,9 @@ interface Draft {
   parentName: string; whatsapp: string; governorate: string; city: string; street: string; landmark: string; bestTime: string; promo: string;
   isGift: boolean; giftTo: string; giftMessage: string; hidePrice: boolean;
   quantity: number; // printed books, 1–100
+  language: BookLanguage; // "Book language" (U6), default English
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", struggles: [], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true, quantity: 3 };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", struggles: [], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true, quantity: 3, language: "en" };
 
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
 const FAVES = ["Lego", "Cars", "Dinosaurs", "Football", "Dolls", "Koshari", "Pizza", "Mango", "The beach", "Teta's house", "Blue", "Pink", "Cats", "Horses"];
@@ -132,7 +134,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       child: { name: cap(d.name), age: d.age, gender: d.gender, description: d.description.trim() || undefined }, photos: { face: d.face || undefined },
       books: d.struggles.slice(0, 3).map((st, k) => ({ struggle: st, people: d.books[k].people.filter((p) => p.name.trim()).map((p) => ({ who: p.who, name: cap(p.name), description: p.description.trim() || undefined, photo_key: p.photo_key || undefined })), setting: d.books[k].setting.trim() || undefined })),
       world: { favourites: d.favourites, notes: d.worldText.trim() || undefined },
-      quantity: QTY,
+      quantity: QTY, language: d.language,
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
       dedication: d.dedication.trim() || undefined, activities: d.activities,
       parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined,
@@ -184,6 +186,10 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
             <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>
           </div>
           <div className="grid grid-cols-2 gap-3">{(["boy", "girl"] as const).map((g) => <button key={g} type="button" aria-pressed={d.gender === g} onClick={() => u("gender", g)} className={`h-14 rounded-2xl border-[3px] font-bold text-lg ${d.gender === g ? "border-flame bg-flame-soft" : "border-line bg-white"}`}>{g === "boy" ? "Boy" : "Girl"}</button>)}</div>
+          <div role="radiogroup" aria-label="Book language" className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Book language</span>
+            <div className="flex flex-wrap gap-2">{BOOK_LANGUAGES.map((l) => <button key={l.value} type="button" role="radio" aria-checked={d.language === l.value} onClick={() => u("language", l.value)} className={`chip ${d.language === l.value ? "chip-on" : ""}`}>{l.label}</button>)}</div>
+            <span className="text-[13px] font-bold text-ink-soft">Arabic books are prepared by our team and take 3 extra days.</span>
+          </div>
           <PhotoField label={`A photo of ${name}'s face (optional)`} hint="Good light, facing the camera. You can also send it on WhatsApp later." value={d.face} onPick={async (f) => { const k = await upload(f); if (k) u("face", k); }} onClear={() => u("face", "")} />
           <F label={`Or describe ${name} (optional)`} hint="Hair, eyes, skin, glasses, anything that makes them them."><textarea className="field font-medium min-h-20" placeholder="e.g. curly brown hair, big brown eyes, always in his blue football shirt" value={d.description} onChange={(e) => u("description", e.target.value)} maxLength={300} /></F>
           {d.face && <p className="m-0 text-[12px] leading-4 text-ink-soft">I have permission to use this photo. It is used only to create the pictures and deleted when the books are delivered.</p>}
@@ -268,6 +274,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <Row label="Message" onEdit={() => goTo("dedication")}>{d.dedication.trim() || "None"}</Row>
           {d.isGift && <Row label="🎁 Gift" onEdit={() => goTo("delivery")}>For {d.giftTo.trim()}{d.giftMessage.trim() ? ` · "${d.giftMessage.trim()}"` : ""} · {d.hidePrice ? "no price in the parcel" : "price included"}</Row>}
           <Row label="Number of books" onEdit={() => goTo("delivery")}>{booksLabel(QTY)}</Row>
+          <Row label="Book language" onEdit={() => goTo("hero")}>{languageLabel(d.language)}</Row>
           <Row label="Delivery" onEdit={() => goTo("delivery")}>{d.parentName}, {d.whatsapp} · {d.street}, {d.city}, {d.governorate}</Row>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
             <LaunchPrice pricing={pricing} size="sm" />

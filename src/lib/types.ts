@@ -174,7 +174,9 @@ export interface OrderRecord {
   words: { parent?: string; child?: string; nicknames?: string };
   dedication?: string;
   activities: string[];
-  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string; gift?: OrderGift; quantity?: number /* only if saved before migration 0007 */ };
+  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string; gift?: OrderGift; quantity?: number; language?: BookLanguage /* only if saved before migration 0007 / 0009 */ };
+  /** Book language (U6): en English, eg Egyptian Arabic (عامية), ar Literary Arabic (فصحى). Missing = en. */
+  language?: BookLanguage;
   /** Books ordered (1–100). Missing on orders placed before 29 Oct = 3 books: always read it via orderQuantity(). */
   quantity?: number;
   promo_code?: string;
@@ -191,6 +193,8 @@ export interface OrderRecord {
   created_at: string;
   updated_at: string;
 }
+
+export type BookLanguage = "en" | "eg" | "ar";
 
 /** "This is a gift" (SPEC §9): stored inside `parent` (jsonb), so no migration. */
 export interface OrderGift { recipient: string; message?: string; hide_price: boolean }

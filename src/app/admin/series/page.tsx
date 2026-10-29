@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { listOrders } from "@/lib/db";
 import { egpOrFree } from "@/lib/gtales";
-import { booksLabel, orderQuantity, STATUS_LABEL } from "@/lib/orders";
+import { booksLabel, languageLabel, orderLanguage, orderQuantity, STATUS_LABEL } from "@/lib/orders";
 import { baseUrl } from "@/lib/site";
 import { statusMessage, waLink } from "@/lib/whatsapp";
 import type { OrderRecord, OrderStatus } from "@/lib/types";
@@ -76,6 +76,7 @@ function OrderCard({ o, base }: { o: OrderRecord; base: string }) {
       <div className="flex flex-wrap gap-1">
         <span className="pill bg-sky-soft text-sky">{STATUS_LABEL[o.status]}</span>
         {o.edit_requested && <span className="pill bg-flame-soft text-flame-deep">edits</span>}
+        <span className={`pill ${orderLanguage(o) === "en" ? "bg-surface-tint text-ink-soft" : "bg-flame-soft text-flame-deep"}`}>{languageLabel(orderLanguage(o))}</span>
         {o.parent.gift && <span className="pill bg-sun-soft text-ink">🎁 gift{o.parent.gift.hide_price ? " · no price" : ""}</span>}
       </div>
       <a href={waLink(o.parent.whatsapp, statusMessage(o, base))} target="_blank" rel="noreferrer" className="btn-secondary !h-10 !min-h-10 !px-3 text-sm w-full">WhatsApp: {STATUS_LABEL[o.status].toLowerCase()} message</a>

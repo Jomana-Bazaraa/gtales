@@ -1,4 +1,4 @@
-import type { OrderRecord, OrderStatus } from "./types";
+import type { BookLanguage, OrderRecord, OrderStatus } from "./types";
 
 /** Status pipeline (SPEC §10). Parent-facing labels; the same words appear in My stories and WhatsApp. */
 export const STATUS_ORDER: OrderStatus[] = ["ordered", "being_made", "awaiting_approval", "approved", "printing", "shipped", "delivered_paid"];
@@ -23,3 +23,14 @@ export function booksLine(o: Pick<OrderRecord, "quantity" | "list_price" | "pare
   if (q * o.list_price - o.discount + o.delivery !== o.total) return { label: `${booksLabel(q)} (Series price)`, amount: o.list_price };
   return { label: `${booksLabel(q)} × ${o.list_price} EGP`, amount: q * o.list_price };
 }
+
+/** Book language choices (U6), in the order the form shows them. */
+export const BOOK_LANGUAGES: { value: BookLanguage; label: string; short: string }[] = [
+  { value: "en", label: "🇺🇸 English", short: "English" },
+  { value: "eg", label: "🇪🇬 Egyptian Arabic (عامية)", short: "Egyptian Arabic (عامية)" },
+  { value: "ar", label: "📜 Literary Arabic (فصحى)", short: "Literary Arabic (فصحى)" },
+];
+export function orderLanguage(o: Pick<OrderRecord, "language" | "parent">): BookLanguage {
+  return o.language ?? o.parent.language ?? "en";
+}
+export const languageLabel = (l: BookLanguage) => BOOK_LANGUAGES.find((x) => x.value === l)?.short ?? l;
