@@ -1,6 +1,7 @@
 /**
- * Layout check in a real browser: every story × boy/girl × age 4 and 8, with and without the Builder's
- * snack/silly, rendered with the team's book.css and render.js; fitPages() must not warn "too much text".
+ * Story checker in a real browser: every story × boy/girl × age 2/5/8/10 × names Abdelrahman and Lulu, with and
+ * without the silly word, rendered with the team's book.css and render.js: no "{{", no "undefined", and fitPages()
+ * must not warn "too much text".
  * Needs Chrome/Chromium: PUPPETEER_EXECUTABLE_PATH (default /usr/bin/google-chrome).   npm run check:fit
  * When a page overflows, report it to the team: never shorten their text here.
  */
@@ -30,15 +31,17 @@ await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
 const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
 
 const browser = await puppeteer.launch({ executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome", args: ["--no-sandbox"], headless: true });
-const FULL = { name: "Abdelrahman", other: "Mohamed Ali", place: "Sheikh Zayed", sidekick: "Captain Bolt", power_word: "I'm a dinosaur! RAWR!", need: "I need some quiet time." };
+const FULL = { other: "Mohamed Ali", place: "Sheikh Zayed", sidekick: "Captain Bolt", power_word: "I'm a dinosaur! RAWR!", need: "I need some quiet time." };
 let combos = 0, overflowing = 0;
 try {
   for (const [slug, raw] of Object.entries(FILES)) {
     const st = storySchema.parse(raw);
-    for (const gender of ["boy", "girl"] as const) for (const age of [2, 4, 8, 10]) for (const fun of [true, false]) {
-      const form: StoryForm = { slug: st.slug, gender, age, half: false, strength: "builder", other_relation: st.other_rule === "not_sibling" ? "school" : "brother", ...FULL, ...(fun ? { snack: "ice cream", silly: "Fasoolya" } : {}) };
+    for (const name of ["Abdelrahman", "Lulu"]) for (const gender of ["boy", "girl"] as const) for (const age of [2, 5, 8, 10]) for (const fun of [true, false]) {
+      // strength = the story's fixed default (the forms don't ask it)
+      const form: StoryForm = { slug: st.slug, gender, age, half: false, name, strength: st.default_strength ?? "hero", other_relation: st.other_rule === "not_sibling" ? "school" : "brother", ...FULL, ...(fun ? { silly: "Sha3bolla" } : {}) };
       const html = await renderBookHtml(fillStory(applyStoryVariants(st, form), form), form, "web");
-      const key = `/__book/${slug}-${gender}-${age}-${fun}`;
+      const holes = [/\{\{|\}\}/.test(html) && "{{", /undefined/.test(html) && "undefined"].filter(Boolean);
+      const key = `/__book/${slug}-${name}-${gender}-${age}-${fun}`;
       pages.set(key, `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/gtales-book/book.css"><script src="/gtales-book/render.js"></script>
         <style>html,body{margin:0;background:#fff}.gt-book{background:none}.gt-page{margin:0}</style></head><body><div class="gt-book"><div id="book">${html}</div></div></body></html>`);
       const page = await browser.newPage();
@@ -51,7 +54,8 @@ try {
       });
       await page.close();
       combos++;
-      const label = `${slug} ${gender} age ${age} ${fun ? "with" : "without"} snack/silly`;
+      const label = `${slug} ${name} ${gender} age ${age} ${fun ? "with" : "without"} silly word`;
+      warnings.push(...holes.map((h) => `contains ${h}`));
       if (warnings.length) { overflowing++; console.log(`✗ ${label}: ${warnings.join("; ")}`); } else console.log(`✓ ${label}`);
     }
   }
@@ -59,5 +63,5 @@ try {
   await browser.close();
   server.close();
 }
-console.log(`\n${combos} books, ${overflowing} with "too much text" warnings`);
+console.log(`\n${combos} books, ${overflowing} with problems ({{, undefined or "too much text")`);
 process.exit(overflowing ? 1 : 0);

@@ -167,8 +167,6 @@ export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: {
       {/* end of the story: no review prompt here (Jomana, 24 Oct) */}
       <div className="mx-auto max-w-md px-4 pb-16 -mt-8 flex flex-col gap-3 text-center">
         {!hasEmail && <div className="text-left"><EmailMe bookId={bookId} /></div>}
-        <Link href={`/order?story=${bookId}`} onClick={() => beacon("series_cta_clicked", bookId)} className="btn-secondary self-center">Make it a real printed book →</Link>
-        <Link href={backHref} className="text-[15px] font-extrabold text-sky">Story page: PDF, parent guide, share</Link>
       </div>
     </div>
   );
