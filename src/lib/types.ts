@@ -170,11 +170,11 @@ export interface OrderRecord {
   photos: { face?: string };
   strengths: string[];
   books: OrderBook[]; // 1–3
-  world: { favourites: string[]; notes?: string };
+  world: { favourites: string[]; notes?: string; snack?: string; silly?: string }; // snack/silly: Story Builder cards
   words: { parent?: string; child?: string; nicknames?: string };
   dedication?: string;
   activities: string[];
-  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string };
+  parent: { name: string; whatsapp: string; governorate: string; city: string; street: string; landmark?: string; best_time?: string; gift?: OrderGift };
   promo_code?: string;
   list_price: number;
   discount: number;
@@ -189,6 +189,9 @@ export interface OrderRecord {
   created_at: string;
   updated_at: string;
 }
+
+/** "This is a gift" (SPEC §9): stored inside `parent` (jsonb), so no migration. */
+export interface OrderGift { recipient: string; message?: string; hide_price: boolean }
 
 /** A parent = one user (LAUNCH-PLAN §1b). id = hash of the normalised email or WhatsApp number. */
 export interface ParentRecord {

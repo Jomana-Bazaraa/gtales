@@ -4,6 +4,9 @@
 	"name": "gtales",
 	"compatibility_date": "2026-10-01",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	// Keep the variables set in the Cloudflare dashboard (Settings → Variables and Secrets) on every deploy.
+	// Without this, `wrangler deploy` deletes dashboard plain-text variables (Secrets survive either way).
+	"keep_vars": true,
 	// public/ (story images, fonts, book template) is served as static assets: free, and not counted in the Worker size.
 	"assets": {
 		"directory": ".open-next/assets",

@@ -1,0 +1,127 @@
+{
+  "slug": "worry",
+  "version": 1,
+  "fun": [
+    {
+      "page": 5,
+      "after": 2,
+      "requires": [
+        "silly"
+      ],
+      "text": "One gecko sneezed: \"{{silly}}!\" Even {{name}} giggled."
+    },
+    {
+      "page": 6,
+      "after": 1,
+      "requires": [
+        "snack"
+      ],
+      "text": "\"I'm so sad, I can't even eat my {{snack}},\" she sniffed."
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "Look at the band. Big cloud or small cloud?",
+      "options": [
+        {
+          "label": "☁️ Big",
+          "correct": true,
+          "response": "Yes. Big cloud, big worry."
+        },
+        {
+          "label": "🌤️ Small",
+          "correct": false,
+          "response": "Look again. It's very big!"
+        }
+      ]
+    },
+    "4": {
+      "type": "choice",
+      "question": "What makes the worry cloud smaller?",
+      "options": [
+        {
+          "label": "🗣️ Saying it out loud",
+          "correct": true,
+          "response": "Yes! Say it, and it shrinks."
+        },
+        {
+          "label": "🛏️ Hiding under the blanket",
+          "correct": false,
+          "response": "Hiding keeps the cloud big. Try again."
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Where did the Big Shadow go?",
+      "options": [
+        {
+          "label": "🌑 Where the lights are off",
+          "correct": true,
+          "response": "Yes! The lights went out where he passed."
+        },
+        {
+          "label": "💡 Where the lights are on",
+          "correct": false,
+          "response": "Those lights are still bright. Try again."
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "What is BIG on the wall but small in real life? Tap it!",
+      "options": [
+        {
+          "label": "👤 A shadow",
+          "correct": true,
+          "response": "A shadow! {{name}} kept the note in {{his}} pocket."
+        },
+        {
+          "label": "🦖 A dinosaur",
+          "correct": false,
+          "response": "A dinosaur on the wall? Ha! Try again."
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Trace the planks with your finger. Which path gets to the top?",
+      "options": [
+        {
+          "label": "🔵 Blue",
+          "correct": false,
+          "response": "Oops! That one stops in the air."
+        },
+        {
+          "label": "🟢 Green",
+          "correct": true,
+          "response": "Yes! Step, step, step, all the way across."
+        },
+        {
+          "label": "🩷 Pink",
+          "correct": false,
+          "response": "That path goes back down. Try again."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Say:** \"I'm scared. {{need}}\""
+      ],
+      "done": "The cloud got tiny, and {{his}} band shone brighter than the moon!"
+    },
+    "14": {
+      "type": "boxes",
+      "question": "Breathe with Basbousa. Tick a box for each slow breath.",
+      "count": 3,
+      "done": "Basbousa's cloud is tiny. You helped a kitten be brave!"
+    }
+  }
+}

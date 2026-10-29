@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Footer, Header } from "@/components/SiteChrome";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { getOrder } from "@/lib/db";
-import { COPY, egp } from "@/lib/gtales";
+import { COPY, egp, egpOrFree } from "@/lib/gtales";
 
 export const metadata: Metadata = { title: "Order received — GTales" };
 
@@ -18,7 +18,8 @@ export default async function Confirmed({ params }: PageProps<"/order/[id]/confi
     { icon: "book", tint: "bg-flame-soft text-flame-deep", title: "We create the pictures and the three tales", copy: `From ${name}'s photo, built around what you told us. About 5 days.` },
     { icon: "chat", tint: "bg-sky-soft text-sky", title: "You approve every page on WhatsApp", copy: `We send the full story to ${o.parent.whatsapp}. Change anything, as many times as you like.` },
     { icon: "home", tint: "bg-sun-soft text-cta-shadow", title: "We print and deliver", copy: `${o.parent.city}, ${o.parent.governorate}. About 5 days after your approval.` },
-    { icon: "star", tint: "bg-mint-soft text-mint", title: `You pay ${egp(o.total)} to the courier`, copy: "Cash or card at the door. Nothing online." },
+    o.total ? { icon: "star", tint: "bg-mint-soft text-mint", title: `You pay ${egp(o.total)} to the courier`, copy: "Cash or card at the door. Nothing online." }
+      : { icon: "star", tint: "bg-mint-soft text-mint", title: "It's free: nothing to pay", copy: `With ${o.promo_code ?? "your code"}, the books and the delivery are on us.` },
   ];
   return (
     <>
@@ -41,12 +42,13 @@ export default async function Confirmed({ params }: PageProps<"/order/[id]/confi
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-1 text-[15px]">
             <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(o.list_price)}</b></div>
             {o.discount > 0 && <div className="flex justify-between text-mint"><span>{o.promo_code}</span><b>−{egp(o.discount)}</b></div>}
-            <div className="flex justify-between"><span>Delivery</span><b>{egp(o.delivery)}</b></div>
-            <div className="flex justify-between font-bold"><span>Pay on delivery</span><b>{egp(o.total)}</b></div>
+            <div className="flex justify-between"><span>Delivery</span><b>{egpOrFree(o.delivery)}</b></div>
+            <div className="flex justify-between font-bold"><span>{o.total ? "Pay on delivery" : "To pay"}</span><b>{egpOrFree(o.total)}</b></div>
           </div>
           <div className="flex flex-col gap-2">
             <Link href={`/my-stories?order=${o.id}`} className="btn-secondary">Track this order</Link>
             <Link href="/tales" className="btn-ghost">{COPY.ctaSecondary} for another child</Link>
+            <Link href="/reviews/new" className="text-center text-[15px] font-extrabold text-sky">★ Loved your free story? Add a review for other families</Link>
           </div>
         </section>
       </main>

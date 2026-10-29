@@ -1,0 +1,127 @@
+{
+  "slug": "friendship",
+  "version": 1,
+  "fun": [
+    {
+      "page": 5,
+      "after": 2,
+      "requires": [
+        "silly"
+      ],
+      "text": "{{sidekick}} yelled \"{{silly}}!\" all the way down."
+    },
+    {
+      "page": 6,
+      "after": 1,
+      "requires": [
+        "snack"
+      ],
+      "text": "\"He even chewed my {{snack}}!\" said Mishmish."
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "How does {{other}} feel?",
+      "options": [
+        {
+          "label": "😢 Sad and left out",
+          "correct": true,
+          "response": "Yes. And {{name}} feels lonely too."
+        },
+        {
+          "label": "😄 Happy",
+          "correct": false,
+          "response": "Look at that face. Is that happy?"
+        }
+      ]
+    },
+    "4": {
+      "type": "choice",
+      "question": "What makes the star glow?",
+      "options": [
+        {
+          "label": "🤝 Playing together",
+          "correct": true,
+          "response": "Yes! Together, it glows."
+        },
+        {
+          "label": "🧍 Playing alone",
+          "correct": false,
+          "response": "Alone, the seesaw doesn't even move. Try again."
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Which way did Zizo go?",
+      "options": [
+        {
+          "label": "🚩 The chewed flags",
+          "correct": true,
+          "response": "Yes! Munch, munch. Zizo went that way."
+        },
+        {
+          "label": "🏳️ The neat flags",
+          "correct": false,
+          "response": "No chew marks there. Try again."
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "What makes a game fair? Tap it!",
+      "options": [
+        {
+          "label": "🔄 Taking turns",
+          "correct": true,
+          "response": "Taking turns! {{name}} kept that in {{his}} pocket."
+        },
+        {
+          "label": "✋ Grabbing",
+          "correct": false,
+          "response": "Grabbing makes people sad. Try again!"
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Trace the paths with your finger. Which car gets to Zizo?",
+      "options": [
+        {
+          "label": "🔵 Blue car",
+          "correct": false,
+          "response": "Bump! Dead end. Try again."
+        },
+        {
+          "label": "🟡 Yellow car",
+          "correct": true,
+          "response": "The yellow path! There's Zizo!"
+        },
+        {
+          "label": "🟢 Green car",
+          "correct": false,
+          "response": "Bump! Dead end. Try again."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Say:** \"Sorry. Let's play together.\""
+      ],
+      "done": "{{sidekick}} came back. The star glowed brighter than all the stars in the sky!"
+    },
+    "14": {
+      "type": "boxes",
+      "question": "Give everyone a turn on the Big Wheel. Tick a box for each turn.",
+      "count": 3,
+      "done": "Everyone got a turn! You helped Zizo make friends."
+    }
+  }
+}

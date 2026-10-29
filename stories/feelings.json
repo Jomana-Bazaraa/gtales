@@ -2,6 +2,7 @@
   "slug": "feelings",
   "struggle": "Big feelings",
   "title": "{{name}} and the Dust Storm",
+  "default_strength": "feelings-finder",
   "uses": [
     "name",
     "age",

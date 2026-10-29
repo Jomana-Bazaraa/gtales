@@ -1,0 +1,149 @@
+{
+  "slug": "bullied",
+  "version": 1,
+  "fun": [
+    {
+      "page": 5,
+      "after": 2,
+      "requires": [
+        "silly"
+      ],
+      "text": "\"{{silly}}!\" the little crabs cheered. That's crab for \"thank you.\""
+    },
+    {
+      "page": 10,
+      "after": 0,
+      "requires": [
+        "snack"
+      ],
+      "text": "The cave smelled like seaweed and old {{snack}}. Yuck."
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "Was it {{name}}'s fault?",
+      "options": [
+        {
+          "label": "🙅 No",
+          "correct": true,
+          "response": "That's right. When someone is mean, it is never your fault."
+        },
+        {
+          "label": "🙋 Yes",
+          "correct": false,
+          "response": "No! {{other}} was mean. {{name}} did nothing wrong."
+        }
+      ]
+    },
+    "4": {
+      "type": "choice",
+      "question": "What makes the shield come up?",
+      "options": [
+        {
+          "label": "📣 A strong voice",
+          "correct": true,
+          "response": "Yes! Stand tall, speak loud, shield up."
+        },
+        {
+          "label": "🙈 Hiding",
+          "correct": false,
+          "response": "Hiding makes the shield go down. Try again."
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Which way did Snap go?",
+      "options": [
+        {
+          "label": "🦀 The big claw marks",
+          "correct": true,
+          "response": "Yes! Big crab, big marks. Let's go!"
+        },
+        {
+          "label": "🐾 The little footprints",
+          "correct": false,
+          "response": "Those are too small for Snap. Try again."
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "Someone is mean to you. What do you do? Tap it!",
+      "options": [
+        {
+          "label": "🧑‍🏫 Tell a grown-up",
+          "correct": true,
+          "response": "Yes! Telling keeps you safe. {{name}} kept that in {{his}} pocket."
+        },
+        {
+          "label": "🤐 Keep it a secret",
+          "correct": false,
+          "response": "Secrets keep you alone. Tell a big person!"
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Trace the tunnels with your finger. Which one has the whistle?",
+      "options": [
+        {
+          "label": "🩷 Pink shells",
+          "correct": false,
+          "response": "Dead end! Try another."
+        },
+        {
+          "label": "🔵 Blue shells",
+          "correct": true,
+          "response": "The blue tunnel! There's the whistle."
+        },
+        {
+          "label": "🟡 Yellow shells",
+          "correct": false,
+          "response": "Dead end! Try again."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Stand tall and say it loud:** \"Stop. I don't like that.\""
+      ],
+      "done": "{{His}} shield came up, bigger and shinier than ever!"
+    },
+    "14": {
+      "type": "choice",
+      "question": "Who can you tell when someone is mean? Tap every one!",
+      "options": [
+        {
+          "label": "👩 Mama or Baba",
+          "correct": true,
+          "response": "Yes!"
+        },
+        {
+          "label": "🧑‍🏫 A teacher",
+          "correct": true,
+          "response": "Yes!"
+        },
+        {
+          "label": "👵 Teta or Gedo",
+          "correct": true,
+          "response": "Yes!"
+        },
+        {
+          "label": "🐦 A seagull",
+          "correct": false,
+          "response": "Ha! No. Tell a big person."
+        }
+      ],
+      "done": "Yes! Lots of big people can help.",
+      "multi": true
+    }
+  }
+}

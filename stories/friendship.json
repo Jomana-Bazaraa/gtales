@@ -2,6 +2,7 @@
   "slug": "friendship",
   "struggle": "Friendship",
   "title": "{{name}} and the Eid Swings",
+  "default_strength": "teammate",
   "uses": [
     "name",
     "age",

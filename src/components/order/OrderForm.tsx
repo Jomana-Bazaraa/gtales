@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { sessionId, source, track } from "@/lib/track";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { COPY, egp, priceBreakdown, type Pricing } from "@/lib/gtales";
+import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -26,8 +26,9 @@ interface Draft {
   dedication: string; activities: string[];
   books: Book[];
   parentName: string; whatsapp: string; governorate: string; city: string; street: string; landmark: string; bestTime: string; promo: string;
+  isGift: boolean; giftTo: string; giftMessage: string; hidePrice: boolean;
 }
-const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "" };
+const EMPTY: Draft = { name: "", age: 0, gender: "", face: "", description: "", strengths: [], strengthText: "", struggles: [], context: ["", "", ""], favourites: [], worldText: "", wordsParent: "", wordsChild: "", nicknames: "", dedication: "", activities: [], books: [{ people: [], setting: "" }, { people: [], setting: "" }, { people: [], setting: "" }], parentName: "", whatsapp: "", governorate: "", city: "", street: "", landmark: "", bestTime: "", promo: "", isGift: false, giftTo: "", giftMessage: "", hidePrice: true };
 
 const STRENGTHS = ["Building", "Drawing", "Football", "Swimming", "Dancing", "Reading", "Singing", "Helping", "Running", "Making people laugh", "Puzzles"];
 const STRUGGLES = ["Tantrums", "Hitting", "Being bullied", "Sleeping in the dark", "Worries", "Lying", "Big feelings", "Sharing", "Making friends", "Shyness", "Screen time", "New school"];
@@ -65,6 +66,19 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
   }, [prefill, pricing.promoCode]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d })); } catch {} }, [d, ready]);
 
+  // Promo: checked on the server as it's typed (codes, limits and expiry live in Supabase), with the number once given
+  const [quote, setQuote] = useState<PromoQuote | null>(null);
+  useEffect(() => {
+    const code = d.promo.trim().toUpperCase();
+    if (!code) return; // an old quote never matches an empty code
+    const ctl = new AbortController();
+    const t = setTimeout(() => {
+      const wa = /\d{10,}/.test(d.whatsapp.replace(/\D/g, "")) ? `&whatsapp=${encodeURIComponent(d.whatsapp)}` : "";
+      fetch(`/api/promo?code=${encodeURIComponent(code)}${wa}`, { signal: ctl.signal }).then((r) => r.json()).then((j: PromoQuote) => setQuote({ ...j, code: j.ok ? j.code : code })).catch(() => {});
+    }, 350);
+    return () => { clearTimeout(t); ctl.abort(); };
+  }, [d.promo, d.whatsapp]);
+
   const u = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }));
   const toggle = (k: "strengths" | "favourites" | "activities", v: string) => setD((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
   const name = d.name.trim() || "your child";
@@ -88,6 +102,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         if (!/^\+?[0-9 ]{10,16}$/.test(d.whatsapp.trim())) return "A WhatsApp number, like 010 1234 5678.";
         if (!d.governorate) return "Please choose a governorate.";
         if (d.city.trim().length < 2 || d.street.trim().length < 3) return "City and street, please.";
+        if (d.isGift && d.giftTo.trim().length < 2) return "Who is the gift for? Please write their name.";
         return null;
       }
       default: return null;
@@ -118,7 +133,8 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       world: { favourites: d.favourites, notes: d.worldText.trim() || undefined },
       words: { parent: d.wordsParent.trim() || undefined, child: d.wordsChild.trim() || undefined, nicknames: d.nicknames.trim() || undefined },
       dedication: d.dedication.trim() || undefined, activities: d.activities,
-      parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined },
+      parent: { name: d.parentName.trim(), whatsapp: d.whatsapp.trim(), governorate: d.governorate, city: d.city.trim(), street: d.street.trim(), landmark: d.landmark.trim() || undefined, best_time: d.bestTime || undefined,
+        gift: d.isGift ? { recipient: d.giftTo.trim(), message: d.giftMessage.trim() || undefined, hide_price: d.hidePrice } : undefined },
       promo_code: d.promo.trim() || undefined, free_story_id: prefill.storyId, ref: safeRef(), session_id: sessionId(), website: (document.getElementById("website") as HTMLInputElement | null)?.value || "",
     };
     let r: Response;
@@ -129,14 +145,15 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
       return setErr("No connection. Your answers are saved: check the internet and tap Confirm my order again.");
     }
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) { setBusy(false); return setErr(j.message || j.issues?.[0]?.message || "Something went wrong. Please try again."); }
+    if (!r.ok) { setBusy(false); if (j.field === "promo" || String(j.field ?? "").startsWith("gift")) goTo("delivery"); return setErr(j.message || j.issues?.[0]?.message || "Something went wrong. Please try again."); }
     try { localStorage.removeItem(KEY); } catch {}
     router.push(`/order/${j.id}/confirmed`);
   };
 
   const bookIdx = step.startsWith("book") ? Number(step.slice(4)) - 1 : -1;
-  const promoOk = d.promo.trim().toUpperCase() === price.promoCode.toUpperCase();
-  const discount = promoOk ? price.discount : 0;
+  const promoOk = !!quote?.ok && quote.code === d.promo.trim().toUpperCase();
+  const discount = promoOk ? quote!.discount! : 0;
+  const delivery = promoOk ? quote!.delivery! : price.delivery;
 
   return (
     <div className="mx-auto max-w-xl w-full flex flex-col min-h-[calc(100dvh-64px)]">
@@ -221,6 +238,12 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
         {step === "delivery" && (<>
           <Q help="We send every page to this WhatsApp number for your approval, then the books to this address.">Where do we send the books?</Q>
+          <label className="flex gap-3 items-center rounded-2xl border-[3px] border-line bg-white px-4 py-3 font-bold text-[17px]"><input type="checkbox" className="w-6 h-6 shrink-0 accent-[var(--flame)]" checked={d.isGift} onChange={(e) => u("isGift", e.target.checked)} />🎁 This is a gift</label>
+          {d.isGift && (<div className="flex flex-col gap-4 rounded-2xl bg-surface-tint p-4">
+            <F label="Recipient's name" hint="The person who receives the parcel."><input className="field font-medium" placeholder="e.g. Nour Hassan" value={d.giftTo} onChange={(e) => u("giftTo", e.target.value)} maxLength={60} /></F>
+            <F label="Gift message (optional)" hint={`Printed on the first page. ${d.giftMessage.length} / 200`}><textarea className="field font-medium min-h-24" placeholder={`e.g. Happy birthday ${name}! Love, Auntie Mona`} value={d.giftMessage} onChange={(e) => u("giftMessage", e.target.value)} maxLength={200} /></F>
+            <label className="flex gap-3 items-center text-[15px] font-bold"><input type="checkbox" className="w-5 h-5 shrink-0" checked={d.hidePrice} onChange={(e) => u("hidePrice", e.target.checked)} />Don&apos;t include the price</label>
+          </div>)}
           <F label="Your name"><input className="field font-medium" value={d.parentName} onChange={(e) => u("parentName", e.target.value)} maxLength={60} /></F>
           <F label="WhatsApp number"><input className="field font-medium" inputMode="tel" placeholder="010 1234 5678" value={d.whatsapp} onChange={(e) => u("whatsapp", e.target.value)} maxLength={16} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Governorate</span><div className="flex flex-wrap gap-2">{GOVS.map((g) => <Chip key={g} on={d.governorate === g} onClick={() => u("governorate", g)}>{g}</Chip>)}</div></div>
@@ -228,7 +251,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <F label="Street and building"><input className="field font-medium" placeholder="e.g. 12 Road 9, building 4, flat 3" value={d.street} onChange={(e) => u("street", e.target.value)} maxLength={200} /></F>
           <F label="Landmark (optional)"><input className="field font-medium" placeholder="e.g. next to Seoudi" value={d.landmark} onChange={(e) => u("landmark", e.target.value)} maxLength={120} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Best time to message you</span><div className="flex flex-wrap gap-2">{["Morning", "Afternoon", "Evening", "Any time"].map((t) => <Chip key={t} on={d.bestTime === t} onClick={() => u("bestTime", t)}>{t}</Chip>)}</div></div>
-          <F label="Promo code" hint={promoOk ? `${price.promoPercent}% off applied.` : d.promo.trim() ? "This code isn't valid." : undefined}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
+          <F label="Promo code" hint={!d.promo.trim() ? undefined : promoOk ? (promoLine(quote!) === "Free" ? "Free: books and delivery." : promoLine(quote!) + " applied.") : quote && !quote.ok && quote.code === d.promo.trim().toUpperCase() ? quote.message : "Checking…"}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
         </>)}
 
         {step === "review" && (<>
@@ -239,13 +262,14 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <Row label="World and words" onEdit={() => goTo("world")}>{[...d.favourites, d.worldText.trim(), d.wordsParent.trim(), d.wordsChild.trim()].filter(Boolean).join(" · ") || "—"}</Row>
           <Row label="Play pages" onEdit={() => goTo("activities")}>{d.activities.join(", ") || "We'll choose for you"}</Row>
           <Row label="Message" onEdit={() => goTo("dedication")}>{d.dedication.trim() || "None"}</Row>
+          {d.isGift && <Row label="🎁 Gift" onEdit={() => goTo("delivery")}>For {d.giftTo.trim()}{d.giftMessage.trim() ? ` · "${d.giftMessage.trim()}"` : ""} · {d.hidePrice ? "no price in the parcel" : "price included"}</Row>}
           <Row label="Delivery" onEdit={() => goTo("delivery")}>{d.parentName}, {d.whatsapp} · {d.street}, {d.city}, {d.governorate}</Row>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
             <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(price.listPrice)}</b></div>
-            {discount > 0 && <div className="flex justify-between text-mint"><span>{price.promoCode} · {price.promoPercent}% off</span><b>−{egp(discount)}</b></div>}
-            <div className="flex justify-between"><span>Delivery, anywhere in Egypt</span><b>{egp(price.delivery)}</b></div>
+            {discount > 0 && <div className="flex justify-between text-mint"><span>{quote!.code} · {promoLine(quote!)}</span><b>−{egp(discount)}</b></div>}
+            <div className="flex justify-between"><span>Delivery, anywhere in Egypt</span><b>{egpOrFree(delivery)}</b></div>
             <div className="h-px bg-line" />
-            <div className="flex justify-between items-center"><span className="font-bold">Pay on delivery</span><b className="display text-[26px]">{egp(price.listPrice - discount + price.delivery)}</b></div>
+            <div className="flex justify-between items-center"><span className="font-bold">{price.listPrice - discount + delivery ? "Pay on delivery" : "To pay"}</span><b className="display text-[26px]">{egpOrFree(price.listPrice - discount + delivery)}</b></div>
           </div>
           <Promises variant="compact" />
         </>)}
@@ -257,7 +281,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         {step === "review" ? <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Sending…" : "Confirm my order"}</button>
           : (step === "dedication" || step === "context") ? <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
           : <button type="button" onClick={next} className="btn-primary w-full">Next</button>}
-        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : `${egp(price.net)} + ${egp(price.delivery)} delivery · pay on delivery`}</span>}
+        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : price.listPrice - discount + delivery === 0 ? `Free with ${quote?.code ?? "your code"}` : `${egp(price.listPrice - discount)} + ${egp(delivery)} delivery · pay on delivery`}</span>}
       </div>
     </div>
   );
@@ -314,6 +338,8 @@ function Row({ label, children, onEdit }: { label: string; children: React.React
     </div>
   );
 }
+type PromoQuote = { ok: boolean; code?: string; message?: string; percent_off?: number; covers_delivery?: boolean; discount?: number; delivery?: number; total?: number };
+function promoLine(q: PromoQuote) { return q.percent_off === 100 && q.covers_delivery ? "Free" : `${q.percent_off === 100 ? "books free" : `${q.percent_off}% off`}${q.covers_delivery ? " + free delivery" : ""}`; }
 function cap(s: string) { return s.trim().replace(/\s+/g, " ").split(" ").map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(" "); }
 const safeRef = source;
 void COPY;

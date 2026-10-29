@@ -148,6 +148,8 @@ export function priceBreakdown(p: Pricing = getPricing()) {
 }
 
 export const egp = (n: number) => `${n.toLocaleString("en-EG")} EGP`;
+/** Prices that can be zero (a free order, free delivery): "Free" instead of "0 EGP". */
+export const egpOrFree = (n: number) => (n === 0 ? "Free" : egp(n));
 
 function num(v: string | undefined, d: number) {
   const n = Number(v);
@@ -196,7 +198,6 @@ export const COPY = {
   promoBar: (p = getPricing()) =>
     `Launch offer: ${p.promoPercent}% off the printed Series with ${p.promoCode} · Pay on delivery`,
   trustLine: ["Ages 2–10", "You approve every page", "Pay on delivery"],
-  reviewsVisible: process.env.NEXT_PUBLIC_REVIEWS_VISIBLE === "true",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "",
   whatsappText: "Hi GTales! I have a question about a story for my child.",
 };

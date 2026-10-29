@@ -2,6 +2,7 @@
   "slug": "lying",
   "struggle": "Lying",
   "title": "{{name}} and the Rainbow Kite",
+  "default_strength": "truth-teller",
   "uses": [
     "name",
     "age",

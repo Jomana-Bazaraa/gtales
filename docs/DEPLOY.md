@@ -4,7 +4,7 @@ Do once. After this, every push to `main` builds and deploys on Cloudflare. Why 
 
 ## 1. Supabase (database + file storage)
 1. supabase.com → New project → name `gtales`, region Frankfurt (closest to Egypt), strong DB password.
-2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`. (0003 is safe to re-run.)
+2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0005_reviews.sql`. (0003–0005 are safe to re-run.)
 3. Project settings → API: copy **Project URL** and the **service_role** key (never the anon key, never in client code).
 
 ## 2. GitHub (PDFs)
@@ -32,7 +32,8 @@ PDFs are rendered by `.github/workflows/pdf.yml`, never on the web server. The w
    `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, `INTERNAL_RENDER_TOKEN`, `RESEND_API_KEY`,
    `EMAIL_FROM` (`GTales <stories@gtales.kids>`), `ADMIN_NOTIFY_EMAIL`, `GITHUB_PDF_TOKEN`,
    and again `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_WHATSAPP`. Leave `POLISH_PROVIDER` unset (= off) and `RATE_LIMIT_PER_HOUR` unset (= 10).
-5. Deployments → Retry/Deploy. The site is live on `https://gtales.<your-subdomain>.workers.dev`.
+5. `wrangler.jsonc` has `keep_vars: true`, so these survive every deploy (before 24 Oct, a deploy deleted dashboard variables of type Text; Secrets were always kept). After adding or changing a variable, Cloudflare offers **Deploy**: click it (or push to `main`). Check in Admin → Settings → **Send test email**.
+6. Deployments → Retry/Deploy. The site is live on `https://gtales.<your-subdomain>.workers.dev`.
    Static files in `public/` (story images, fonts) are served as free static assets. The Worker itself is ~2 MiB gzip (free limit 3 MiB).
 
 Local check of the Worker build: `npm run cf:preview` (needs `.dev.vars` with the runtime variables; never commit it).
@@ -43,6 +44,7 @@ Local check of the Worker build: `npm run cf:preview` (needs `.dev.vars` with th
 3. Wait for Cloudflare to say the domain is **Active** (minutes to a few hours).
 4. Workers & Pages → `gtales` → Settings → **Domains & Routes** → Add → **Custom domain** → `gtales.kids`; again for `www.gtales.kids`.
 5. Analytics & Logs → **Web Analytics** → Add a site → `gtales.kids` → automatic setup (free, no cookie banner).
+6. **Turnstile** (bot check on the review form, free): Cloudflare → **Turnstile** → Add widget → name `gtales-reviews`, hostname `gtales.kids` (add `localhost` for testing), mode **Managed** → Create. Put the **Site key** in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Settings → Build variables AND runtime Variables) and the **Secret key** in `TURNSTILE_SECRET_KEY` (runtime, type Secret). Redeploy. Without them the form works but has no bot check.
 
 ## 5. Email
 **Sending (Resend):** resend.com → Domains → Add `gtales.kids` (region eu-west-1) → copy its records into Cloudflare → DNS: the `TXT resend._domainkey`, the `MX send` and `TXT send` records. Verify. Create an API key → `RESEND_API_KEY`.

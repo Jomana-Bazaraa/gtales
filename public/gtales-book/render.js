@@ -9,7 +9,7 @@
     const girl = form.gender === 'girl';
     return {
       name: form.name, age: AGES[form.age] || String(form.age), place: form.place, other: form.other,
-      sidekick: form.sidekick, power_word: form.power_word, need: form.need, ask: form.ask, strength: form.strength,
+      sidekick: form.sidekick, power_word: form.power_word, need: form.need, ask: form.ask, strength: form.strength, snack: form.snack, silly: form.silly,
       he: girl ? 'she' : 'he', him: girl ? 'her' : 'him', his: girl ? 'her' : 'his',
       He: girl ? 'She' : 'He', Him: girl ? 'Her' : 'Him', His: girl ? 'Her' : 'His'
     };

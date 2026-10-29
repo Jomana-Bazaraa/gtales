@@ -4,11 +4,13 @@ import { COPY, TALES, egp } from "@/lib/gtales";
 import { currentBreakdown } from "@/lib/pricing";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
+import { LandingView } from "./StartButton";
 
 /* ============ 1. Hero ============ */
 export function Hero() {
   return (
     <section className="bg-surface-tint">
+      <LandingView />{/* invisible: landing_view for the Dashboard funnel */}
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-16 grid md:grid-cols-[1.05fr_1fr] gap-8 md:gap-10 items-center">
         <div className="flex flex-col gap-5 md:gap-6">
           <span className="eyebrow">{COPY.slogan}</span>

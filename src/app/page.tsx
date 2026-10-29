@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Footer, Header, PromoBar } from "@/components/SiteChrome";
 import { Faq, FinalCta, Hero, HowItWorks, MeetTheBook, Pricing, Superpowers } from "@/components/landing/Landing";
-import { COPY } from "@/lib/gtales";
+import { FamiliesLoveGTales } from "@/components/reviews/ReviewsWall";
+import { publicReviews } from "@/lib/reviews";
 
 export const metadata: Metadata = {
   title: "GTales — A personalised storybook where your child is the hero",
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 /** Landing page — docs/SPEC.md §5. Seven sections, same order on phone and desktop. */
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const { reviews, count, average } = await publicReviews(12).catch(() => ({ reviews: [], count: 0, average: 0 }));
   return (
     <>
       <PromoBar />
@@ -21,7 +25,7 @@ export default function Home() {
         <MeetTheBook />
         <Superpowers />
         <Pricing />
-        {COPY.reviewsVisible && null /* Reviews: hidden until three real reviews exist (SPEC §2.6) */}
+        <FamiliesLoveGTales reviews={reviews} count={count} average={average} />
         <Faq />
         <FinalCta />
       </main>

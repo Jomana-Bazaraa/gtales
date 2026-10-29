@@ -1,0 +1,48 @@
+{
+  "_note": "Edit freely. 'label' is shown on the card (and read aloud). 'value' is what goes into the story. Values: no emoji, no ending punctuation. Snacks must read well after 'my', 'all the' and 'smells like' (use mass/plural nouns: 'mangoes', not 'a mango'). Silly words: the story adds the '!' itself, so values have none (letters, digits like Sha3bolla, spaces; max 15).",
+  "sidekick": [
+    {"label": "🤖 Bolt", "value": "Bolt"},
+    {"label": "🤖 Mr. Beep", "value": "Mr. Beep"},
+    {"label": "🤖 Zuzu", "value": "Zuzu"},
+    {"label": "🤖 Captain Bolt", "value": "Captain Bolt"},
+    {"label": "🤖 Bombom", "value": "Bombom"},
+    {"label": "🤖 Sprocket", "value": "Sprocket"},
+    {"label": "🐱 Name it after my pet or friend", "value": "__parent_types__"}
+  ],
+  "power_word": [
+    {"label": "🦁 I'm a LION!", "value": "I'm a LION!"},
+    {"label": "🦸 I'm a superhero!", "value": "I'm a superhero!"},
+    {"label": "🍌 BANANAS!", "value": "BANANAS!"},
+    {"label": "🦖 I'm a dinosaur! RAWR!", "value": "I'm a dinosaur! RAWR!"},
+    {"label": "🍲 Koshary power!", "value": "Koshary power!"},
+    {"label": "🚀 Blast off!", "value": "Blast off!"},
+    {"label": "🧠 I'm a genius!", "value": "I'm a genius!"},
+    {"label": "⚽ GOOOAL!", "value": "GOOOAL!"}
+  ],
+  "snack": [
+    {"label": "🍲 Koshary", "value": "koshary"},
+    {"label": "🍕 Pizza", "value": "pizza"},
+    {"label": "🍫 Chocolate", "value": "chocolate"},
+    {"label": "🍟 Fries", "value": "fries"},
+    {"label": "🥭 Mangoes", "value": "mangoes"},
+    {"label": "🍿 Popcorn", "value": "popcorn"},
+    {"label": "🍦 Ice cream", "value": "ice cream"},
+    {"label": "🥞 Feteer", "value": "feteer"},
+    {"label": "🍪 Biscuits", "value": "biscuits"},
+    {"label": "🥬 Molokhia", "value": "molokhia"}
+  ],
+  "silly": [
+    {"label": "🦁 Aslaaan!", "value": "Aslaaan"},
+    {"label": "🙌 Yastaaa!", "value": "Yastaaa"},
+    {"label": "🎉 Sha3bolla!", "value": "Sha3bolla"},
+    {"label": "🤷 Keda keda!", "value": "Keda keda"},
+    {"label": "🍟 Batates!", "value": "Batates"},
+    {"label": "🍩 Zalabya!", "value": "Zalabya"}
+  ],
+  "need": [
+    {"label": "🤗 A hug", "value": "Can I have a hug?"},
+    {"label": "🗣️ To talk", "value": "Can we talk?"},
+    {"label": "🧸 Quiet time", "value": "I need some quiet time."},
+    {"label": "🎮 To play", "value": "Can we play something?"}
+  ]
+}

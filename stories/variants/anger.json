@@ -1,0 +1,127 @@
+{
+  "slug": "anger",
+  "version": 1,
+  "fun": [
+    {
+      "page": 5,
+      "after": 1,
+      "requires": [
+        "silly"
+      ],
+      "text": "\"{{silly}}!\" beeped {{sidekick}}. That's robot for \"WOW.\""
+    },
+    {
+      "page": 6,
+      "after": 1,
+      "requires": [
+        "snack"
+      ],
+      "text": "\"Also,\" Tilly sniffed, \"he ate all the {{snack}} in Blocktown.\""
+    }
+  ],
+  "little": {
+    "2": {
+      "type": "choice",
+      "question": "Look at {{other}}'s face. Happy or sad?",
+      "options": [
+        {
+          "label": "😢 Sad",
+          "correct": true,
+          "response": "Yes. And {{name}} doesn't feel good either."
+        },
+        {
+          "label": "😄 Happy",
+          "correct": false,
+          "response": "Look at those tears. Is that happy?"
+        }
+      ]
+    },
+    "4": {
+      "type": "choice",
+      "question": "Which color makes the band BUILD?",
+      "options": [
+        {
+          "label": "🟢 Green",
+          "correct": true,
+          "response": "Yes! Green means build."
+        },
+        {
+          "label": "🔴 Red",
+          "correct": false,
+          "response": "Red means SMASH. Look at {{sidekick}}'s arm!"
+        }
+      ]
+    },
+    "6": {
+      "type": "choice",
+      "question": "Where do the paw prints go?",
+      "options": [
+        {
+          "label": "🧁 The bakery",
+          "correct": false,
+          "response": "Mmm, cookies! But no paw prints there."
+        },
+        {
+          "label": "🗼 The tall tower",
+          "correct": true,
+          "response": "Yes! To the tower. Let's go!"
+        }
+      ]
+    },
+    "8": {
+      "type": "choice",
+      "question": "What helps {{name}} feel calm? Tap it!",
+      "options": [
+        {
+          "label": "🌬️ A slow breath",
+          "correct": true,
+          "response": "Yes! In… and out. {{name}} kept that in {{his}} pocket."
+        },
+        {
+          "label": "🥁 Banging a drum",
+          "correct": false,
+          "response": "BOOM! Fun, but not calm. Try again!"
+        }
+      ]
+    },
+    "10": {
+      "type": "choice",
+      "question": "Trace the paths with your finger. Which flag gets to the tower?",
+      "options": [
+        {
+          "label": "🔴 Red flag",
+          "correct": false,
+          "response": "Dead end! Try another."
+        },
+        {
+          "label": "🟡 Yellow flag",
+          "correct": false,
+          "response": "Dead end! Try again."
+        },
+        {
+          "label": "🔵 Blue flag",
+          "correct": true,
+          "response": "The blue path! But Wrecks was already climbing the tower."
+        }
+      ]
+    },
+    "12": {
+      "type": "steps",
+      "tag": "Your turn · Do it with {{name}}",
+      "question": "Stand up and do it together:",
+      "steps": [
+        "**Freeze** and hug your tummy.",
+        "**Breathe** in and out. Three times!",
+        "**Shout your Power Word:** \"{{power_word}}\"",
+        "**Say:** \"I'm mad. {{need}}\""
+      ],
+      "done": "The band turned yellow, then green. The brightest green in Blocktown!"
+    },
+    "14": {
+      "type": "boxes",
+      "question": "Breathe with Wrecks. Tick a box for each slow breath.",
+      "count": 3,
+      "done": "Wrecks's band is green. You helped a raccoon calm down!"
+    }
+  }
+}

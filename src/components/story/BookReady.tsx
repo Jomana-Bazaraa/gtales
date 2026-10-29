@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
 import { SeriesBand } from "@/components/ui/SeriesBand";
-import { BookActions } from "./BookActions";
+import { BookActions, GuideLink } from "./BookActions";
 import { taleBySlug } from "@/lib/gtales";
 import type { BookRecord } from "@/lib/types";
 import { storyImage } from "@/stories/images";
@@ -39,9 +39,10 @@ export function BookReady({ book, url }: { book: BookRecord; url: string }) {
                 <li>When it gets hard at home, say the Power Word first, then the Combo.</li>
               </ul>
             </div>
-            <div className="card p-5 flex flex-col gap-2 border-2 border-dashed border-line !shadow-none">
-              <b className="font-bold">Guide for the {tale?.title ?? ""} tale</b>
-              <p className="m-0 text-[15px] leading-[22px] text-ink-soft">CONTENT NEEDED: the team's parent guide for this superpower goes here (what to say, what to try, what to notice).</p>
+            <div className="card p-5 flex flex-col gap-2">
+              <b className="font-bold">The full guide for {tale?.title ?? "this tale"}</b>
+              <p className="m-0 text-[15px] leading-[22px] text-ink-soft">What is going on, what to say, what to try this week, and when to ask for more help. A PDF to read on your phone or print.</p>
+              <GuideLink bookId={book.id} slug={book.slug} className="btn-secondary self-start">Open the parent guide</GuideLink>
             </div>
           </div>
           <Link href="/tales?ref=share" className="text-[15px] font-extrabold text-sky">Another child at home? A free story for every superpower →</Link>

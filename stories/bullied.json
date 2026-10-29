@@ -2,6 +2,7 @@
   "slug": "bullied",
   "struggle": "Being bullied",
   "title": "{{name}} and the Big Crab",
+  "default_strength": "friend",
   "uses": [
     "name",
     "age",

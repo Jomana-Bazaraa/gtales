@@ -7,6 +7,7 @@ import { sendOrderNotice } from "@/lib/email";
 import { rememberParent } from "@/lib/parents";
 import { baseUrl } from "@/lib/site";
 import { currentBreakdown } from "@/lib/pricing";
+import { PROMO_MESSAGES, promoPrice, redeemPromo, releasePromo } from "@/lib/promos";
 import { assertSafe, SafetyError } from "@/stories/safety";
 import type { OrderRecord } from "@/lib/types";
 
@@ -18,11 +19,12 @@ const schema = z.object({
   photos: z.object({ face: z.string().max(80).optional() }).default({}),
   strengths: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
   books: z.array(book).min(1).max(3),
-  world: z.object({ favourites: z.array(z.string().trim().min(1).max(40)).max(20).default([]), notes: z.string().trim().max(300).optional() }),
+  world: z.object({ favourites: z.array(z.string().trim().min(1).max(40)).max(20).default([]), notes: z.string().trim().max(300).optional(), snack: z.string().trim().max(20).optional(), silly: z.string().trim().max(14).optional() }),
   words: z.object({ parent: z.string().trim().max(120).optional(), child: z.string().trim().max(120).optional(), nicknames: z.string().trim().max(120).optional() }),
   dedication: z.string().trim().max(200).optional(),
   activities: z.array(z.string().trim().max(40)).max(12).default([]),
-  parent: z.object({ name: z.string().trim().min(2).max(60), whatsapp: z.string().trim().regex(/^\+?[0-9 ]{10,16}$/), governorate: z.string().trim().min(2).max(40), city: z.string().trim().min(2).max(60), street: z.string().trim().min(3).max(200), landmark: z.string().trim().max(120).optional(), best_time: z.string().trim().max(40).optional() }),
+  parent: z.object({ name: z.string().trim().min(2).max(60), whatsapp: z.string().trim().regex(/^\+?[0-9 ]{10,16}$/), governorate: z.string().trim().min(2).max(40), city: z.string().trim().min(2).max(60), street: z.string().trim().min(3).max(200), landmark: z.string().trim().max(120).optional(), best_time: z.string().trim().max(40).optional(),
+    gift: z.object({ recipient: z.string().trim().min(2).max(60), message: z.string().trim().max(200).optional(), hide_price: z.boolean().default(false) }).optional() }),
   promo_code: z.string().trim().max(30).optional(),
   free_story_id: z.string().max(40).optional(),
   ref: z.string().trim().max(60).optional(),
@@ -38,25 +40,35 @@ export async function POST(req: Request) {
   const o = parsed.data;
   if (o.website) return NextResponse.json({ id: nanoid(10) });
   try {
-    assertSafe({ name: o.child.name, dedication: o.dedication, ...Object.fromEntries(o.books.flatMap((b, i) => [[`book_${i + 1}`, b.struggle], [`setting_${i + 1}`, b.setting], ...b.people.map((p, k) => [`person_${i + 1}_${k + 1}`, `${p.name} ${p.description ?? ""}`])])) });
+    assertSafe({ name: o.child.name, dedication: o.dedication, gift_recipient: o.parent.gift?.recipient, gift_message: o.parent.gift?.message, ...Object.fromEntries(o.books.flatMap((b, i) => [[`book_${i + 1}`, b.struggle], [`setting_${i + 1}`, b.setting], ...b.people.map((p, k) => [`person_${i + 1}_${k + 1}`, `${p.name} ${p.description ?? ""}`])])) });
   } catch (e) {
     if (e instanceof SafetyError) return NextResponse.json({ error: "unsafe", field: e.field, message: "Please choose another word." }, { status: 422 });
     throw e;
   }
   const p = await currentBreakdown();
-  const promoOk = (o.promo_code ?? "").toUpperCase() === p.promoCode.toUpperCase();
-  const discount = promoOk ? p.discount : 0;
   const now = new Date().toISOString();
   const id = `GT-${1000 + Math.floor(Math.random() * 9000)}-${nanoid(4).toUpperCase()}`;
+  // Promo (migration 0004): claimed for this order now, given back if the order can't be saved or is cancelled.
+  let promo: Awaited<ReturnType<typeof redeemPromo>> | null = null;
+  if (o.promo_code?.trim()) {
+    promo = await redeemPromo(o.promo_code, o.parent.whatsapp, id);
+    if (!promo.ok) return NextResponse.json({ error: "promo", field: "promo", message: `${PROMO_MESSAGES[promo.reason]} Remove it or check it.` }, { status: 422 });
+  }
+  const price = promoPrice(p.listPrice, p.delivery, promo?.ok ? promo.promo : null);
   const parent_id = await rememberParent(o.parent.whatsapp, { name: o.parent.name, source: o.ref, first_order_id: id });
   const rec: OrderRecord = {
     id, status: "ordered", edit_requested: false,
     child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
-    promo_code: promoOk ? p.promoCode : undefined, list_price: p.listPrice, discount, delivery: p.delivery, total: p.listPrice - discount + p.delivery,
+    promo_code: promo?.ok ? promo.promo.code : undefined, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
     free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,
   };
-  await insertOrder(rec);
+  try {
+    await insertOrder(rec);
+  } catch (e) {
+    if (promo?.ok) await releasePromo(id);
+    throw e;
+  }
   await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null, total: rec.total } });
   const site = await baseUrl();
   after(() => sendOrderNotice(rec, site).catch((e) => console.error("[email] order", e)));

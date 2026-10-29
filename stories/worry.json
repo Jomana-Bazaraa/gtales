@@ -2,6 +2,7 @@
   "slug": "worry",
   "struggle": "Worry and fear",
   "title": "{{name}} and the Big Shadow",
+  "default_strength": "explorer",
   "uses": [
     "name",
     "age",

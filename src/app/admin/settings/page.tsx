@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { TestEmail } from "@/components/admin/TestEmail";
 import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { getSettings } from "@/lib/settings";
@@ -14,7 +15,8 @@ export default async function AdminSettings({ searchParams }: PageProps<"/admin/
   );
   const promo = Math.round(s.list_price_egp * (1 - s.promo_percent / 100));
   return (
-    <form action="/api/admin/settings" method="post" className="max-w-2xl flex flex-col gap-4">
+    <div className="max-w-2xl flex flex-col gap-4">
+    <form action="/api/admin/settings" method="post" className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Settings</h1>
       {sp.saved && <p className="m-0 rounded-xl bg-mint-soft text-mint p-3 text-sm font-bold">Saved. Pages update within 30 seconds.</p>}
       <div className="card p-4 grid md:grid-cols-2 gap-3">
@@ -29,9 +31,11 @@ export default async function AdminSettings({ searchParams }: PageProps<"/admin/
       </div>
       <div className="card p-4 flex flex-col gap-3">
         <F name="promo_bar" label="Promo bar text (empty = hidden)" value={s.promo_bar} />
-        <label className="flex items-center gap-2 font-bold text-sm"><input type="checkbox" name="reviews_visible" defaultChecked={s.reviews_visible} /> Show the reviews section (only once three real reviews with permission exist)</label>
+        <p className="m-0 text-sm text-ink-soft">Reviews: the home page section appears by itself once a review is approved in <a className="text-sky font-bold" href="/admin/reviews">Admin → Reviews</a>; the average rating shows from 3 reviews.</p>
       </div>
       <button className="btn-primary self-start">Save settings</button>
     </form>
+    <TestEmail defaultTo={process.env.ADMIN_NOTIFY_EMAIL ?? ""} />
+    </div>
   );
 }

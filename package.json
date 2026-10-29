@@ -10,12 +10,13 @@
     "samples": "tsx scripts/samples.mts",
     "check:templates": "node scripts/check-templates.mjs && tsx scripts/render-check.mts",
     "pdfs": "tsx scripts/pdf.mts",
-    "test": "tsx --test src/stories/__tests__/*.test.ts",
+    "test": "tsx --test src/stories/__tests__/*.test.ts src/lib/__tests__/*.test.ts",
     "check:stories": "tsx scripts/check-stories.mts",
     "pdf:jobs": "node scripts/pdf-worker.mjs",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "node scripts/cf-preview.mjs",
-    "cf:deploy": "opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "check:fit": "tsx scripts/fit-check.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",

@@ -29,3 +29,8 @@ export const IMAGE_SETS: Record<string, ReadonlyArray<"boy" | "girl">> = {
 export function hasImageSet(slug: string, gender: "boy" | "girl"): boolean {
   return IMAGE_SETS[storyFolder(slug)]?.includes(gender) ?? false;
 }
+
+/** The team's parent guide for a tale (public/guides/<folder>.pdf, one per story file). */
+export function guideUrl(slug: string): string {
+  return `/guides/${storyFolder(slug)}.pdf`;
+}

@@ -4,6 +4,7 @@ import { isValidAdminCookie } from "@/lib/admin-auth";
 import { countParents, listBooks, listOrders } from "@/lib/db";
 import { listEvents, type StoredEvent } from "@/lib/events";
 import { TALES } from "@/lib/gtales";
+import { listPromos, promoProblem } from "@/lib/promos";
 import type { BookRecord, OrderRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -30,12 +31,20 @@ function metrics(ev: StoredEvent[], books: BookRecord[], orders: OrderRecord[]) 
   return {
     visitors: sessions.size || ev.filter((e) => e.event === "page_view").length,
     started: ev.filter((e) => e.event === "story_started").length,
+    // funnel by unique session (24 Oct): where do visitors drop?
+    landing: new Set(ev.filter((e) => e.event === "landing_view").map((e) => e.session_id)).size,
+    startClick: new Set(ev.filter((e) => e.event === "start_click").map((e) => e.session_id)).size,
+    step1: new Set(ev.filter((e) => e.event === "story_started" || e.event === "form_step_1").map((e) => e.session_id)).size,
+    step2: new Set(ev.filter((e) => (e.event === "free_form_step" && (e.meta as { name?: string } | undefined)?.name === "review") || e.event === "form_step_2").map((e) => e.session_id)).size,
     created: books.length,
     finished: distinct("story_finished"),
     shared: ev.filter((e) => e.event === "story_shared" || e.event === "share_clicked").length,
     orders: placed.length,
     revenue: placed.reduce((a, o) => a + o.total, 0),
     delivered: orders.filter((o) => o.status === "delivered_paid").reduce((a, o) => a + o.total, 0),
+    reviewsStarted: ev.filter((e) => e.event === "review_started").length,
+    reviewsSubmitted: ev.filter((e) => e.event === "review_submitted").length,
+    reviewsApproved: ev.filter((e) => e.event === "review_approved").length,
   };
 }
 
@@ -59,7 +68,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
   const sp = await searchParams;
   const range: Range = sp.range === "today" || sp.range === "7d" ? sp.range : "30d";
   const from30 = since("30d");
-  const [events, allBooks, allOrders, parents, parentsNew] = await Promise.all([listEvents(from30), listBooks(5000), listOrders(5000), countParents(), countParents(since(range))]);
+  const [events, allBooks, allOrders, parents, parentsNew, promoCodes] = await Promise.all([listEvents(from30), listBooks(5000), listOrders(5000), countParents(), countParents(since(range)), listPromos()]);
   const pick = <T extends { created_at: string }>(xs: T[], r: Range) => xs.filter((x) => x.created_at >= since(r));
   const cols = RANGES.map(([r, label]) => ({ r, label, m: metrics(pick(events, r), pick(allBooks, r), pick(allOrders, r)) }));
 
@@ -83,11 +92,27 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
   for (const e of E) if (e.session_id && (e.source || e.ref)) src(e.source || e.ref).visitors.add(e.session_id);
   for (const b of B) src(b.ref).created++;
   for (const o of O.filter(live)) { const s = src(o.ref); s.orders++; s.revenue += o.total; }
-  const promos = new Map<string, { orders: number; revenue: number }>();
-  for (const o of O.filter(live)) { const k = o.promo_code || "(none)"; const p = promos.get(k) ?? { orders: 0, revenue: 0 }; p.orders++; p.revenue += o.total; promos.set(k, p); }
+  // Promo codes: rules and lifetime uses from promo_codes; orders, discount given and revenue in the chosen range
+  const cairo = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { timeZone: "Africa/Cairo", day: "numeric", month: "short", year: "numeric" });
+  const status = (p: (typeof promoCodes)[number]) => ({ invalid: "Off", not_started: "Not started", expired: "Expired", used_up: "Used up", phone_limit: "" })[promoProblem(p) ?? "phone_limit"] || "Active";
+  const promoRows = [...promoCodes.map((p) => p.code), ...(O.some((o) => live(o) && !o.promo_code) ? ["(no code)"] : [])].map((code) => {
+    const p = promoCodes.find((x) => x.code === code);
+    const os = O.filter(live).filter((o) => (o.promo_code || "(no code)") === code);
+    return [
+      code,
+      p ? (p.percent_off === 100 && p.covers_delivery ? "Free (books + delivery)" : `${p.percent_off === 100 ? "Books free" : `${p.percent_off}% off`}${p.covers_delivery ? " + free delivery" : ""}`) : "—",
+      p ? `${p.uses}${p.max_uses != null ? ` / ${p.max_uses}` : ""}` : "—",
+      p?.max_per_phone != null ? `${p.max_per_phone} per phone` : "—",
+      p?.expires_at ? cairo(p.expires_at) : "—",
+      p ? status(p) : "—",
+      os.length,
+      egp(os.reduce((a, o) => a + o.discount, 0)),
+      egp(os.reduce((a, o) => a + o.total, 0)),
+    ];
+  });
   const taleTitle = (slug: string) => TALES.find((t) => t.slug === slug)?.title ?? slug;
   const m = metrics(E, B, O);
-  const funnel: [string, number][] = [["Visitors", m.visitors], ["Free form opened", m.started], ["Story created", m.created], ["Story finished", m.finished], ["Shared", m.shared], ["Order placed", m.orders]];
+  const funnel: [string, number][] = [["Visitors", m.visitors], ["Saw the home page", m.landing], ["Tapped start", m.startClick], ["Opened the form", m.step1], ["Reached the last page", m.step2], ["Story created", m.created], ["Story finished", m.finished], ["Order placed", m.orders]];
   const max = Math.max(1, ...funnel.map((f) => f[1]));
 
   const breakdown = (title: string, rows: ReturnType<typeof group>, label: (k: string | number) => string) =>
@@ -111,6 +136,9 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
         ["Orders (not cancelled)", ...cols.map((c) => c.m.orders)],
         ["Revenue, orders placed (cash on delivery)", ...cols.map((c) => egp(c.m.revenue))],
         ["Revenue, delivered and paid", ...cols.map((c) => egp(c.m.delivered))],
+        ["Review form opened", ...cols.map((c) => c.m.reviewsStarted)],
+        ["Reviews submitted", ...cols.map((c) => c.m.reviewsSubmitted)],
+        ["Reviews approved", ...cols.map((c) => c.m.reviewsApproved)],
       ]} />
 
       <div className="flex gap-2 items-center flex-wrap">
@@ -136,9 +164,9 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
         {breakdown("By age", byAge, (k) => String(k))}
         <div className="flex flex-col gap-4">
           <Table title="Top sources" head={["Visitors", "Stories", "Orders", "Revenue"]} rows={[...sources.entries()].sort((a, b) => b[1].orders - a[1].orders || b[1].created - a[1].created).slice(0, 15).map(([k, v]) => [k, v.visitors.size, v.created, v.orders, egp(v.revenue)])} />
-          <Table title="Promo codes" head={["Orders", "Revenue"]} rows={[...promos.entries()].sort((a, b) => b[1].orders - a[1].orders).map(([k, v]) => [k, v.orders, egp(v.revenue)])} />
         </div>
       </div>
+      <Table title="Promo codes" head={["Offer", "Uses (all time)", "Limit", "Expires", "Status", "Orders in range", "Discount given", "Revenue"]} rows={promoRows} />
       <p className="m-0 text-xs text-ink-soft">Orders by story count only orders that came from a free story. Sources come from <code>?ref=</code>, <code>?utm_source=</code> or <code>?code=</code> on the first visit. Page views and countries: Cloudflare Web Analytics. Events never hold child names.</p>
     </div>
   );
