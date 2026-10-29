@@ -3,6 +3,7 @@ import { TestEmail } from "@/components/admin/TestEmail";
 import { redirect } from "next/navigation";
 import { isValidAdminCookie } from "@/lib/admin-auth";
 import { getSettings } from "@/lib/settings";
+import { priceBreakdown } from "@/lib/gtales";
 
 /** Admin → Settings (SPEC §11): every configurable value in one form. */
 export default async function AdminSettings({ searchParams }: PageProps<"/admin/settings">) {
@@ -13,17 +14,14 @@ export default async function AdminSettings({ searchParams }: PageProps<"/admin/
   const F = ({ name, label, value, type = "text", hint }: { name: string; label: string; value: string | number; type?: string; hint?: string }) => (
     <label className="flex flex-col gap-1 font-bold text-sm">{label}<input name={name} defaultValue={String(value)} type={type} className="field font-medium" />{hint && <span className="text-xs font-medium text-ink-soft">{hint}</span>}</label>
   );
-  const promo = Math.round(s.list_price_egp * (1 - s.promo_percent / 100));
+  const p = priceBreakdown();
   return (
     <div className="max-w-2xl flex flex-col gap-4">
     <form action="/api/admin/settings" method="post" className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Settings</h1>
       {sp.saved && <p className="m-0 rounded-xl bg-mint-soft text-mint p-3 text-sm font-bold">Saved. Pages update within 30 seconds.</p>}
       <div className="card p-4 grid md:grid-cols-2 gap-3">
-        <F name="list_price_egp" label="List price (EGP, three books)" value={s.list_price_egp} type="number" />
-        <F name="delivery_egp" label="Delivery (EGP)" value={s.delivery_egp} type="number" />
-        <F name="default_promo" label="Default promo code" value={s.default_promo} />
-        <F name="promo_percent" label="Promo %" value={s.promo_percent} type="number" hint={`Today: ${s.list_price_egp} → ${promo} + ${s.delivery_egp} delivery = ${promo + s.delivery_egp} EGP on delivery`} />
+        <p className="m-0 md:col-span-2 text-sm"><b>Prices</b> (one place: Cloudflare variables <code>NEXT_PUBLIC_LIST_PRICE_EGP</code>, <code>NEXT_PUBLIC_PROMO_PERCENT</code>, <code>NEXT_PUBLIC_DELIVERY_EGP</code>): {p.listPrice} EGP per book, launch {p.promoPercent}% ({p.promoCode}) → <b>{p.net} EGP per book</b>, delivery {p.delivery} EGP per order. Example: 3 books = {p.net * 3} + {p.delivery} = {p.net * 3 + p.delivery} EGP.</p>
         <F name="production_days" label="Production days (shown to parents)" value={s.production_days} type="number" />
         <F name="delivery_days" label="Delivery days after approval" value={s.delivery_days} type="number" />
         <F name="rate_limit_per_hour" label="Free stories per hour per device (silent)" value={s.rate_limit_per_hour} type="number" />

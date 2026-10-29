@@ -54,19 +54,26 @@ export async function POST(req: Request) {
     promo = await redeemPromo(o.promo_code, o.parent.whatsapp, id);
     if (!promo.ok) return NextResponse.json({ error: "promo", field: "promo", message: `${PROMO_MESSAGES[promo.reason]} Remove it or check it.` }, { status: 422 });
   }
-  const price = promoPrice(p.listPrice, p.delivery, promo?.ok ? promo.promo : null);
+  // The launch % applies to every order without a code; an entered code is used instead only when it is cheaper.
+  const quantity = 3; // books per order (fixnow A3 makes this the parent's choice)
+  const launch = promoPrice(p.listPrice, p.delivery, { percent_off: p.promoPercent, covers_delivery: false }, quantity);
+  let price = launch, code: string | undefined = p.promoCode;
+  if (promo?.ok) {
+    const withCode = promoPrice(p.listPrice, p.delivery, promo.promo, quantity);
+    if (withCode.total < launch.total) { price = withCode; code = promo.promo.code; } else if (promo.promo.code !== p.promoCode) await releasePromo(id);
+  }
   const parent_id = await rememberParent(o.parent.whatsapp, { name: o.parent.name, source: o.ref, first_order_id: id });
   const rec: OrderRecord = {
     id, status: "ordered", edit_requested: false,
     child: o.child, photos: o.photos, strengths: o.strengths, books: o.books, world: o.world, words: o.words,
     dedication: o.dedication, activities: o.activities, parent: { ...o.parent, whatsapp: o.parent.whatsapp.replace(/\s+/g, "") },
-    promo_code: promo?.ok ? promo.promo.code : undefined, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
+    promo_code: code, list_price: p.listPrice, discount: price.discount, delivery: price.delivery, total: price.total,
     free_story_id: o.free_story_id, ref: o.ref, parent_id, photos_deleted_at: null, created_at: now, updated_at: now,
   };
   try {
     await insertOrder(rec);
   } catch (e) {
-    if (promo?.ok) await releasePromo(id);
+    if (promo?.ok && code === promo.promo.code) await releasePromo(id);
     throw e;
   }
   await logEvent({ event: "order_placed", order_id: id, story_id: o.free_story_id, gender: o.child.gender, child_age: o.child.age, parent_id, session_id: o.session_id, ref: o.ref, meta: { books: o.books.length, promo: rec.promo_code ?? null, total: rec.total } });

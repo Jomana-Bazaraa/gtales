@@ -10,12 +10,20 @@ const load = () => import("../promos"); // after chdir, so the module's .data/ p
 
 const base = { code: "X", percent_off: 10, covers_delivery: false, max_uses: null, uses: 0, max_per_phone: null, expires_at: null, active: true };
 
-test("prices: LAUNCH40 = 538, GTALESFAMILY = delivery only (89), a code that covers delivery = 0 delivery", async () => {
+test("prices per book (fixnow A2): 249 − 40% = 149.4 → 149 per book, delivery 89 once per order", async () => {
   const { promoPrice } = await load();
-  assert.deepEqual(promoPrice(749, 89, { percent_off: 40, covers_delivery: false }), { discount: 300, delivery: 89, total: 538 });
-  assert.deepEqual(promoPrice(749, 89, { percent_off: 100, covers_delivery: false }), { discount: 749, delivery: 89, total: 89 });
-  assert.deepEqual(promoPrice(749, 89, { percent_off: 100, covers_delivery: true }), { discount: 749, delivery: 0, total: 0 });
-  assert.deepEqual(promoPrice(749, 89, null), { discount: 0, delivery: 89, total: 838 });
+  const { bookPrice, priceBreakdown } = await import("../gtales");
+  assert.equal(bookPrice(249, 40), 149, "149.4 rounds to 149");
+  assert.equal(bookPrice(249, 30), 174, "174.3 rounds to 174");
+  assert.equal(bookPrice(250, 40), 150);
+  assert.deepEqual(promoPrice(249, 89, { percent_off: 40, covers_delivery: false }, 2), { unit: 149, discount: 200, delivery: 89, total: 387 }, "2 × 149 + 89");
+  assert.equal(promoPrice(249, 89, { percent_off: 40, covers_delivery: false }, 3).total, 536, "3 × 149 + 89");
+  assert.equal(promoPrice(249, 89, { percent_off: 40, covers_delivery: false }, 100).total, 14989, "delivery once, not per book");
+  assert.deepEqual(promoPrice(249, 89, { percent_off: 100, covers_delivery: false }, 3), { unit: 0, discount: 747, delivery: 89, total: 89 });
+  assert.deepEqual(promoPrice(249, 89, { percent_off: 100, covers_delivery: true }, 3), { unit: 0, discount: 747, delivery: 0, total: 0 });
+  assert.deepEqual(promoPrice(249, 89, null, 1), { unit: 249, discount: 0, delivery: 89, total: 338 });
+  const b = priceBreakdown({ listPrice: 249, promoCode: "LAUNCH40", promoPercent: 40, delivery: 89 }, 2);
+  assert.deepEqual([b.net, b.books, b.total], [149, 298, 387]);
 });
 
 test("rules: inactive, not started, expired, used up", async () => {
@@ -33,7 +41,7 @@ test("GTALESFAMILY: free, up to 5 per phone (any spelling of the number), use gi
   const { checkPromo, promoPrice, promoProblem, redeemPromo, releasePromo, listPromos } = await load();
   const fam = (await listPromos()).find((p) => p.code === "GTALESFAMILY")!;
   assert.deepEqual([fam.percent_off, fam.covers_delivery, fam.max_uses, fam.max_per_phone], [100, true, 30, 5]);
-  assert.equal(promoPrice(749, 89, fam).total, 0, "free: books and delivery");
+  assert.equal(promoPrice(249, 89, fam, 3).total, 0, "free: books and delivery");
   assert.equal(new Date(fam.expires_at!).toISOString(), "2026-11-05T21:59:59.000Z");
   // the expiry is checked against the real clock; only run the claim flow while the code is live
   if (promoProblem(fam)) return;

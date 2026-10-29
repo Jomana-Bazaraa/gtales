@@ -65,13 +65,13 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 ## Decisions (don't re-litigate without talking)
 
 - Ages **2–10** everywhere (Ayman 10 Oct; reconfirmed by Jomana 24 Oct). Ages 2–5 get the `little` challenges, 6–10 the original text.
-- The Series is **three** printed books: list 749 EGP, `LAUNCH40` → 449, delivery 89, total 538, **pay on delivery, no refunds** (parents approve every page on WhatsApp first).
+- Price **per book** (Jomana, 29 Oct): list 249 EGP, launch 40% on every order with no code → **149 EGP per book** (final per-book price rounded to whole EGP everywhere), delivery 89 EGP per **order**; **pay on delivery, no refunds** (parents approve every page on WhatsApp first). Prices come only from env (`getPricing()`), not Admin → Settings. A code (e.g. GTALESFAMILY) is used only when cheaper.
 - Free story is **text-only** personalisation on fixed art. Images are never generated at runtime. Series art is made manually by the team.
 - The template is the only design; the story JSON is the only text source; the reference PDFs are only for comparison.
 - `ask` field is gone for good. `need` comes from the `need` cards in `stories/builder-options.json` (19 Oct; replaced the form's six sentences).
 - Free form = one question per page (Jomana, 24 Oct: the 2-screen version was reverted). No snack, no "great at": `{{strength}}` = the story's `default_strength`.
 - Hero photo in the order form is optional; a text description can replace it; no full-body photo.
-- Price appears only on the delivery and review screens of the order form.
+- Price shows as ~~249~~ **149 EGP per book**, "Launch price", on the homepage, the order page (first screen) and the order summary (29 Oct; was: only on the delivery and review screens).
 - Promo codes live in Supabase `promo_codes`; a use is claimed when the order is placed and given back if it's cancelled. Settings' default code + % stays the advertised offer (22 Oct).
 - Single admin login. WhatsApp is manual (`wa.me` links) until a Business API is justified.
 - Honest copy: no "psychology", no "hand-drawn", no "expert-reviewed", never cap or advertise the free stories.
@@ -109,6 +109,7 @@ Windows shortcut on Ayman's laptop: `run-dev.bat`.
 
 ## Worklog (newest first — one line per push)
 
+- 2026-10-29 · Claude for Jomana · fixnow A2: price per book 249 EGP, launch 40% applied to every order without a code → 149 EGP per book (rounded to whole EGP: `bookPrice()`), delivery 89 per order; one source = env via `getPricing()` (defaults 249/40/89); Admin → Settings now only shows prices (no price fields, no DB override). "Launch price ~~249~~ 149 EGP per book" on the homepage, the order page and the order summary. A code is used only if cheaper (GTALESFAMILY still free). Orders are 3 books until A3. **Jomana:** in Cloudflare (Build AND runtime variables) set NEXT_PUBLIC_LIST_PRICE_EGP=249 or delete it (a leftover 749 would win); keep PROMO_PERCENT=40, DELIVERY_EGP=89.
 - 2026-10-29 · Claude for Jomana · fixnow A1: removed the end-of-story links "Make it a real printed book →" and "Story page: PDF, parent guide, share" (only place: `BookView.tsx`, the reader). /order and /story/<id> unchanged. Story checker now = 6 stories × boy/girl × ages 2/5/8/10 × Abdelrahman/Lulu × silly word on/off (192 books): no {{, no undefined, no fitPages warning.
 - 2026-10-24 · Claude for Jomana · Admin → Series orders is now a board: New → Preview sent → Approved → Printing → Delivered, a WhatsApp button per order (opens the chat with that stage's message), one move button per card, Cancelled folded below, "Export CSV" with names/WhatsApp/address/gift for the team and courier. Phone-tested: one order moved through every column, each WhatsApp link had the right message, CSV downloaded, no sideways page scroll.
 - 2026-10-24 · Claude for Jomana · Series order: "🎁 This is a gift" on the delivery screen → recipient's name, gift message (printed on the first page, ≤ 200), "Don't include the price". Saved in `parent.gift` (no migration), safety-checked, shown on the review screen, the admin order page (red "No price anywhere in the parcel"), the admin email and the orders CSV. Phone-tested: missing recipient refused, order saved, admin + CSV show it. **Jomana + Ayman:** decide who pays for a no-price gift (open item #12; old #12 about the free-form contact is settled: email required, WhatsApp as the alternative).

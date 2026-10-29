@@ -1,3 +1,4 @@
+import { priceBreakdown } from "./gtales";
 import { headers } from "next/headers";
 
 /** Absolute base URL of this deployment (works on Vercel previews and custom domains). */
@@ -9,4 +10,4 @@ export async function baseUrl(): Promise<string> {
   return `${proto}://${host}`;
 }
 
-export const PHYSICAL_BOOK_PRICE_EGP = Number(process.env.NEXT_PUBLIC_BOOK_PRICE_EGP || 450);
+export const PHYSICAL_BOOK_PRICE_EGP = priceBreakdown().net; // old Estoria page: the same per-book launch price

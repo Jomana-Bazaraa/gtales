@@ -8,6 +8,7 @@ import { sessionId, source, track } from "@/lib/track";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { COPY, egp, egpOrFree, priceBreakdown, type Pricing } from "@/lib/gtales";
+import { LaunchPrice } from "@/components/ui/LaunchPrice";
 import { Icon } from "@/components/ui/Icon";
 import { Promises } from "@/components/ui/Promises";
 
@@ -55,15 +56,16 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
-  const price = priceBreakdown(pricing);
+  const QTY = 3; // books per order (fixnow A3 makes this a stepper)
+  const price = priceBreakdown(pricing, QTY);
 
   useEffect(() => {
-    let base = { ...EMPTY, promo: pricing.promoCode };
+    let base = { ...EMPTY }; // the launch price applies by itself: no code to type
     try { const raw = localStorage.getItem(KEY); if (raw) base = { ...EMPTY, ...(JSON.parse(raw) as { d: Draft }).d }; } catch {}
     if (prefill.name && !base.name) base = { ...base, name: prefill.name, age: prefill.age ?? base.age, gender: prefill.gender ?? base.gender, struggles: prefill.struggle && !base.struggles.length ? [prefill.struggle] : base.struggles };
     setD(base); setReady(true);
     track("order_started", { story_id: prefill.storyId });
-  }, [prefill, pricing.promoCode]);
+  }, [prefill]);
   useEffect(() => { if (ready) try { localStorage.setItem(KEY, JSON.stringify({ d })); } catch {} }, [d, ready]);
 
   // Promo: checked on the server as it's typed (codes, limits and expiry live in Supabase), with the number once given
@@ -74,7 +76,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
     const ctl = new AbortController();
     const t = setTimeout(() => {
       const wa = /\d{10,}/.test(d.whatsapp.replace(/\D/g, "")) ? `&whatsapp=${encodeURIComponent(d.whatsapp)}` : "";
-      fetch(`/api/promo?code=${encodeURIComponent(code)}${wa}`, { signal: ctl.signal }).then((r) => r.json()).then((j: PromoQuote) => setQuote({ ...j, code: j.ok ? j.code : code })).catch(() => {});
+      fetch(`/api/promo?code=${encodeURIComponent(code)}&quantity=${QTY}${wa}`, { signal: ctl.signal }).then((r) => r.json()).then((j: PromoQuote) => setQuote({ ...j, code: j.ok ? j.code : code })).catch(() => {});
     }, 350);
     return () => { clearTimeout(t); ctl.abort(); };
   }, [d.promo, d.whatsapp]);
@@ -152,8 +154,11 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
 
   const bookIdx = step.startsWith("book") ? Number(step.slice(4)) - 1 : -1;
   const promoOk = !!quote?.ok && quote.code === d.promo.trim().toUpperCase();
-  const discount = promoOk ? quote!.discount! : 0;
-  const delivery = promoOk ? quote!.delivery! : price.delivery;
+  // a code is used only when it beats the launch price (the server applies the same rule)
+  const codeWins = promoOk && quote!.total! < price.total;
+  const unit = codeWins ? quote!.unit! : price.net;
+  const delivery = codeWins ? quote!.delivery! : price.delivery;
+  const orderTotal = unit * QTY + delivery;
 
   return (
     <div className="mx-auto max-w-xl w-full flex flex-col min-h-[calc(100dvh-64px)]">
@@ -172,6 +177,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         {step === "hero" && (<>
           <Q help={prefill.name ? "Filled in from the free story. Change anything." : "A few quick questions, then we start."}>The hero</Q>
           <p className="m-0 -mt-2 rounded-2xl bg-sun-soft px-4 py-3 text-[15px] leading-[22px] font-medium">You will get <b>three printed books</b>. Each one is about one thing that is hard for your child right now, with their face in every picture.</p>
+          <LaunchPrice pricing={pricing} size="sm" />
           <F label="Name"><input className="field text-xl" placeholder="e.g. Adam" value={d.name} onChange={(e) => u("name", e.target.value)} maxLength={14} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Age</span>
             <div className="flex flex-wrap gap-2">{[2, 3, 4, 5, 6, 7, 8, 9, 10].map((a) => <button key={a} type="button" aria-pressed={d.age === a} onClick={() => u("age", a)} className={`w-[52px] h-[52px] rounded-full border-[3px] display font-bold text-xl ${d.age === a ? "border-flame bg-flame-soft text-flame-deep" : "border-line bg-white"}`}>{a}</button>)}</div>
@@ -251,7 +257,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           <F label="Street and building"><input className="field font-medium" placeholder="e.g. 12 Road 9, building 4, flat 3" value={d.street} onChange={(e) => u("street", e.target.value)} maxLength={200} /></F>
           <F label="Landmark (optional)"><input className="field font-medium" placeholder="e.g. next to Seoudi" value={d.landmark} onChange={(e) => u("landmark", e.target.value)} maxLength={120} /></F>
           <div className="flex flex-col gap-1.5"><span className="font-bold text-[15px]">Best time to message you</span><div className="flex flex-wrap gap-2">{["Morning", "Afternoon", "Evening", "Any time"].map((t) => <Chip key={t} on={d.bestTime === t} onClick={() => u("bestTime", t)}>{t}</Chip>)}</div></div>
-          <F label="Promo code" hint={!d.promo.trim() ? undefined : promoOk ? (promoLine(quote!) === "Free" ? "Free: books and delivery." : promoLine(quote!) + " applied.") : quote && !quote.ok && quote.code === d.promo.trim().toUpperCase() ? quote.message : "Checking…"}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
+          <F label="Promo code" hint={!d.promo.trim() ? "Optional. The launch price is already applied." : promoOk ? (!codeWins ? "The launch price is already lower, so we keep it." : promoLine(quote!) === "Free" ? "Free: books and delivery." : promoLine(quote!) + " applied.") : quote && !quote.ok && quote.code === d.promo.trim().toUpperCase() ? quote.message : "Checking…"}><input className="field font-medium uppercase" value={d.promo} onChange={(e) => u("promo", e.target.value)} maxLength={30} /></F>
         </>)}
 
         {step === "review" && (<>
@@ -265,11 +271,11 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
           {d.isGift && <Row label="🎁 Gift" onEdit={() => goTo("delivery")}>For {d.giftTo.trim()}{d.giftMessage.trim() ? ` · "${d.giftMessage.trim()}"` : ""} · {d.hidePrice ? "no price in the parcel" : "price included"}</Row>}
           <Row label="Delivery" onEdit={() => goTo("delivery")}>{d.parentName}, {d.whatsapp} · {d.street}, {d.city}, {d.governorate}</Row>
           <div className="rounded-2xl bg-surface-tint p-4 flex flex-col gap-2 text-[15px]">
-            <div className="flex justify-between"><span>Three printed books + parent guide</span><b>{egp(price.listPrice)}</b></div>
-            {discount > 0 && <div className="flex justify-between text-mint"><span>{quote!.code} · {promoLine(quote!)}</span><b>−{egp(discount)}</b></div>}
-            <div className="flex justify-between"><span>Delivery, anywhere in Egypt</span><b>{egpOrFree(delivery)}</b></div>
+            <LaunchPrice pricing={pricing} size="sm" />
+            <div className="flex justify-between gap-3"><span>{QTY} printed books × {codeWins ? <>{egpOrFree(unit)} <span className="text-mint font-bold">({quote!.code} · {promoLine(quote!)})</span></> : egp(unit)}</span><b className="whitespace-nowrap">{egpOrFree(unit * QTY)}</b></div>
+            <div className="flex justify-between gap-3"><span>Delivery, anywhere in Egypt (one per order)</span><b className="whitespace-nowrap">{egpOrFree(delivery)}</b></div>
             <div className="h-px bg-line" />
-            <div className="flex justify-between items-center"><span className="font-bold">{price.listPrice - discount + delivery ? "Pay on delivery" : "To pay"}</span><b className="display text-[26px]">{egpOrFree(price.listPrice - discount + delivery)}</b></div>
+            <div className="flex justify-between items-center"><span className="font-bold">{orderTotal ? "Pay on delivery" : "To pay"}</span><b className="display text-[26px]">{egpOrFree(orderTotal)}</b></div>
           </div>
           <Promises variant="compact" />
         </>)}
@@ -281,7 +287,7 @@ export function OrderForm({ prefill, pricing }: { prefill: Prefill; pricing: Pri
         {step === "review" ? <button type="button" onClick={submit} disabled={busy} className="btn-primary w-full !h-14 text-lg">{busy ? "Sending…" : "Confirm my order"}</button>
           : (step === "dedication" || step === "context") ? <div className="grid grid-cols-2 gap-2"><button type="button" onClick={() => { setErr(null); setI((x) => x + 1); }} className="btn-ghost w-full">Skip</button><button type="button" onClick={next} className="btn-primary w-full">Next</button></div>
           : <button type="button" onClick={next} className="btn-primary w-full">Next</button>}
-        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : price.listPrice - discount + delivery === 0 ? `Free with ${quote?.code ?? "your code"}` : `${egp(price.listPrice - discount)} + ${egp(delivery)} delivery · pay on delivery`}</span>}
+        {(step === "review" || step === "delivery") && <span className="text-center text-xs font-bold text-ink-soft">{step === "review" ? "Nothing to pay online." : orderTotal === 0 ? `Free with ${quote?.code ?? "your code"}` : `${QTY} × ${egp(unit)} + ${egp(delivery)} delivery = ${egp(orderTotal)} · pay on delivery`}</span>}
       </div>
     </div>
   );
@@ -338,7 +344,7 @@ function Row({ label, children, onEdit }: { label: string; children: React.React
     </div>
   );
 }
-type PromoQuote = { ok: boolean; code?: string; message?: string; percent_off?: number; covers_delivery?: boolean; discount?: number; delivery?: number; total?: number };
+type PromoQuote = { ok: boolean; code?: string; message?: string; percent_off?: number; covers_delivery?: boolean; unit?: number; discount?: number; delivery?: number; total?: number };
 function promoLine(q: PromoQuote) { return q.percent_off === 100 && q.covers_delivery ? "Free" : `${q.percent_off === 100 ? "books free" : `${q.percent_off}% off`}${q.covers_delivery ? " + free delivery" : ""}`; }
 function cap(s: string) { return s.trim().replace(/\s+/g, " ").split(" ").map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(" "); }
 const safeRef = source;

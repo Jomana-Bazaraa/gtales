@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { LaunchPrice } from "@/components/ui/LaunchPrice";
 import Link from "next/link";
 import { COPY, TALES, egp } from "@/lib/gtales";
 import { currentBreakdown } from "@/lib/pricing";
@@ -202,12 +203,8 @@ export async function Pricing() {
           <div className="relative order-1 md:order-2 flex flex-col gap-3 rounded-[24px] md:rounded-[28px] bg-white border-[3px] border-flame p-5 md:p-7 shadow-[0_3px_0_var(--line)]">
             <span className="pill bg-sun text-ink absolute -top-3.5 left-5 md:left-7">The Series · printed · most loved</span>
             <h3 className="mt-2 text-[22px] leading-[26px] md:text-[28px] md:leading-8 font-bold">Three printed books + a complete parent guide</h3>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-ink-soft line-through text-lg md:text-xl">{egp(p.listPrice)}</span>
-              <span className="display text-[32px] md:text-[40px] font-bold leading-none">{egp(p.net)}</span>
-              <span className="pill bg-sun text-ink">{p.promoCode}</span>
-            </div>
-            <span className="text-sm font-bold text-ink-soft -mt-1">+ {egp(p.delivery)} delivery · pay on delivery</span>
+            <LaunchPrice pricing={p} size="lg" />
+            <span className="text-sm font-bold text-ink-soft -mt-1">+ {egp(p.delivery)} delivery per order · pay on delivery</span>
             <div className="grid md:grid-cols-2 gap-2 md:gap-x-4">
               <Row ok>Their face in every picture, from your photo</Row>
               <Row ok className="hidden md:flex">The people they love, with their faces</Row>

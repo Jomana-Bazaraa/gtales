@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LaunchPrice } from "@/components/ui/LaunchPrice";
 import { COPY, egp } from "@/lib/gtales";
 import { currentBreakdown } from "@/lib/pricing";
 import { Icon, type IconName } from "./Icon";
@@ -32,10 +33,8 @@ export async function SeriesBand({ childName, className = "", href = "/order" }:
         ))}
       </ul>
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-ink-soft line-through text-base">{egp(p.listPrice)}</span>
-        <span className="display text-[28px] md:text-[32px] font-bold leading-none">{egp(p.net)}</span>
-        <span className="pill bg-sun text-ink">{p.promoCode}</span>
-        <span className="text-sm font-bold text-ink-soft">+ {egp(p.delivery)} delivery · pay on delivery</span>
+        <LaunchPrice pricing={p} />
+        <span className="text-sm font-bold text-ink-soft">+ {egp(p.delivery)} delivery per order · pay on delivery</span>
       </div>
       <Promises variant="compact" />
       <Link href={href} className="btn-primary w-full md:w-auto md:self-start md:!h-14 md:!px-7 md:text-lg">{COPY.ctaPrimary}</Link>

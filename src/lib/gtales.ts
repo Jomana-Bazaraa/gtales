@@ -122,29 +122,34 @@ export function taleByKey(key: string): Tale | undefined {
   return TALES.find((t) => t.key === key);
 }
 
-/* ---------- Pricing (SPEC §1, §11 Settings) ----------
- * Until Admin → Settings exists, values come from env with these defaults.
- * All amounts in EGP, integers. */
+/* ---------- Pricing (SPEC §1) ----------
+ * The ONE place prices come from: env (Cloudflare build + runtime variables) with these defaults.
+ * listPrice is per BOOK; delivery is per ORDER; the launch % applies to every order without a code. */
 export interface Pricing {
-  listPrice: number;
-  promoCode: string;
+  listPrice: number; // per book, EGP
+  promoCode: string; // the launch discount's name (recorded on orders that use it)
   promoPercent: number;
-  delivery: number;
+  delivery: number; // per order, EGP
 }
 
 export function getPricing(): Pricing {
   return {
-    listPrice: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 749),
+    listPrice: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 249),
     promoCode: process.env.NEXT_PUBLIC_PROMO_CODE || "LAUNCH40",
     promoPercent: num(process.env.NEXT_PUBLIC_PROMO_PERCENT, 40),
     delivery: num(process.env.NEXT_PUBLIC_DELIVERY_EGP, 89),
   };
 }
 
-export function priceBreakdown(p: Pricing = getPricing()) {
-  const discount = Math.round((p.listPrice * p.promoPercent) / 100);
-  const net = p.listPrice - discount;
-  return { ...p, discount, net, total: net + p.delivery };
+/** The rounding rule everywhere: the final per-book price, rounded to the nearest whole EGP (249 − 40% = 149.4 → 149). */
+export function bookPrice(listPrice: number, percentOff: number): number {
+  return Math.round(listPrice * (1 - percentOff / 100));
+}
+/** Launch price for `quantity` books: net = per-book price after the launch %, total = books + one delivery. */
+export function priceBreakdown(p: Pricing = getPricing(), quantity = 1) {
+  const net = bookPrice(p.listPrice, p.promoPercent);
+  const discount = (p.listPrice - net) * quantity;
+  return { ...p, quantity, net, discount, books: net * quantity, total: net * quantity + p.delivery };
 }
 
 export const egp = (n: number) => `${n.toLocaleString("en-EG")} EGP`;
@@ -196,7 +201,7 @@ export const COPY = {
   ctaPrimary: "Create your child's books",
   ctaSecondary: "Try a free story",
   promoBar: (p = getPricing()) =>
-    `Launch offer: ${p.promoPercent}% off the printed Series with ${p.promoCode} · Pay on delivery`,
+    `Launch price: ${bookPrice(p.listPrice, p.promoPercent)} EGP per printed book (was ${p.listPrice}) · Pay on delivery`,
   trustLine: ["Ages 2–10", "You approve every page", "Pay on delivery"],
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || "",
   whatsappText: "Hi GTales! I have a question about a story for my child.",

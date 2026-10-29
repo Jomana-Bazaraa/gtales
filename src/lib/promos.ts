@@ -7,6 +7,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { isMockDb, supabase } from "./db";
 import { normaliseContact } from "./parents";
+import { bookPrice } from "./gtales";
 
 export interface PromoCode {
   code: string;
@@ -29,11 +30,12 @@ export const PROMO_MESSAGES: Record<PromoReason, string> = {
   phone_limit: "This code has been used the most times allowed with this WhatsApp number.",
 };
 
-/** Book discount and delivery for a list price under a code (percent of the book only; delivery free only if covered). */
-export function promoPrice(listPrice: number, delivery: number, promo: Pick<PromoCode, "percent_off" | "covers_delivery"> | null) {
-  const discount = promo ? Math.round((listPrice * promo.percent_off) / 100) : 0;
+/** Order price for `quantity` books under a code: per-book price rounded to whole EGP (bookPrice), delivery once per order, free only if covered. */
+export function promoPrice(listPrice: number, delivery: number, promo: Pick<PromoCode, "percent_off" | "covers_delivery"> | null, quantity = 1) {
+  const unit = bookPrice(listPrice, promo?.percent_off ?? 0);
+  const discount = (listPrice - unit) * quantity;
   const del = promo?.covers_delivery ? 0 : delivery;
-  return { discount, delivery: del, total: listPrice - discount + del };
+  return { unit, discount, delivery: del, total: unit * quantity + del };
 }
 
 /** Why a code can't be used right now (ignoring the per-phone rule), or null if it can. */

@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   if (!r.ok) return NextResponse.json({ ok: false, message: PROMO_MESSAGES[r.reason] }, { headers: { "cache-control": "no-store" } });
   const p = await currentBreakdown();
   return NextResponse.json(
-    { ok: true, code: r.promo.code, percent_off: r.promo.percent_off, covers_delivery: r.promo.covers_delivery, ...promoPrice(p.listPrice, p.delivery, r.promo) },
+    { ok: true, code: r.promo.code, percent_off: r.promo.percent_off, covers_delivery: r.promo.covers_delivery, ...promoPrice(p.listPrice, p.delivery, r.promo, Math.min(100, Math.max(1, Math.floor(Number(q.get("quantity")) || 1)))) },
     { headers: { "cache-control": "no-store" } },
   );
 }

@@ -5,6 +5,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { isMockDb, supabase } from "./db";
+import { COPY, getPricing } from "./gtales";
 
 export interface Settings {
   list_price_egp: number; delivery_egp: number; default_promo: string; promo_percent: number; rate_limit_per_hour: number;
@@ -12,10 +13,11 @@ export interface Settings {
 }
 const num = (v: string | undefined, d: number) => { const n = Number(v); return Number.isFinite(n) && n > 0 ? n : d; };
 export const DEFAULTS: Settings = {
-  list_price_egp: num(process.env.NEXT_PUBLIC_LIST_PRICE_EGP, 749), delivery_egp: num(process.env.NEXT_PUBLIC_DELIVERY_EGP, 89),
-  default_promo: process.env.NEXT_PUBLIC_PROMO_CODE || "LAUNCH40", promo_percent: num(process.env.NEXT_PUBLIC_PROMO_PERCENT, 40),
+  // prices are NOT settings any more (fixnow A2): kept here only so old saved rows still parse; read getPricing()
+  list_price_egp: getPricing().listPrice, delivery_egp: getPricing().delivery,
+  default_promo: getPricing().promoCode, promo_percent: getPricing().promoPercent,
   rate_limit_per_hour: num(process.env.RATE_LIMIT_PER_HOUR, 10),
-  promo_bar: "Launch offer: 40% off the printed Series with LAUNCH40 · Pay on delivery",
+  promo_bar: COPY.promoBar(),
   production_days: 5, delivery_days: 5, whatsapp_number: process.env.NEXT_PUBLIC_WHATSAPP || "",
 };
 const FILE = path.join(process.cwd(), ".data", "settings.json");
