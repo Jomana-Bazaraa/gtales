@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getBook } from "@/lib/db";
 import { logEvent } from "@/lib/events";
-import { pdfState } from "@/lib/pdf-jobs";
+import { PDF_ENABLED, pdfState } from "@/lib/pdf-jobs";
+import { cookies } from "next/headers";
+import { isValidAdminCookie } from "@/lib/admin-auth";
 import { baseUrl } from "@/lib/site";
 
 /**
@@ -10,6 +12,7 @@ import { baseUrl } from "@/lib/site";
  */
 export async function GET(req: Request, { params }: RouteContext<"/api/books/[id]/pdf">) {
   const { id } = await params;
+  if (!PDF_ENABLED && !isValidAdminCookie((await cookies()).get("estoria_admin")?.value)) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const book = await getBook(id);
   if (!book) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const state = await pdfState(id);

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
 import { PdfWaiter } from "@/components/story/PdfWaiter";
 import { getBook } from "@/lib/db";
-import { requestPdf } from "@/lib/pdf-jobs";
+import { PDF_ENABLED, requestPdf } from "@/lib/pdf-jobs";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +12,7 @@ export default async function PdfPage({ params }: PageProps<"/story/[id]/pdf">) 
   const { id } = await params;
   const book = await getBook(id);
   if (!book) notFound();
+  if (!PDF_ENABLED) redirect(`/story/${id}`); // PDFs are hidden from parents
   const state = await requestPdf(id, "parent");
   if (state?.status === "done") redirect(`/api/books/${id}/pdf`);
   return (

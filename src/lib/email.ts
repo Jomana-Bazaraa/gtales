@@ -2,6 +2,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { KEEPERS } from "./keepers";
+import { guideUrl } from "@/stories/images";
 import type { BookRecord, OrderRecord, StoryRecord } from "./types";
 import { booksLabel, orderQuantity } from "./orders";
 import type { Review } from "./reviews";
@@ -60,16 +61,12 @@ export async function sendStoryEmail(rec: StoryRecord, baseUrl: string) {
   const body =
     lang === "ar"
       ? `<h2 style="margin:0 0 8px">قصة ${name} مع ${k?.name.ar ?? "الحارس"} جاهزة!</h2>
-         <p>أهلاً ${input.parentName}، القصة اتكتبت والرسمة اتعملت. اقراها على الموقع أو حمّل ملفات الـ PDF.</p>
-         ${btn(url, "اقرا القصة")}<br/>
-         ${rec.pdf_color_url ? btn(rec.pdf_color_url, "PDF بالألوان", "#2b2d6b") : ""}
-         ${rec.pdf_lineart_url ? btn(rec.pdf_lineart_url, "PDF الأنشطة", "#2b2d6b") : ""}
+         <p>أهلاً ${input.parentName}، ده لينك قصة ${name} ودليل الأهل.</p>
+         ${btn(url, "اقرا القصة")}
          <p style="font-size:13px;color:#6b5f58;margin-top:16px">احتفظ بالإيميل ده — اللينك هو طريقتك للرجوع للقصة في أي وقت. عايزها كتاب مطبوع؟ هتلاقي الطلب في آخر صفحة القصة.</p>`
       : `<h2 style="margin:0 0 8px">${name}'s story with ${k?.name.en ?? "the Keeper"} is ready!</h2>
-         <p>Hi ${input.parentName}, the story is written and illustrated. Read it online or download the PDFs.</p>
-         ${btn(url, "Read the story")}<br/>
-         ${rec.pdf_color_url ? btn(rec.pdf_color_url, "Color PDF", "#2b2d6b") : ""}
-         ${rec.pdf_lineart_url ? btn(rec.pdf_lineart_url, "Activity PDF", "#2b2d6b") : ""}
+         <p>Hi ${input.parentName}, here's the link to ${name}'s story and your parent guide.</p>
+         ${btn(url, "Read the story")}
          <p style="font-size:13px;color:#6b5f58;margin-top:16px">Keep this email — the link is your way back to the story any time. Want it as a printed book? The order form is at the end of the story.</p>`;
   if (!input.parentEmail) return;
   await send(input.parentEmail, subject, shell(lang, body));
@@ -93,8 +90,8 @@ export async function sendBookEmail(book: BookRecord, baseUrl: string) {
   if (!book.contact.includes("@")) return;
   const url = `${baseUrl}/story/${book.id}`;
   const body = `<h2 style="margin:0 0 8px">${esc(book.child_name)}'s story is ready</h2>
-     <p>${esc(book.title)}. Read it together on the phone, or download the PDF.</p>
-     ${btn(url, "Open the story")}
+     <p>Here's the link to ${esc(book.child_name)}'s story and your parent guide.</p>
+     ${btn(url, "Open the story")} ${btn(`${baseUrl}${guideUrl(book.slug)}`, "Open the parent guide", "#2b2d6b")}
      <p style="font-size:13px;color:#6b5f58;margin-top:16px">Keep this email: the link is your way back to the story any time.</p>
      <p style="margin-top:16px">Did your child enjoy it? <a href="${baseUrl}/reviews/new?tale=${encodeURIComponent(book.slug)}" style="color:#e8673f;font-weight:700">Tell other families</a>.</p>`;
   await send(book.contact, `${book.child_name}'s story is ready`, shell("en", body));

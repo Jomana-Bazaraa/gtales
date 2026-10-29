@@ -15,10 +15,6 @@ const dict = {
     en: "Stories where your child doesn't just hear the solution — they live it.",
     ar: "قصص طفلك مش بس بيسمع فيها الحل — بيعيشه.",
   },
-  hero_sub: {
-    en: "Your child becomes the hero who helps a Keeper through the exact struggle they're facing — anger, worry, friendships, and more. Two free PDFs, ready in minutes.",
-    ar: "طفلك بيبقى البطل اللي بيساعد حارس يعدّي نفس المشكلة اللي هو بيواجهها — غضب، قلق، صداقات، وأكتر. ملفين PDF مجاناً في دقايق.",
-  },
   hero_proof: { en: "No photo needed · No card needed · Arabic or English", ar: "من غير صورة · من غير فيزا · عربي أو إنجليزي" },
   see_example: { en: "See a real example", ar: "شوف مثال حقيقي" },
 
@@ -28,8 +24,6 @@ const dict = {
   how_1_d: { en: "A short form: name, what they love, and what they're working through. Two minutes, no photo.", ar: "فورم قصير: الاسم، بيحب إيه، وبيواجه إيه. دقيقتين، ومن غير صورة." },
   how_2_t: { en: "Their Keeper comes to life", ar: "الحارس بتاعه بيظهر" },
   how_2_d: { en: "The right Keeper appears in a story set in your child's world — with your child as the one who helps.", ar: "الحارس المناسب بيظهر في قصة في عالم طفلك — وطفلك هو اللي بيساعده." },
-  how_3_t: { en: "Read, play, print", ar: "اقرا، العب، اطبع" },
-  how_3_d: { en: "Get 2 free PDFs instantly: a full-color story and a printable activity version. Then, if you'd like, order a printed book — pay on delivery.", ar: "استلم ملفين PDF فوراً: القصة بالألوان ونسخة أنشطة للطباعة. ولو حابب، اطلب كتاب مطبوع — الدفع عند الاستلام." },
 
   // showcase
   showcase_title: { en: "A real Estoria story", ar: "قصة إستوريا حقيقية" },
@@ -45,7 +39,6 @@ const dict = {
 
   // final cta
   final_title: { en: "Ready to make your child the hero?", ar: "جاهز تخلي طفلك البطل؟" },
-  final_sub: { en: "Two free PDFs in minutes. No photo, no card.", ar: "ملفين PDF مجاناً في دقايق. من غير صورة ولا فيزا." },
 
   footer_privacy: { en: "Privacy & consent", ar: "الخصوصية والموافقة" },
   footer_tag: { en: "Made with care in Egypt", ar: "اتعمل بحب في مصر" },
@@ -128,7 +121,7 @@ const dict = {
   s_step_template: { en: "Choosing the right Keeper", ar: "بنختار الحارس المناسب" },
   s_step_text: { en: "Weaving in the personal details", ar: "بنحط التفاصيل الشخصية" },
   s_step_images: { en: "Painting the cover", ar: "بنرسم الغلاف" },
-  s_step_pdf: { en: "Preparing your PDFs", ar: "بنجهز ملفات الـ PDF" },
+  s_step_pdf: { en: "Finishing your story", ar: "بنخلّص القصة" },
   s_failed: { en: "Something went wrong. Please try again.", ar: "حصلت مشكلة. جرّب تاني." },
 
   // story page
@@ -136,8 +129,6 @@ const dict = {
   st_workshop: { en: "'s Workshop", ar: " — الورشة" },
   st_badge: { en: "Your badge", ar: "شارتك" },
   st_parents: { en: "For parents", ar: "للأهل" },
-  st_dl_color: { en: "Download color PDF", ar: "حمّل PDF بالألوان" },
-  st_dl_lineart: { en: "Download activity PDF", ar: "حمّل PDF الأنشطة" },
   st_share: { en: "Share", ar: "شارك" },
   st_save_link: { en: "Save this link — it's the only way back to the story.", ar: "احفظ اللينك ده — هو الطريقة الوحيدة ترجع للقصة." },
   st_reveal: { en: "Tap to reveal the answer", ar: "دوس عشان تشوف الإجابة" },

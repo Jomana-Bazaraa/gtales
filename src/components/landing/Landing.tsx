@@ -229,7 +229,7 @@ export async function Pricing() {
             <div className="flex flex-col gap-2">
               <Row ok>Your child's name, interests and home words</Row>
               <Row ok>Interactive pages: riddles and choices</Row>
-              <Row ok>1 digital story PDF + parent guide</Row>
+              <Row ok>1 digital story + parent guide</Row>
               <Row ok={false}>Standard pictures, not your child's face</Row>
               <Row ok={false}>A ready-made tale, not written for them</Row>
               <Row ok={false}>Digital only, nothing printed</Row>

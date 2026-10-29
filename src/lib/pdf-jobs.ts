@@ -11,6 +11,9 @@ import { nanoid } from "nanoid";
 import { getBook, insertPdfJob, latestPdfJob, updatePdfJob } from "./db";
 import type { PdfJob } from "./types";
 
+/** Story PDFs are hidden from parents (Jomana, 29 Oct): the backend stays, reachable only when PDF_ENABLED=true (admin always). */
+export const PDF_ENABLED = process.env.PDF_ENABLED === "true";
+
 /** A queued/running job older than this is treated as lost and queued again. */
 const STALE_MS = 10 * 60_000;
 

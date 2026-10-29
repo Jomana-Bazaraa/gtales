@@ -18,7 +18,7 @@ declare global {
   interface Window { GTales?: { fitPages: (root: Element) => void } }
 }
 
-export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: { html: string; story: StoryJson; backHref: string; pdfHref: string; bookId: string; hasEmail: boolean }) {
+export function BookView({ html, story, backHref, bookId, hasEmail }: { html: string; story: StoryJson; backHref: string; bookId: string; hasEmail: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
 
@@ -193,7 +193,6 @@ export function BookView({ html, story, backHref, pdfHref, bookId, hasEmail }: {
         <Link href={backHref} aria-label="Close the story" className="w-10 h-10 rounded-full grid place-items-center bg-surface-tint text-ink no-underline">✕</Link>
         <span className="flex-1 text-center display font-bold text-[15px] leading-5 truncate">{story.title}</span>
         {canSpeak && <button type="button" onClick={readToMe} aria-label={reading ? "Stop reading" : "Read to me"} aria-pressed={reading} className={`w-10 h-10 rounded-full grid place-items-center text-ink ${reading ? "bg-sun" : "bg-cta shadow-[0_3px_0_var(--cta-shadow)]"}`}><Icon name="speaker" size={20} strokeWidth={2.5} /></button>}
-        <a href={pdfHref} target="_blank" rel="noreferrer" className="btn-ghost !h-9 !px-3 text-sm">PDF</a>
       </header>
       {/* overflow-x: clip keeps the A4 pages from widening the page before they are scaled (and keeps the header sticky) */}
       <div style={{ overflowX: "clip" }}>

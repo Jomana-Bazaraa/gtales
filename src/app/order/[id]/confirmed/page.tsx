@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Footer, Header } from "@/components/SiteChrome";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { getOrder } from "@/lib/db";
-import { COPY, egp, egpOrFree } from "@/lib/gtales";
+import { egp, egpOrFree } from "@/lib/gtales";
 import { booksLine } from "@/lib/orders";
 
 export const metadata: Metadata = { title: "Order received — GTales" };
@@ -48,7 +48,6 @@ export default async function Confirmed({ params }: PageProps<"/order/[id]/confi
           </div>
           <div className="flex flex-col gap-2">
             <Link href={`/my-stories?order=${o.id}`} className="btn-secondary">Track this order</Link>
-            <Link href="/tales" className="btn-ghost">{COPY.ctaSecondary} for another child</Link>
             <Link href="/reviews/new" className="text-center text-[15px] font-extrabold text-sky">★ Loved your free story? Add a review for other families</Link>
           </div>
         </section>

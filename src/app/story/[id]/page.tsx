@@ -1,5 +1,4 @@
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
 import { ReadyActions } from "@/components/story/ReadyActions";
 import { SeriesBand } from "@/components/ui/SeriesBand";
@@ -29,7 +28,6 @@ export default async function StoryPage({ params }: PageProps<"/story/[id]">) {
   const story = await getStory(id);
   if (!story) notFound();
   if (story.status !== "ready" || !story.assembled) redirect(`/story/${id}/status`);
-  const url = `${await baseUrl()}/story/${id}`;
   const name = story.input.childName;
   const tale = taleByKey(story.input.struggle);
   const cover = story.cover_url ?? story.assembled.pages.find((p) => p.imageUrl)?.imageUrl ?? null;
@@ -50,8 +48,8 @@ export default async function StoryPage({ params }: PageProps<"/story/[id]">) {
             <div className="flex flex-col gap-4">
               <span className="pill bg-mint-soft text-mint self-start">Free story · {tale?.title ?? "Superpower"}</span>
               <h1 className="text-[30px] leading-9 md:text-[44px] md:leading-[48px] font-bold text-balance">{name}'s story is ready</h1>
-              <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft">{story.assembled.title}. Read it together on the phone, or print the PDF. Keep this link: it is your way back to the story.</p>
-              <ReadyActions story={story} url={url} />
+              <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft">{story.assembled.title}. Read it together on the phone. Keep this link: it is your way back to the story.</p>
+              <ReadyActions story={story} />
             </div>
           </div>
         </section>
@@ -73,7 +71,6 @@ export default async function StoryPage({ params }: PageProps<"/story/[id]">) {
               <ol className="m-0 ps-5 text-[15px] leading-[22px] text-ink-soft flex flex-col gap-1">{tips.map((q, j) => <li key={j}>{q}</li>)}</ol>
             </div>
           </div>
-          <Link href="/tales?ref=share" className="text-[15px] font-extrabold text-sky">Another child at home? A free story for every superpower →</Link>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-10 md:pb-16">

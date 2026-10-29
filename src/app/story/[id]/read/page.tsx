@@ -10,7 +10,7 @@ import { renderBookHtml } from "@/stories/render";
 export default async function ReadPage({ params }: PageProps<"/story/[id]/read">) {
   const { id } = await params;
   const book = await getBook(id);
-  if (book) return <BookView html={await renderBookHtml(book.story, book.form)} story={book.story} backHref={`/story/${id}`} pdfHref={`/api/books/${id}/pdf`} bookId={id} hasEmail={(book.contact ?? "").includes("@")} />;
+  if (book) return <BookView html={await renderBookHtml(book.story, book.form)} story={book.story} backHref={`/story/${id}`} bookId={id} hasEmail={(book.contact ?? "").includes("@")} />;
   const story = await getStory(id);
   if (!story) notFound();
   if (story.status !== "ready" || !story.assembled) redirect(`/story/${id}/status`);

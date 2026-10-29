@@ -233,7 +233,7 @@ After fillStory, one call to Claude or Gemini (`POLISH_PROVIDER=claude|gemini|of
 
 Submit → fillStory → polish (if on) → Ready screen in ≤ 10 s (p95). Rate limit per §2.3. Event `story_created` with time and `polished: true|false`.
 
-**Ready screen `/story/[id]`.** Cover (the tale's cover for the chosen set), "Adam's story is ready", buttons: Open the story (sky), Story PDF, Colouring PDF, Parent guide; "Send to WhatsApp" (wa.me link with the story link, ref=share); "Make a story for another child" (ref=share). Series band as §6. No expert line.
+**Ready screen `/story/[id]`.** Cover (the tale's cover for the chosen set), "Adam's story is ready", buttons: Open the story (sky), Parent guide, "Send to WhatsApp" (wa.me link with the story link, ref=share), "★ Loved it? Add your review". No story PDF, no print, no "Make a story for another child" (29 Oct, U4/U5). PDFs stay in the backend behind `PDF_ENABLED=true` (admin can always generate/open them). Series band as §6. No expert line.
 
 ---
 

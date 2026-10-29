@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Footer, Header } from "@/components/SiteChrome";
 import { SeriesBand } from "@/components/ui/SeriesBand";
 import { BookActions, GuideLink } from "./BookActions";
@@ -21,7 +20,7 @@ export function BookReady({ book, url }: { book: BookRecord; url: string }) {
             <div className="flex flex-col gap-4">
               <span className="pill bg-mint-soft text-mint self-start">Free story · {tale?.title ?? "Superpower"}</span>
               <h1 className="text-[30px] leading-9 md:text-[44px] md:leading-[48px] font-bold text-balance">{name}'s story is ready</h1>
-              <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft">{book.title}. Read it together on the phone, or print the PDF. Keep this link: it is your way back to the story.</p>
+              <p className="m-0 text-[16px] leading-6 md:text-lg text-ink-soft">{book.title}. Read it together on the phone. Keep this link: it is your way back to the story.</p>
               <BookActions book={book} url={url} />
             </div>
           </div>
@@ -41,11 +40,10 @@ export function BookReady({ book, url }: { book: BookRecord; url: string }) {
             </div>
             <div className="card p-5 flex flex-col gap-2">
               <b className="font-bold">The full guide for {tale?.title ?? "this tale"}</b>
-              <p className="m-0 text-[15px] leading-[22px] text-ink-soft">What is going on, what to say, what to try this week, and when to ask for more help. A PDF to read on your phone or print.</p>
+              <p className="m-0 text-[15px] leading-[22px] text-ink-soft">What is going on, what to say, what to try this week, and when to ask for more help.</p>
               <GuideLink bookId={book.id} slug={book.slug} className="btn-secondary self-start">Open the parent guide</GuideLink>
             </div>
           </div>
-          <Link href="/tales?ref=share" className="text-[15px] font-extrabold text-sky">Another child at home? A free story for every superpower →</Link>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 pb-10 md:pb-16">
