@@ -4,7 +4,7 @@ Do once. After this, every push to `main` builds and deploys on Cloudflare. Why 
 
 ## 1. Supabase (database + file storage)
 1. supabase.com → New project → name `gtales`, region Frankfurt (closest to Egypt), strong DB password.
-2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0005_reviews.sql`, `0007_order_quantity.sql`, `0008_dashboard_stats.sql` (there is no 0006). (0003–0008 are safe to re-run.)
+2. SQL Editor → run, in this order: `supabase/migrations/0001_init.sql`, `0002_gtales.sql`, `0003_launch.sql`, `0004_promo_codes.sql`, `0007_order_quantity.sql`, `0008_dashboard_stats.sql`, `0009_order_language.sql`, `0010_reviews_setup.sql` (there is no 0006; 0010 contains all of 0005). (0003–0010 are safe to re-run.)
 3. Project settings → API: copy **Project URL** and the **service_role** key (never the anon key, never in client code).
 
 ## 2. GitHub (PDFs)
