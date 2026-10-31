@@ -1,4 +1,4 @@
-# Estoria
+# GTALES
 
 Personalized interactive children's storybooks built around **the Keepers** — nine characters who each guard one feeling and need the child's help with it.
 
@@ -15,7 +15,7 @@ cp .env.example .env.local      # leave keys empty for mock mode
 npm run dev                      # http://localhost:3000
 ```
 
-Mock mode: stories are stored in `.data/`, emails land in `.data/outbox/`, AI output is canned, illustrations are SVG placeholders. Admin at `/admin` (password `estoria-dev` unless you set `ADMIN_PASSWORD`).
+Mock mode: stories are stored in `.data/`, emails land in `.data/outbox/`, AI output is canned, illustrations are SVG placeholders. Admin at `/admin` (password `GTales-dev` unless you set `ADMIN_PASSWORD`).
 
 PDFs locally need a Chrome binary: set `PUPPETEER_EXECUTABLE_PATH` (e.g. `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`), or set `PDF_DISABLED=1` to skip them.
 
